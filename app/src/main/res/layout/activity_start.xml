@@ -23,7 +23,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/not_selected"
-            style="@style/CustomButton"
             android:layout_marginRight="8dp"
             android:id="@+id/selectButton"
             android:layout_weight="70" />
@@ -32,7 +31,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/connect"
-            style="@style/CustomButton"
             android:id="@+id/connectButton"
             android:layout_weight="30" />
     </LinearLayout>

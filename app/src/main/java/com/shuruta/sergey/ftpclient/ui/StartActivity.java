@@ -1,6 +1,7 @@
 package com.shuruta.sergey.ftpclient.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +27,7 @@ public class StartActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_connection:
-                // TODO Start add connection activity
+                startActivity(new Intent(StartActivity.this, AddConActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -6,5 +6,11 @@
     <string name="new_connection">New connection</string>
     <string name="connect">Connect</string>
     <string name="not_selected">Not selected</string>
+    <string name="connection_name">Connection name:</string>
+    <string name="host_adress">Host address:</string>
+    <string name="port_number">Port number:</string>
+    <string name="login">Login:</string>
+    <string name="password">Password:</string>
+    <string name="save">Save</string>
 
 </resources>

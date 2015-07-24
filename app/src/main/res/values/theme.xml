@@ -5,11 +5,20 @@
         <attr name="actionBarIconColor" format="color" />
     </declare-styleable>
 
+
     <style name="BaseAppTheme" parent="android:Theme.Holo.Light">
 
     </style>
 
     <style name="MainTheme" parent="BaseAppTheme">
+        <item name="android:buttonStyle">@style/MainTheme.Button</item>
+    </style>
+
+    <style name="MainTheme.Button" parent="android:Widget.Holo.Button">
+        <item name="android:background">@drawable/custom_button_bg</item>
+        <item name="android:textColor">@color/light_text</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:gravity">center</item>
     </style>
 
 <!--    <style name="BaseAppTheme" parent="android:Theme.Material.Light">
