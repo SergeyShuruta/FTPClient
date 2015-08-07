@@ -13,4 +13,6 @@
     <color name="icons">#212121</color>
     <color name="divider">#B6B6B6</color>
     <color name="light_text">#ffffffff</color>
+
+    <color name="field_error">#ff8a7c</color>
 </resources>

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.shuruta.sergey.ftpclient.database.DatabaseAdapter;
+import com.shuruta.sergey.ftpclient.database.entity.Connection;
 
 /**
  * Created by Sergey on 24.07.2015.

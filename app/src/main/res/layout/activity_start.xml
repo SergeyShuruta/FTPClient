@@ -2,40 +2,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StartActivity">
+    tools:context=".MainActivity">
 
-    <ImageView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/conRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/logoImageView"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/logo" />
+        android:layout_height="match_parent"
+        tools:context=".MainActivity"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <TextView android:text="@string/hello_world"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/conteinerLinearLayout"
-        android:layout_below="@+id/logoImageView"
-        android:layout_margin="8dp">
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/not_selected"
-            android:layout_marginRight="8dp"
-            android:id="@+id/selectButton"
-            android:layout_weight="70" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/connect"
-            android:id="@+id/connectButton"
-            android:layout_weight="30" />
-    </LinearLayout>
-
-    <TextView android:text="@string/hello_world" android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/messageTextView"
         android:layout_alignParentBottom="true"

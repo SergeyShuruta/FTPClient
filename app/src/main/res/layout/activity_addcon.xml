@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/scrollView"
-        android:layout_above="@+id/save">
+        android:layout_above="@+id/saveButton">
 
         <LinearLayout
             android:orientation="vertical"
@@ -25,10 +25,10 @@
                 android:text="@string/connection_name" />
 
             <EditText
+                android:id="@+id/nameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:id="@+id/nameEditText" />
+                style="@style/FormEditText" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -37,10 +37,10 @@
                 android:text="@string/host_adress" />
 
             <EditText
+                android:id="@+id/hostEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:id="@+id/hostEditText" />
+                style="@style/FormEditText" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -49,10 +49,10 @@
                 android:text="@string/port_number" />
 
             <EditText
+                android:id="@+id/portEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:id="@+id/portEditText" />
+                style="@style/FormEditText" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -61,10 +61,10 @@
                 android:text="@string/login" />
 
             <EditText
+                android:id="@+id/loginEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:id="@+id/loginEditText" />
+                style="@style/FormEditText" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -73,16 +73,16 @@
                 android:text="@string/password" />
 
             <EditText
+                android:id="@+id/passwEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:id="@+id/passwordEditText" />
+                style="@style/FormEditText" />
         </LinearLayout>
     </ScrollView>
 
 
     <Button
-        android:id="@+id/save"
+        android:id="@+id/saveButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/save"
