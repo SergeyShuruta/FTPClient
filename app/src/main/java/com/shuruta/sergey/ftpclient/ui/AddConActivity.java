@@ -33,7 +33,7 @@ public class AddConActivity extends Activity implements View.OnClickListener {
         Connection connection = new Connection(
                 conForm.nameEditText.getText().toString(),
                 conForm.hostEditText.getText().toString(),
-                conForm.portEditText.getText().toString());
+                Integer.parseInt(conForm.portEditText.getText().toString()));
         connection.setLogin(conForm.loginEditText.getText().toString());
         connection.setPassw(conForm.passwEditText.getText().toString());
         CustomApplication.getInstance().getDatabaseAdapter().saveConnection(connection);

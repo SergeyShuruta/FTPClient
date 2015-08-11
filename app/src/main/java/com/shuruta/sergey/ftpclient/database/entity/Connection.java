@@ -39,56 +39,82 @@ public class Connection {
     private long   id;
     private String name;
     private String host;
-    private String port;
+    private int    port;
     private String login;
     private String passw;
     private long   date;
 
     public Connection(Cursor cursor) {
-
+        if(null == cursor) return;
+        setId(cursor.getLong(cursor.getColumnIndex(Connection._ID)));
+        setName(cursor.getString(cursor.getColumnIndex(Connection.NAME)));
+        setHost(cursor.getString(cursor.getColumnIndex(Connection.HOST)));
+        setPort(cursor.getInt(cursor.getColumnIndex(Connection.PORT)));
+        setLogin(cursor.getString(cursor.getColumnIndex(Connection.LOGIN)));
+        setPassw(cursor.getString(cursor.getColumnIndex(Connection.PASSW)));
     }
 
-    public Connection(String name, String host, String port) {
+    public Connection(String name, String host, int port) {
         this.id = 0;
         this.name = name;
         this.host = host;
         this.port = port;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public void setPassw(String passw) {
-        this.passw = passw;
-    }
-
     public String getStringId() {
         return String.valueOf(id);
+    }
+
+    private void setId(long id) {
+        this.id = id;
     }
 
     public long getId() {
         return id;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public String getHost() {
         return host;
     }
 
-    public String getPort() {
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public int getPort() {
         return port;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getLogin() {
         return login;
     }
 
+    public void setPassw(String passw) {
+        this.passw = passw;
+    }
+
     public String getPassw() {
         return passw;
+    }
+
+    private void setDate(long date) {
+        this.date = date;
     }
 
     public long getDate() {
@@ -101,7 +127,7 @@ public class Connection {
 
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();
-        values.put(_ID,   id);
+        if(id > 0) values.put(_ID,   id);
         values.put(NAME,  name);
         values.put(HOST,  host);
         values.put(PORT,  port);

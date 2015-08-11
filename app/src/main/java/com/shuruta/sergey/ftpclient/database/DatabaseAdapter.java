@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
 
@@ -57,6 +58,7 @@ public class DatabaseAdapter extends SQLiteOpenHelper {
             cursor.close();
         }
         db.close();
+        Log.d(TAG, "getConnections(" + connections.size() + ")");
         return connections;
     }
 
@@ -64,9 +66,9 @@ public class DatabaseAdapter extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = connection.getContentValues();
         if(connection.isNewRow()) {
-            db.update(Connection.TABLE, values, Connection._ID + "=?", new String[]{connection.getStringId()});
-        } else {
             db.insert(Connection.TABLE, null, values);
+        } else {
+            db.update(Connection.TABLE, values, Connection._ID + "=?", new String[]{connection.getStringId()});
         }
         db.close();
     }
