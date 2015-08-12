@@ -12,5 +12,14 @@
     <string name="login">Login:</string>
     <string name="password">Password:</string>
     <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="remove">Remove</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_connection_ask">Delete the connection?</string>
+    <string name="changes_not_saved_still_close_ask">Changes are not saved. Still close?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="connection_error">Connection error</string>
 
 </resources>

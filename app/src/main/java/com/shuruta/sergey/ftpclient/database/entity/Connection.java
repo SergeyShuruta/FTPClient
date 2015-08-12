@@ -4,6 +4,9 @@ package com.shuruta.sergey.ftpclient.database.entity;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.shuruta.sergey.ftpclient.CustomApplication;
+import com.shuruta.sergey.ftpclient.database.DatabaseAdapter;
+
 import java.util.Calendar;
 
 /**
@@ -21,8 +24,6 @@ public class Connection {
     public static final String PASSW = "password";
     public static final String DATE  = "date";
 
-
-
     public static String getCreateTableSQL() {
 
         return "CREATE TABLE " + TABLE + " ("
@@ -36,13 +37,25 @@ public class Connection {
                 + ")";
     }
 
-    private long   id;
-    private String name;
-    private String host;
-    private int    port;
-    private String login;
-    private String passw;
-    private long   date;
+    public enum State {
+        PREPARE,
+        CONNECTED,
+        ERROR,
+        CLOSED
+    }
+
+    private long   id = 0;
+    private String name = new String();
+    private String host = new String();
+    private int    port = 21;
+    private String login = new String();
+    private String passw = new String();
+    private long   date = Calendar.getInstance().getTimeInMillis();
+    private boolean isActive = false;
+
+    public Connection(long id) {
+        this(CustomApplication.getInstance().getDatabaseAdapter().getConnection(id));
+    }
 
     public Connection(Cursor cursor) {
         if(null == cursor) return;
@@ -52,13 +65,6 @@ public class Connection {
         setPort(cursor.getInt(cursor.getColumnIndex(Connection.PORT)));
         setLogin(cursor.getString(cursor.getColumnIndex(Connection.LOGIN)));
         setPassw(cursor.getString(cursor.getColumnIndex(Connection.PASSW)));
-    }
-
-    public Connection(String name, String host, int port) {
-        this.id = 0;
-        this.name = name;
-        this.host = host;
-        this.port = port;
     }
 
     public String getStringId() {
@@ -123,6 +129,14 @@ public class Connection {
 
     public boolean isNewRow() {
         return 0 == id;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public ContentValues getContentValues() {

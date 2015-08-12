@@ -55,8 +55,8 @@ public class DatabaseAdapter extends SQLiteOpenHelper {
                     connections.add(new Connection(cursor));
                 } while (cursor.moveToNext());
             }
-            cursor.close();
         }
+        cursor.close();
         db.close();
         Log.d(TAG, "getConnections(" + connections.size() + ")");
         return connections;
@@ -73,4 +73,28 @@ public class DatabaseAdapter extends SQLiteOpenHelper {
         db.close();
     }
 
+    public Cursor getConnection(long id) {
+        if(id <= 0) return null;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(Connection.TABLE, null, Connection._ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+            cursor.moveToFirst();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        db.close();
+        return cursor;
+    }
+
+    public void removeConnection(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            db.delete(Connection.TABLE, Connection._ID + "=?", new String[]{String.valueOf(id)});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        db.close();
+
+    }
 }

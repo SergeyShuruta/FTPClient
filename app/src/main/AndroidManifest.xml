@@ -18,6 +18,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.AddConActivity" />
+        <activity android:name=".ui.FtpActivity" />
+        <service android:name=".FtpConnectionService" />
     </application>
 
 </manifest>

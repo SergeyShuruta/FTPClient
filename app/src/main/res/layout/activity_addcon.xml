@@ -22,61 +22,73 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/FormTextView"
-                android:text="@string/connection_name" />
+                android:text="@string/connection_name"
+                android:singleLine="true" />
 
             <EditText
                 android:id="@+id/nameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText" />
+                style="@style/FormEditText"
+                android:singleLine="true" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/FormTextView"
-                android:text="@string/host_adress" />
+                android:text="@string/host_adress"
+                android:singleLine="true" />
 
             <EditText
                 android:id="@+id/hostEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText" />
+                style="@style/FormEditText"
+                android:singleLine="true" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/FormTextView"
-                android:text="@string/port_number" />
+                android:text="@string/port_number"
+                android:singleLine="true" />
 
             <EditText
                 android:id="@+id/portEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText" />
+                style="@style/FormEditText"
+                android:text="21"
+                android:singleLine="true"
+                android:numeric="integer" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/FormTextView"
-                android:text="@string/login" />
+                android:text="@string/login"
+                android:singleLine="true" />
 
             <EditText
                 android:id="@+id/loginEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText" />
+                style="@style/FormEditText"
+                android:singleLine="true" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/FormTextView"
-                android:text="@string/password" />
+                android:text="@string/password"
+                android:singleLine="true" />
 
             <EditText
                 android:id="@+id/passwEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/FormEditText" />
+                style="@style/FormEditText"
+                android:singleLine="true" />
         </LinearLayout>
     </ScrollView>
 

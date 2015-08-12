@@ -2,9 +2,9 @@ package com.shuruta.sergey.ftpclient;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 
 import com.shuruta.sergey.ftpclient.database.DatabaseAdapter;
-import com.shuruta.sergey.ftpclient.database.entity.Connection;
 
 /**
  * Created by Sergey on 24.07.2015.
@@ -12,9 +12,10 @@ import com.shuruta.sergey.ftpclient.database.entity.Connection;
 public class CustomApplication extends Application {
 
     private Context mContext;
-    private DatabaseAdapter databaseAdapter;
+    private DatabaseAdapter mDatabaseAdapter;
 
     private static CustomApplication instance;
+    public static final String TAG = CustomApplication.class.getSimpleName();
 
     public static CustomApplication getInstance() {
         return instance;
@@ -25,10 +26,11 @@ public class CustomApplication extends Application {
         super.onCreate();
         instance = this;
         mContext = getApplicationContext();
-        databaseAdapter = new DatabaseAdapter(mContext);
+        mDatabaseAdapter = new DatabaseAdapter(mContext);
+        startService(new Intent(this, FtpConnectionService.class));
     }
 
     public DatabaseAdapter getDatabaseAdapter() {
-        return databaseAdapter;
+        return mDatabaseAdapter;
     }
 }
