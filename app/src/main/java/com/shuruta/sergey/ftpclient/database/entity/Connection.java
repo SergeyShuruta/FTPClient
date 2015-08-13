@@ -3,10 +3,13 @@ package com.shuruta.sergey.ftpclient.database.entity;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.CustomApplication;
+import com.shuruta.sergey.ftpclient.Utils;
 import com.shuruta.sergey.ftpclient.database.DatabaseAdapter;
 
+import java.io.File;
 import java.util.Calendar;
 
 /**
@@ -16,10 +19,11 @@ public class Connection {
 
     public static final String TABLE = "connections";
 
-    public static final String _ID  = "_id";
-    public static final String NAME = "name";
-    public static final String HOST = "host";
+    public static final String _ID   = "_id";
+    public static final String NAME  = "name";
+    public static final String HOST  = "host";
     public static final String PORT  = "port";
+    public static final String DIR   = "dir";
     public static final String LOGIN = "login";
     public static final String PASSW = "password";
     public static final String DATE  = "date";
@@ -31,26 +35,26 @@ public class Connection {
                     + Connection.NAME     + " TEXT NOT NULL,"
                     + Connection.HOST     + " TEXT NOT NULL,"
                     + Connection.PORT     + " INTEGER NOT NULL,"
+                    + Connection.DIR      + " TEXT NOT NULL DEFAULT '" + File.separator + "',"
                     + Connection.LOGIN    + " TEXT,"
                     + Connection.PASSW + " TEXT, "
                     + Connection.DATE + " INTEGER NOT NULL"
                 + ")";
     }
 
-    public enum State {
-        PREPARE,
-        CONNECTED,
-        ERROR,
-        CLOSED
+    public boolean isAnonymous() {
+        return login.isEmpty() && passw.isEmpty();
     }
 
-    private long   id = 0;
-    private String name = new String();
-    private String host = new String();
-    private int    port = 21;
-    private String login = new String();
-    private String passw = new String();
-    private long   date = Calendar.getInstance().getTimeInMillis();
+    private long    id;
+    private String  name;
+    private String  host;
+    private int     port;
+    private String  dir;
+    private String  login;
+    private String  passw;
+    private long    date;
+
     private boolean isActive = false;
 
     public Connection(long id) {
@@ -63,6 +67,7 @@ public class Connection {
         setName(cursor.getString(cursor.getColumnIndex(Connection.NAME)));
         setHost(cursor.getString(cursor.getColumnIndex(Connection.HOST)));
         setPort(cursor.getInt(cursor.getColumnIndex(Connection.PORT)));
+        setDir(cursor.getString(cursor.getColumnIndex(Connection.DIR)));
         setLogin(cursor.getString(cursor.getColumnIndex(Connection.LOGIN)));
         setPassw(cursor.getString(cursor.getColumnIndex(Connection.PASSW)));
     }
@@ -101,6 +106,34 @@ public class Connection {
 
     public int getPort() {
         return port;
+    }
+
+    public String getDir() {
+        return dir;
+    }
+
+    public void setDir(String dir) {
+        this.dir = dir;
+    }
+
+    public void backDir() {
+        if(this.dir.isEmpty() || this.dir.equals(File.separator)) return;
+        String[] dirs = this.dir.split(File.separator);
+        this.dir = new String();
+        for(String d : dirs) {
+            if(dirs[dirs.length - 1].equals(d)) continue;
+            this.dir += File.separator + d;
+        }
+    }
+
+    public void addDir(String dir) {
+        // TODO fix it
+        String entityDir =  Utils.trim(dir, File.separator);
+        entityDir = entityDir.equals(File.separator) ? File.separator : (File.separator + entityDir);
+        Log.d("TEST", "\"" + this.dir + "\" contains \"" + entityDir + "\"?");
+        Log.d("TEST", this.dir.toLowerCase().indexOf(entityDir) + " != " + (this.dir.length() - entityDir.length()));
+        if(this.dir.toLowerCase().indexOf(entityDir) != (this.dir.length() - entityDir.length() - 1))
+            this.dir += entityDir;
     }
 
     public void setLogin(String login) {
@@ -145,6 +178,7 @@ public class Connection {
         values.put(NAME,  name);
         values.put(HOST,  host);
         values.put(PORT,  port);
+        values.put(DIR,  dir);
         values.put(LOGIN, login);
         values.put(PASSW, passw);
         values.put(DATE, Calendar.getInstance().getTimeInMillis() / 1000);

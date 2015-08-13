@@ -14,6 +14,7 @@ import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.database.DatabaseAdapter;
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -36,9 +37,11 @@ public class AddConActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(!conForm.isFormValid()) return;
+        String dir = conForm.dirEditText.getText().toString();
         connection.setName(conForm.nameEditText.getText().toString());
         connection.setHost(conForm.hostEditText.getText().toString());
         connection.setPort(Integer.parseInt(conForm.portEditText.getText().toString()));
+        connection.setDir(dir.isEmpty() ? File.separator : dir);
         connection.setLogin(conForm.loginEditText.getText().toString());
         connection.setPassw(conForm.passwEditText.getText().toString());
         CustomApplication.getInstance().getDatabaseAdapter().saveConnection(connection);
@@ -71,6 +74,7 @@ public class AddConActivity extends Activity implements View.OnClickListener {
                 nameEditText,
                 hostEditText,
                 portEditText,
+                dirEditText,
                 loginEditText,
                 passwEditText;
         public final Button saveButton;
@@ -79,6 +83,7 @@ public class AddConActivity extends Activity implements View.OnClickListener {
             this.nameEditText  = (EditText) view.findViewById(R.id.nameEditText);
             this.hostEditText  = (EditText) view.findViewById(R.id.hostEditText);
             this.portEditText  = (EditText) view.findViewById(R.id.portEditText);
+            this.dirEditText = (EditText) view.findViewById(R.id.dirEditText);
             this.loginEditText = (EditText) view.findViewById(R.id.loginEditText);
             this.passwEditText = (EditText) view.findViewById(R.id.passwEditText);
             this.saveButton    = (Button) view.findViewById(R.id.saveButton);
@@ -90,6 +95,7 @@ public class AddConActivity extends Activity implements View.OnClickListener {
             this.nameEditText.setText(connection.getName());
             this.hostEditText.setText(connection.getHost());
             this.portEditText.setText(String.valueOf(connection.getPort()));
+            this.dirEditText.setText(connection.getDir());
             this.loginEditText.setText(connection.getLogin());
             this.passwEditText.setText(connection.getPassw());
         }

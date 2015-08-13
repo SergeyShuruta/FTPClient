@@ -6,11 +6,11 @@
     <string name="new_connection">New connection</string>
     <string name="connect">Connect</string>
     <string name="not_selected">Not selected</string>
-    <string name="connection_name">Connection name:</string>
-    <string name="host_adress">Host address:</string>
-    <string name="port_number">Port number:</string>
-    <string name="login">Login:</string>
-    <string name="password">Password:</string>
+    <string name="form_con_name">Connection name:</string>
+    <string name="form_host">Host address:</string>
+    <string name="form_port">Port number:</string>
+    <string name="form_login">Login:</string>
+    <string name="form_password">Password:</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
     <string name="remove">Remove</string>
@@ -21,5 +21,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="connection_error">Connection error</string>
+    <string name="form_remote_directory">Remote directory:</string>
+    <string name="back">Back</string>
 
 </resources>

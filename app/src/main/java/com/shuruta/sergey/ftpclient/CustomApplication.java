@@ -27,7 +27,7 @@ public class CustomApplication extends Application {
         instance = this;
         mContext = getApplicationContext();
         mDatabaseAdapter = new DatabaseAdapter(mContext);
-        startService(new Intent(this, FtpConnectionService.class));
+        startService(new Intent(this, FtpService.class));
     }
 
     public DatabaseAdapter getDatabaseAdapter() {
