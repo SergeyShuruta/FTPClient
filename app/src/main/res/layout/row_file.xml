@@ -3,31 +3,42 @@
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     style="@style/CardView">
+
+    <ImageView
+        android:layout_width="@dimen/card_collection_icon"
+        android:layout_height="@dimen/card_collection_icon"
+        android:id="@+id/iconImageView"
+        android:src="@drawable/ic_action_collection"
+        android:layout_alignParentRight="false"
+        android:layout_alignParentLeft="true"
+        android:scaleType="center" />
+
     <TextView
         android:id="@+id/nameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Argest connection"
         style="@style/CardTitleText"
-        android:layout_toLeftOf="@+id/menuImageView" />
+        android:layout_toLeftOf="@+id/menuImageView"
+        android:layout_toRightOf="@+id/iconImageView" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="****"
+        android:text="750 kb"
         style="@style/CardDescText"
-        android:id="@+id/descTextView"
+        android:id="@+id/sizeTextView"
         android:layout_below="@+id/nameTextView"
-        android:layout_alignRight="@+id/nameTextView" />
+        android:layout_alignRight="@+id/nameTextView"
+        android:layout_toRightOf="@+id/iconImageView" />
 
     <ImageView
-        android:layout_width="28dp"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/card_collection_icon"
+        android:layout_height="@dimen/card_collection_icon"
         android:id="@+id/menuImageView"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_menu_moreoverflow_normal_holo_light"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/card_padding_left"
         android:alpha="0.6" />
 
 </RelativeLayout>

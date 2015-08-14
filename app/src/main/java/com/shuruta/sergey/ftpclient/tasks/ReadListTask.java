@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.CacheManager;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.FFile;
 import com.shuruta.sergey.ftpclient.FtpService;
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
 
@@ -69,17 +70,17 @@ public class ReadListTask extends Task {
             EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_LIST_ERROR));
             e.printStackTrace();
         }
-        List<FTPFile> ftpFiles = new ArrayList<FTPFile>();
+        List<FFile> ftpFiles = new ArrayList<FFile>();
         for(int i = 0; i < list.length; i++) {
-            if(/*list[i].getName().equals(".") || */list[i].getName().equals("..")) continue;
-            ftpFiles.add(list[i]);
+            if(list[i].getName().equals("..")) continue;
+            ftpFiles.add(new FFile(list[i]));
         }
-        Collections.sort(ftpFiles, new Comparator<FTPFile>() {
+        Collections.sort(ftpFiles, new Comparator<FFile>() {
             @Override
-            public int compare(final FTPFile object1, final FTPFile object2) {
-                if (object1.getType() == FTPFile.TYPE_DIRECTORY && object2.getType() == FTPFile.TYPE_FILE)
+            public int compare(final FFile object1, final FFile object2) {
+                if (object1.isDirectory() && object2.isFile())
                     return -1;
-                if (object1.getType() == FTPFile.TYPE_FILE && object2.getType() == FTPFile.TYPE_DIRECTORY)
+                if (object1.isFile() && object2.isDirectory())
                     return 1;
                 return object1.getName().compareTo(object2.getName());
             }

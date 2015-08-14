@@ -12,7 +12,7 @@ import it.sauronsoftware.ftp4j.FTPFile;
  */
 public class CacheManager {
 
-    private List<FTPFile> ftpFiles = new ArrayList<>();
+    private List<FFile> ftpFiles = new ArrayList<>();
 
     private static CacheManager instance;
 
@@ -25,11 +25,11 @@ public class CacheManager {
         return instance;
     }
 
-    public List<FTPFile> getFtpFiles() {
-        return new ArrayList<FTPFile>(ftpFiles);
+    public List<FFile> getFtpFiles() {
+        return new ArrayList<FFile>(ftpFiles);
     }
 
-    public void putFtpFiles(List<FTPFile> ftpFiles) {
+    public void putFtpFiles(List<FFile> ftpFiles) {
         this.ftpFiles.clear();
         this.ftpFiles.addAll(ftpFiles);
     }

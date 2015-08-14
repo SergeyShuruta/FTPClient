@@ -35,8 +35,6 @@
 
     <style name="CardTitleText" parent="android:Widget.Holo.TextView">
         <item name="android:textColor">@color/primary_text</item>
-        <item name="android:layout_marginLeft">@dimen/card_padding_left</item>
-        <item name="android:layout_marginRight">@dimen/card_padding_left</item>
         <item name="android:layout_marginTop">@dimen/card_padding_top</item>
         <item name="android:padding">0dp</item>
         <item name="android:textSize">17sp</item>
@@ -46,8 +44,6 @@
 
     <style name="CardDescText" parent="android:Widget.Holo.TextView">
         <item name="android:textColor">@color/secondary_text</item>
-        <item name="android:layout_marginLeft">@dimen/card_padding_left</item>
-        <item name="android:layout_marginRight">@dimen/card_padding_left</item>
         <item name="android:layout_marginBottom">@dimen/card_padding_top</item>
         <item name="android:padding">0dp</item>
         <item name="android:textSize">12sp</item>

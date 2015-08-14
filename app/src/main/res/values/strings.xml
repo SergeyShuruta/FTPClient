@@ -23,5 +23,6 @@
     <string name="connection_error">Connection error</string>
     <string name="form_remote_directory">Remote directory:</string>
     <string name="back">Back</string>
+    <string name="refresh">Refresh</string>
 
 </resources>

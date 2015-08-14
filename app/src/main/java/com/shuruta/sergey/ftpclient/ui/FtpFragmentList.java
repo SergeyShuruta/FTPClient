@@ -11,11 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shuruta.sergey.ftpclient.CacheManager;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.FFile;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ import it.sauronsoftware.ftp4j.FTPFile;
 public class FtpFragmentList extends Fragment {
 
     private FtpFileAdapter ftpFileAdapter;
-    private List<FTPFile> ftpFiles = new ArrayList<>();
+    private List<FFile> ftpFiles = new ArrayList<>();
     private FtpFragmentListener ftpFragmentListener;
     private RecyclerView fileRecyclerView;
 
@@ -39,8 +41,8 @@ public class FtpFragmentList extends Fragment {
 
     public interface FtpFragmentListener {
         public void onBack();
-        public void onDirClick(FTPFile ftpFile);
-        public void onFileClick(FTPFile ftpFile);
+        public void onDirClick(FFile ftpFile);
+        public void onFileClick(FFile ftpFile);
     }
 
     private interface OnFileMenuClickListener {
@@ -125,10 +127,10 @@ public class FtpFragmentList extends Fragment {
 
     private class FtpFileAdapter extends RecyclerView.Adapter<FtpFileAdapter.ViewHolder> {
 
-        private List<FTPFile> files;
+        private List<FFile> files;
         private OnFileMenuClickListener listener;
 
-        public FtpFileAdapter(List<FTPFile> files, OnFileMenuClickListener listener) {
+        public FtpFileAdapter(List<FFile> files, OnFileMenuClickListener listener) {
             this.files = files;
             this.listener = listener;
         }
@@ -141,9 +143,11 @@ public class FtpFragmentList extends Fragment {
 
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, int i) {
-            final FTPFile connection = files.get(i);
-            String name = connection.getName().equals(".") ? getString(R.string.back) : connection.getName();
+            final FFile file = files.get(i);
+            String name = file.getName().equals(".") ? getString(R.string.back) : file.getName();
             viewHolder.nameTextView.setText(name);
+            viewHolder.sizTextView.setText(file.getSizeString());
+            viewHolder.iconImageView.setImageDrawable(file.getIcon());
 /*
             viewHolder.menuImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -161,23 +165,28 @@ public class FtpFragmentList extends Fragment {
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-            private TextView nameTextView;
+            private TextView nameTextView, sizTextView;
+            private ImageView iconImageView;
 
             public ViewHolder(View holderView) {
                 super(holderView);
-                this.nameTextView  = (TextView)    holderView.findViewById(R.id.nameTextView);
+                this.nameTextView  = (TextView) holderView.findViewById(R.id.nameTextView);
+                this.sizTextView   = (TextView) holderView.findViewById(R.id.sizeTextView);
+                this.iconImageView = (ImageView) holderView.findViewById(R.id.iconImageView);
                 holderView.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View v) {
-                FTPFile ftpFile = files.get(getPosition());
-                if(ftpFile.getName().equals("."))
+                FFile ftpFile = files.get(getPosition());
+                if(ftpFile.isBack()) {
                     ftpFragmentListener.onBack();
-                if(ftpFile.getType() == FTPFile.TYPE_DIRECTORY)
-                    ftpFragmentListener.onDirClick(ftpFile);
-                if(ftpFile.getType() == FTPFile.TYPE_FILE)
-                    ftpFragmentListener.onFileClick(ftpFile);
+                } else {
+                    if(ftpFile.isDirectory())
+                        ftpFragmentListener.onDirClick(ftpFile);
+                    if(ftpFile.isFile())
+                        ftpFragmentListener.onFileClick(ftpFile);
+                }
             }
         }
     }

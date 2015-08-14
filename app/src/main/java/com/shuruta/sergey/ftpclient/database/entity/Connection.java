@@ -119,21 +119,21 @@ public class Connection {
     public void backDir() {
         if(this.dir.isEmpty() || this.dir.equals(File.separator)) return;
         String[] dirs = this.dir.split(File.separator);
-        this.dir = new String();
+        this.dir = File.separator;
         for(String d : dirs) {
+            if(d.isEmpty()) continue;
             if(dirs[dirs.length - 1].equals(d)) continue;
-            this.dir += File.separator + d;
+            this.dir += d + File.separator;
         }
     }
 
     public void addDir(String dir) {
-        // TODO fix it
-        String entityDir =  Utils.trim(dir, File.separator);
-        entityDir = entityDir.equals(File.separator) ? File.separator : (File.separator + entityDir);
-        Log.d("TEST", "\"" + this.dir + "\" contains \"" + entityDir + "\"?");
-        Log.d("TEST", this.dir.toLowerCase().indexOf(entityDir) + " != " + (this.dir.length() - entityDir.length()));
-        if(this.dir.toLowerCase().indexOf(entityDir) != (this.dir.length() - entityDir.length() - 1))
-            this.dir += entityDir;
+        if(dir.isEmpty()) return;
+        Log.d("TEST", "addDir(" + dir + ")");
+        String[] dirs = this.dir.split(File.separator);
+        if(0 != dirs.length && dirs[dirs.length - 1].equals(dir)) return;
+        this.dir += dir + File.separator;
+        Log.d("TEST", "this.dir=" + this.dir);
     }
 
     public void setLogin(String login) {
