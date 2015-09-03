@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,7 +21,7 @@ import java.util.List;
 /**
  * Created by Sergey on 24.07.2015.
  */
-public class AddConActivity extends Activity implements View.OnClickListener {
+public class AddConActivity extends ToolBarActivity implements View.OnClickListener {
 
     private ConForm conForm;
     private Connection connection;
@@ -32,6 +33,10 @@ public class AddConActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_addcon);
         connection = new Connection(getIntent().getLongExtra(CONNECTION_ID, 0));
         conForm = new ConForm(getWindow().getDecorView(), this, connection);
+        setupToolBar(R.drawable.ic_launcher,
+                R.string.app_name,
+                getString(connection.getId() == 0 ? R.string.new_connection : R.string.edit_connection_x, connection.getName()),
+                null, null);
     }
 
     @Override

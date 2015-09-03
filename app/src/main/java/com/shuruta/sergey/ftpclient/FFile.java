@@ -16,14 +16,12 @@ public class FFile {
     private final File file;
     private FileType fileType;
 
-    public static final int TYPE_FILE = 0;
-    public static final int TYPE_DIRECTORY = 1;
-    public static final int TYPE_LINK = 2;
-
     public enum FileType {
         DIRECTORY,
-        UNKNOWN_FILE,
-        IMAGE_FILE,
+        FILE_UNKNOWN,
+        FILE_IMG,
+        FILE_TXT,
+        FILE_PHP,
     }
 
     public FFile(FTPFile ftpFile) {
@@ -72,15 +70,19 @@ public class FFile {
         String name = getName();
         switch (name.substring(name.lastIndexOf(".") + 1).toLowerCase()) {
             case "php":
+                this.fileType = FileType.FILE_PHP;
+                break;
             case "txt":
+                this.fileType = FileType.FILE_TXT;
+                break;
             case "png":
             case "jpg":
             case "jpeg":
             case "gif":
-                this.fileType = FileType.IMAGE_FILE;
+                this.fileType = FileType.FILE_IMG;
                 break;
             default:
-                this.fileType = FileType.UNKNOWN_FILE;
+                this.fileType = FileType.FILE_UNKNOWN;
         }
     }
 
@@ -88,8 +90,10 @@ public class FFile {
         int res;
         switch (fileType) {
             case DIRECTORY: res = R.drawable.ic_action_collection; break;
-            case IMAGE_FILE: res = R.drawable.ic_action_picture; break;
-            default: res = R.drawable.ic_action_unknown;
+            case FILE_IMG:  res = R.drawable.ic_action_picture;    break;
+            case FILE_TXT:  res = R.drawable.ic_action_txt;        break;
+            case FILE_PHP:  res = R.drawable.ic_action_php;        break;
+            default:        res = R.drawable.ic_action_unknown;
         }
         return CustomApplication.getInstance().getApplicationContext().getResources().getDrawable(res);
     }

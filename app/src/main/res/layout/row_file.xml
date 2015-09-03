@@ -33,12 +33,13 @@
         android:layout_toRightOf="@+id/iconImageView" />
 
     <ImageView
-        android:layout_width="@dimen/card_collection_icon"
-        android:layout_height="@dimen/card_collection_icon"
+        android:layout_width="28dp"
+        android:layout_height="match_parent"
         android:id="@+id/menuImageView"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_menu_moreoverflow_normal_holo_light"
         android:layout_centerVertical="true"
-        android:alpha="0.6" />
+        android:alpha="0.6"
+        android:layout_marginRight="@dimen/card_padding_left" />
 
 </RelativeLayout>
