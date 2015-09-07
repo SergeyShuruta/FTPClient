@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    style="@style/CardView">
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Argest connection"
+        style="@style/CardTitleText"
+        android:layout_toLeftOf="@+id/menuImageView"
+        android:layout_marginLeft="@dimen/card_padding_left" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        style="@style/CardDescText"
+        android:id="@+id/descTextView"
+        android:layout_below="@+id/nameTextView"
+        android:layout_alignRight="@+id/nameTextView"
+        android:layout_marginLeft="@dimen/card_padding_left" />
+
+    <ImageView
+        android:layout_width="28dp"
+        android:layout_height="match_parent"
+        android:id="@+id/menuImageView"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_menu_moreoverflow_normal_holo_light"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/card_padding_left"
+        android:alpha="0.6" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="@dimen/card_padding_left"
+        android:paddingRight="@dimen/card_padding_left"
+        android:paddingBottom="0dp"
+        android:indeterminate="true" />
+</RelativeLayout>

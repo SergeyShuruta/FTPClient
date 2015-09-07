@@ -25,6 +25,7 @@ public class AddConActivity extends ToolBarActivity implements View.OnClickListe
 
     private ConForm conForm;
     private Connection connection;
+    private boolean isChanged = false;
     public static final String CONNECTION_ID = "connection_id";
 
     @Override
@@ -41,6 +42,10 @@ public class AddConActivity extends ToolBarActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        saveConnection();
+    }
+
+    private void saveConnection() {
         if(!conForm.isFormValid()) return;
         String dir = conForm.dirEditText.getText().toString();
         connection.setName(conForm.nameEditText.getText().toString());
@@ -55,7 +60,7 @@ public class AddConActivity extends ToolBarActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        if(connection.getId() > 0) {
+        if(isChanged) {
             DialogUtility.showDialog(
                     AddConActivity.this,
                     R.string.changes_not_saved_still_close_ask,
@@ -64,7 +69,13 @@ public class AddConActivity extends ToolBarActivity implements View.OnClickListe
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            AddConActivity.super.onBackPressed();
+                            saveConnection();
+                        }
+                    },
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
                         }
                     }
             );
@@ -91,6 +102,14 @@ public class AddConActivity extends ToolBarActivity implements View.OnClickListe
             this.dirEditText = (EditText) view.findViewById(R.id.dirEditText);
             this.loginEditText = (EditText) view.findViewById(R.id.loginEditText);
             this.passwEditText = (EditText) view.findViewById(R.id.passwEditText);
+
+            this.nameEditText.addTextChangedListener(textChangedListener);
+            this.hostEditText.addTextChangedListener(textChangedListener);
+            this.portEditText.addTextChangedListener(textChangedListener);
+            this.dirEditText.addTextChangedListener(textChangedListener);
+            this.loginEditText.addTextChangedListener(textChangedListener);
+            this.passwEditText.addTextChangedListener(textChangedListener);
+
             this.saveButton    = (Button) view.findViewById(R.id.saveButton);
             this.saveButton.setOnClickListener(onClickListener);
             fillForm(connection);
@@ -117,5 +136,22 @@ public class AddConActivity extends ToolBarActivity implements View.OnClickListe
             if(checkFieldError(hostEditText)) isValid = false;
             return isValid;
         }
+
+        private TextWatcher textChangedListener = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                isChanged = count > 0;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
     }
 }

@@ -21,9 +21,9 @@ public class EventBusMessenger {
         CONNECTION_ERROR,
         CONNECTION_ERROR_AUTHORIZATION,
         CONNECTION_FINISH,
-        READ_LIST_START,
-        READ_LIST_OK,
-        READ_LIST_ERROR,
-        READ_LIST_FINISH,
+        READ_FTP_LIST_START,
+        READ_FTP_LIST_OK,
+        READ_FTP_LIST_ERROR,
+        READ_FTP_LIST_FINISH,
     }
 }

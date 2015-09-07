@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.AddConActivity" />
-        <activity android:name=".ui.FtpActivity" />
+        <activity android:name=".ui.FilesActivity" />
         <service android:name=".FtpService" />
     </application>
 

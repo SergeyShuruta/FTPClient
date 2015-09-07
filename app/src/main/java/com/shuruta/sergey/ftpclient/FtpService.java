@@ -2,18 +2,14 @@ package com.shuruta.sergey.ftpclient;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
 import com.shuruta.sergey.ftpclient.tasks.ConnectionTask;
 import com.shuruta.sergey.ftpclient.tasks.ReadListTask;
-import com.shuruta.sergey.ftpclient.ui.FtpActivity;
 
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import it.sauronsoftware.ftp4j.FTPClient;
