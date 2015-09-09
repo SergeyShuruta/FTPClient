@@ -1,22 +1,19 @@
 package com.shuruta.sergey.ftpclient.ui;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.R;
-import com.shuruta.sergey.ftpclient.database.DatabaseAdapter;
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
+import com.shuruta.sergey.ftpclient.ui.parents.ToolBarActivity;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Created by Sergey on 24.07.2015.

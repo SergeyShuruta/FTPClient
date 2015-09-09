@@ -1,4 +1,4 @@
-package com.shuruta.sergey.ftpclient.ui;
+package com.shuruta.sergey.ftpclient.ui.parents;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.shuruta.sergey.ftpclient.FFile;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
+import com.shuruta.sergey.ftpclient.ui.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +26,14 @@ import de.greenrobot.event.EventBus;
  * Created by Sergey Shuruta
  * 04.09.2015 at 13:20
  */
-public abstract class FilesFragmentList extends Fragment {
+public abstract class FilesFragment extends Fragment {
 
     private RecyclerView mFileRecyclerView;
     private FtpFileAdapter mFileAdapter;
 
     private List<FFile> mFilesList = new ArrayList<>();
 
-    public static final String TAG = FilesFragmentList.class.getSimpleName();
+    public static final String TAG = FilesFragment.class.getSimpleName();
 
     public abstract void onBack();
     public abstract void onDirClick(FFile ftpFile);

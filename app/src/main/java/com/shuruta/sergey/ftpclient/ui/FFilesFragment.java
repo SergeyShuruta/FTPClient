@@ -7,36 +7,36 @@ import com.shuruta.sergey.ftpclient.CacheManager;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.FFile;
 import com.shuruta.sergey.ftpclient.FtpService;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.shuruta.sergey.ftpclient.ui.parents.FilesFragment;
 
 /**
  * Created by Sergey Shuruta
  * 08/15/15 at 22:11
  */
-public class LocalFragmentList extends FilesFragmentList {
+public class FFilesFragment extends FilesFragment {
 
-    private LocalFragmentListener mActivityListener;
-    public static final String TAG = LocalFragmentList.class.getSimpleName();
+    private FtpFragmentListener mActivityListener;
+    public static final String TAG = FFilesFragment.class.getSimpleName();
 
-    public interface LocalFragmentListener {
-        boolean isLocalListReading();
+    public interface FtpFragmentListener {
+        FtpService getFtpConnectionService();
+        boolean isFtpListReading();
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mActivityListener = (LocalFragmentListener) activity;
+            mActivityListener = (FtpFragmentListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement LocalFragmentListener");
+            throw new ClassCastException(activity.toString() + " must implement FilesFragmentListener");
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        displayList(CacheManager.getInstance().getFtpFiles());
     }
 
     public void onEventMainThread(EventBusMessenger event) {
@@ -47,7 +47,7 @@ public class LocalFragmentList extends FilesFragmentList {
                 startReadList();
                 break;
             case READ_FTP_LIST_OK:
-                displayList(new ArrayList<FFile>());
+                displayList(CacheManager.getInstance().getFtpFiles());
                 break;
             case READ_FTP_LIST_ERROR:
                 errorReadList();
@@ -59,16 +59,18 @@ public class LocalFragmentList extends FilesFragmentList {
 
     @Override
     public void onBack() {
-        if(mActivityListener.isLocalListReading()) return;
+        if(mActivityListener.isFtpListReading()) return;
+        mActivityListener.getFtpConnectionService().back();
     }
 
     @Override
     public void onDirClick(FFile ftpFile) {
-        if(mActivityListener.isLocalListReading()) return;
+        if(mActivityListener.isFtpListReading()) return;
+        mActivityListener.getFtpConnectionService().readList(ftpFile.getName());
     }
 
     @Override
     public void onFileClick(FFile ftpFile) {
-        if(mActivityListener.isLocalListReading()) return;
+        if(mActivityListener.isFtpListReading()) return;
     }
 }

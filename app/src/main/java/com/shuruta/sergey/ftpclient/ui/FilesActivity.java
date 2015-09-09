@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,6 +18,8 @@ import android.widget.ImageView;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.FtpService;
 import com.shuruta.sergey.ftpclient.R;
+import com.shuruta.sergey.ftpclient.ui.parents.ToolBarActivity;
+
 import de.greenrobot.event.EventBus;
 
 /**
@@ -26,11 +27,17 @@ import de.greenrobot.event.EventBus;
  * Date: 08/15/15
  * Time: 22:11
  */
-public class FilesActivity extends ToolBarActivity implements FtpFragmentList.FtpFragmentListener, Toolbar.OnMenuItemClickListener {
+public class FilesActivity extends ToolBarActivity implements FFilesFragment.FtpFragmentListener, Toolbar.OnMenuItemClickListener {
 
     private FtpService mFtpConnectionService;
     private Menu menu;
     private boolean isFtpListReading, bound;
+    private ListType mSelectedList = ListType.FTP;
+
+    public enum ListType {
+        FTP,
+        LOCAL
+    }
 
     public static final String TAG = FilesActivity.class.getSimpleName();
 
@@ -39,10 +46,14 @@ public class FilesActivity extends ToolBarActivity implements FtpFragmentList.Ft
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files);
         menu = setupToolBar(R.drawable.ic_launcher, R.string.app_name, R.string.list_of_connections, R.menu.menu_files, FilesActivity.this);
+
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.ftpFrameLayout, new FtpFragmentList());
-        if(null != getSupportFragmentManager().findFragmentById(R.id.localFrameLayout))
-            fragmentTransaction.replace(R.id.localFrameLayout, new LocalFragmentList());
+        fragmentTransaction.replace(R.id.ftpFrameLayout, new FFilesFragment());
+
+        if(null != getSupportFragmentManager().findFragmentById(R.id.localFrameLayout)) {
+            fragmentTransaction.replace(R.id.localFrameLayout, new LFilesFragment());
+            mSelectedList = ListType.LOCAL;
+        }
         fragmentTransaction.commit();
     }
 
@@ -81,6 +92,12 @@ public class FilesActivity extends ToolBarActivity implements FtpFragmentList.Ft
         if (!bound) return;
         unbindService(mServiceConnection);
         bound = false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // TODO onBack()
     }
 
     public void onEventMainThread(EventBusMessenger event) {
