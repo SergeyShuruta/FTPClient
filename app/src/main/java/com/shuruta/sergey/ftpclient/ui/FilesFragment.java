@@ -1,4 +1,4 @@
-package com.shuruta.sergey.ftpclient.ui.parents;
+package com.shuruta.sergey.ftpclient.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.shuruta.sergey.ftpclient.FFile;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
-import com.shuruta.sergey.ftpclient.ui.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;

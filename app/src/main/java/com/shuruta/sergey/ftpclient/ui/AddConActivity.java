@@ -11,14 +11,13 @@ import android.widget.EditText;
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
-import com.shuruta.sergey.ftpclient.ui.parents.ToolBarActivity;
 
 import java.io.File;
 
 /**
  * Created by Sergey on 24.07.2015.
  */
-public class AddConActivity extends ToolBarActivity implements View.OnClickListener {
+public class AddConActivity extends BaseActivity implements View.OnClickListener {
 
     private ConForm conForm;
     private Connection connection;

@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
+    <style name="AppTheme" parent="AppTheme.Base">
+
+    </style>
+
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/theme_default_primary</item>
+        <item name="colorPrimaryDark">@color/theme_default_primary_dark</item>
+        <item name="colorAccent">@color/theme_default_accent</item>
+    </style>
+
+    <style name="CustomToolbarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/primary_text</item>
+        <item name="android:textColorSecondary">@color/secondary_text</item>
+    </style>
+
     <style name="MessageTextView" parent="android:Widget.Holo.TextView">
         <item name="android:background">@color/theme_default_accent</item>
         <item name="android:textColor">@color/light_text</item>
@@ -50,6 +67,5 @@
         <item name="android:singleLine">true</item>
         <item name="android:gravity">center_vertical</item>
     </style>
-
 
 </resources>

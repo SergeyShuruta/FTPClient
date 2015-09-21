@@ -7,7 +7,7 @@ import com.shuruta.sergey.ftpclient.CacheManager;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.FFile;
 import com.shuruta.sergey.ftpclient.FtpService;
-import com.shuruta.sergey.ftpclient.ui.parents.FilesFragment;
+import com.shuruta.sergey.ftpclient.ui.FilesFragment;
 
 /**
  * Created by Sergey Shuruta

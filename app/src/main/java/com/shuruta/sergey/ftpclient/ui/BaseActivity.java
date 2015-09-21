@@ -1,9 +1,9 @@
-package com.shuruta.sergey.ftpclient.ui.parents;
+package com.shuruta.sergey.ftpclient.ui;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.support.v7.app.AppCompatActivity;
 
 import com.shuruta.sergey.ftpclient.R;
 
@@ -11,7 +11,7 @@ import com.shuruta.sergey.ftpclient.R;
  * Created by Sergey Shuruta
  * 03.09.2015 at 17:04
  */
-public abstract class ToolBarActivity extends FragmentActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     protected Toolbar mToolbar = null;
 

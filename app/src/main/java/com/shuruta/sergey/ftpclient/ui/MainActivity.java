@@ -27,7 +27,6 @@ import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.FtpService;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.database.entity.Connection;
-import com.shuruta.sergey.ftpclient.ui.parents.ToolBarActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 
 
-public class MainActivity extends ToolBarActivity implements Toolbar.OnMenuItemClickListener {
+public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
 
     private ConnectionsAdapter connectionsAdapter;
     private List<Connection> connections = new ArrayList<>();

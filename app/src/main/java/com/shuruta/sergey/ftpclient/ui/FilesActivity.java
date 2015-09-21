@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.FtpService;
 import com.shuruta.sergey.ftpclient.R;
-import com.shuruta.sergey.ftpclient.ui.parents.ToolBarActivity;
 
 import de.greenrobot.event.EventBus;
 
@@ -27,7 +26,7 @@ import de.greenrobot.event.EventBus;
  * Date: 08/15/15
  * Time: 22:11
  */
-public class FilesActivity extends ToolBarActivity implements FFilesFragment.FtpFragmentListener, Toolbar.OnMenuItemClickListener {
+public class FilesActivity extends BaseActivity implements FFilesFragment.FtpFragmentListener, Toolbar.OnMenuItemClickListener {
 
     private FtpService mFtpConnectionService;
     private Menu menu;

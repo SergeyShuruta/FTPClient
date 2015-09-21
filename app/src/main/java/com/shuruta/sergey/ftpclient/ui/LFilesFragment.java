@@ -5,8 +5,6 @@ import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.FFile;
-import com.shuruta.sergey.ftpclient.ui.parents.FilesFragment;
-
 import java.util.ArrayList;
 
 /**
