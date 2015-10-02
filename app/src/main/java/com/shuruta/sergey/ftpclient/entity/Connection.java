@@ -1,21 +1,24 @@
-package com.shuruta.sergey.ftpclient.database.entity;
+package com.shuruta.sergey.ftpclient.entity;
 
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.util.Log;
 
+import com.shuruta.sergey.ftpclient.BR;
 import com.shuruta.sergey.ftpclient.CustomApplication;
-import com.shuruta.sergey.ftpclient.Utils;
-import com.shuruta.sergey.ftpclient.database.DatabaseAdapter;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by Sergey on 24.07.2015.
  */
-public class Connection {
+public class Connection extends BaseObservable {
 
     public static final String TABLE = "connections";
 
@@ -84,8 +87,10 @@ public class Connection {
         return id;
     }
 
+    @Bindable
     public void setName(String name) {
         this.name = name;
+        notifyPropertyChanged(BR.name);
     }
 
     public String getName() {
@@ -183,5 +188,18 @@ public class Connection {
         values.put(PASSW, passw);
         values.put(DATE, Calendar.getInstance().getTimeInMillis() / 1000);
         return values;
+    }
+
+    public static List<Connection> createList(Cursor cursor) {
+        List<Connection> connections = new ArrayList<>();
+        if(null != cursor) {
+            if(cursor.moveToFirst()) {
+                do {
+                    connections.add(new Connection(cursor));
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+        return connections;
     }
 }

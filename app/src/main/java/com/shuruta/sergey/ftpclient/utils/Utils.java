@@ -1,4 +1,4 @@
-package com.shuruta.sergey.ftpclient;
+package com.shuruta.sergey.ftpclient.utils;
 
 import java.text.DecimalFormat;
 

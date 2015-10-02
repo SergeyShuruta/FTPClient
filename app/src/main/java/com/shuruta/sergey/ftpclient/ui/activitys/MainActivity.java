@@ -1,4 +1,4 @@
-package com.shuruta.sergey.ftpclient.ui;
+package com.shuruta.sergey.ftpclient.ui.activitys;
 
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -24,9 +24,11 @@ import android.widget.Toast;
 
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
-import com.shuruta.sergey.ftpclient.FtpService;
+import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.R;
-import com.shuruta.sergey.ftpclient.database.entity.Connection;
+import com.shuruta.sergey.ftpclient.entity.Connection;
+import com.shuruta.sergey.ftpclient.ui.DialogFactory;
+import com.shuruta.sergey.ftpclient.ui.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +147,7 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
                             startActivity(intent);
                             break;
                         case R.id.remove:
-                            DialogUtility.showDialog(MainActivity.this, R.string.delete_connection_ask, new DialogInterface.OnClickListener() {
+                            DialogFactory.showDialog(MainActivity.this, R.string.delete_connection_ask, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     CustomApplication.getInstance().getDatabaseAdapter().removeConnection(connection.getId());

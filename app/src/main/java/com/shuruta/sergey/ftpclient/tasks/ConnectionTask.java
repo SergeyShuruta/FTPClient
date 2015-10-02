@@ -4,8 +4,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
-import com.shuruta.sergey.ftpclient.FtpService;
-import com.shuruta.sergey.ftpclient.database.entity.Connection;
+import com.shuruta.sergey.ftpclient.services.FtpService;
+import com.shuruta.sergey.ftpclient.entity.Connection;
 
 import java.io.File;
 import java.io.IOException;

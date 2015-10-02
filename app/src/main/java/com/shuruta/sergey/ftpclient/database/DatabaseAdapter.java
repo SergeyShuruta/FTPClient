@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.shuruta.sergey.ftpclient.database.entity.Connection;
+import com.shuruta.sergey.ftpclient.entity.Connection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,25 +41,21 @@ public class DatabaseAdapter extends SQLiteOpenHelper {
     }
 
     public List<Connection> getConnections() {
-        List<Connection> connections = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
+        List<Connection> result = new ArrayList<>();
         Cursor cursor = null;
+        SQLiteDatabase db = getReadableDatabase();
         try {
             cursor = db.query(Connection.TABLE, null, null, null, null, null, Connection.DATE + " DESC");
         } catch (Exception e) {
             e.printStackTrace();
         }
         if(null != cursor) {
-            if(cursor.moveToFirst()) {
-                do {
-                    connections.add(new Connection(cursor));
-                } while (cursor.moveToNext());
-            }
+            result = Connection.createList(cursor);
+            cursor.close();
         }
-        cursor.close();
         db.close();
-        Log.d(TAG, "getConnections(" + connections.size() + ")");
-        return connections;
+        Log.d(TAG, "getConnections(" + result.size() + ")");
+        return result;
     }
 
     public void saveConnection(Connection connection) {

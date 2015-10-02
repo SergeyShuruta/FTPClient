@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.shuruta.sergey.ftpclient.database.DatabaseAdapter;
+import com.shuruta.sergey.ftpclient.services.FtpService;
 
 /**
  * Created by Sergey on 24.07.2015.

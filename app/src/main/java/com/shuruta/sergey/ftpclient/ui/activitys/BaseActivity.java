@@ -1,4 +1,4 @@
-package com.shuruta.sergey.ftpclient.ui;
+package com.shuruta.sergey.ftpclient.ui.activitys;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;

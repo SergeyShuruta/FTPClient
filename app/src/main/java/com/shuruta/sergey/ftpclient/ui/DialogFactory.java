@@ -9,7 +9,7 @@ import com.shuruta.sergey.ftpclient.R;
 /**
  * Created by Sergey on 12.08.2015.
  */
-public class DialogUtility {
+public class DialogFactory {
 
 
     public static void showDialog(Context context, int message, DialogInterface.OnClickListener okListener) {

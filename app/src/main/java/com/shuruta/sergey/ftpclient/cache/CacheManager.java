@@ -1,9 +1,9 @@
-package com.shuruta.sergey.ftpclient;
+package com.shuruta.sergey.ftpclient.cache;
+
+import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import it.sauronsoftware.ftp4j.FTPFile;
 
 /**
  * Author: Sergey Shuruta

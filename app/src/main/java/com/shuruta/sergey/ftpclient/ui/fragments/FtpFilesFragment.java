@@ -1,22 +1,21 @@
-package com.shuruta.sergey.ftpclient.ui;
+package com.shuruta.sergey.ftpclient.ui.fragments;
 
 import android.app.Activity;
 import android.util.Log;
 
-import com.shuruta.sergey.ftpclient.CacheManager;
+import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
-import com.shuruta.sergey.ftpclient.FFile;
-import com.shuruta.sergey.ftpclient.FtpService;
-import com.shuruta.sergey.ftpclient.ui.FilesFragment;
+import com.shuruta.sergey.ftpclient.services.FtpService;
+import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 /**
  * Created by Sergey Shuruta
  * 08/15/15 at 22:11
  */
-public class FFilesFragment extends FilesFragment {
+public class FtpFilesFragment extends FFilesFragment {
 
     private FtpFragmentListener mActivityListener;
-    public static final String TAG = FFilesFragment.class.getSimpleName();
+    public static final String TAG = FtpFilesFragment.class.getSimpleName();
 
     public interface FtpFragmentListener {
         FtpService getFtpConnectionService();
@@ -72,5 +71,10 @@ public class FFilesFragment extends FilesFragment {
     @Override
     public void onFileClick(FFile ftpFile) {
         if(mActivityListener.isFtpListReading()) return;
+    }
+
+    @Override
+    public void reload() {
+        mActivityListener.getFtpConnectionService().readList();
     }
 }

@@ -1,7 +1,6 @@
-package com.shuruta.sergey.ftpclient.ui;
+package com.shuruta.sergey.ftpclient.ui.activitys;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -16,8 +15,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
-import com.shuruta.sergey.ftpclient.FtpService;
+import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.R;
+import com.shuruta.sergey.ftpclient.ui.fragments.FtpFilesFragment;
+import com.shuruta.sergey.ftpclient.ui.fragments.FFilesFragment;
+import com.shuruta.sergey.ftpclient.ui.fragments.LocalFilesFragment;
 
 import de.greenrobot.event.EventBus;
 
@@ -26,12 +28,14 @@ import de.greenrobot.event.EventBus;
  * Date: 08/15/15
  * Time: 22:11
  */
-public class FilesActivity extends BaseActivity implements FFilesFragment.FtpFragmentListener, Toolbar.OnMenuItemClickListener {
+public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpFragmentListener, Toolbar.OnMenuItemClickListener {
 
     private FtpService mFtpConnectionService;
     private Menu menu;
     private boolean isFtpListReading, bound;
     private ListType mSelectedList = ListType.FTP;
+
+    private FFilesFragment mFtpFilesFragment, mLocalFilesFragment;
 
     public enum ListType {
         FTP,
@@ -46,13 +50,17 @@ public class FilesActivity extends BaseActivity implements FFilesFragment.FtpFra
         setContentView(R.layout.activity_files);
         menu = setupToolBar(R.drawable.ic_launcher, R.string.app_name, R.string.list_of_connections, R.menu.menu_files, FilesActivity.this);
 
+        mFtpFilesFragment = new FtpFilesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.ftpFrameLayout, new FFilesFragment());
+        fragmentTransaction.replace(R.id.ftpFrameLayout, mFtpFilesFragment);
 
         if(null != getSupportFragmentManager().findFragmentById(R.id.localFrameLayout)) {
-            fragmentTransaction.replace(R.id.localFrameLayout, new LFilesFragment());
+            mLocalFilesFragment = new LocalFilesFragment();
+            fragmentTransaction.replace(R.id.localFrameLayout, mLocalFilesFragment);
             mSelectedList = ListType.LOCAL;
         }
+
+
         fragmentTransaction.commit();
     }
 
@@ -60,7 +68,7 @@ public class FilesActivity extends BaseActivity implements FFilesFragment.FtpFra
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_refresh:
-
+                getCurrentFragment().reload();
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
@@ -105,7 +113,7 @@ public class FilesActivity extends BaseActivity implements FFilesFragment.FtpFra
         switch (event.state) {
             case READ_FTP_LIST_START:
                 if(isFtpListReading) break;
-                LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
                 ImageView iv = (ImageView)inflater.inflate(R.layout.refresh, null);
                 Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
                 rotation.setRepeatCount(Animation.INFINITE);
@@ -145,5 +153,13 @@ public class FilesActivity extends BaseActivity implements FFilesFragment.FtpFra
     @Override
     public boolean isFtpListReading() {
         return isFtpListReading;
+    }
+
+    private FFilesFragment getCurrentFragment() {
+        if(mSelectedList.equals(ListType.FTP)) {
+            return mFtpFilesFragment;
+        } else {
+            return mLocalFilesFragment;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.shuruta.sergey.ftpclient;
+package com.shuruta.sergey.ftpclient.services;
 
 import android.app.Service;
 import android.content.Intent;
@@ -6,7 +6,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.shuruta.sergey.ftpclient.database.entity.Connection;
+import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.tasks.ConnectionTask;
 import com.shuruta.sergey.ftpclient.tasks.ReadListTask;
 

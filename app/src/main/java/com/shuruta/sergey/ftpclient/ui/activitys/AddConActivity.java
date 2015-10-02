@@ -1,6 +1,8 @@
-package com.shuruta.sergey.ftpclient.ui;
+package com.shuruta.sergey.ftpclient.ui.activitys;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,7 +12,8 @@ import android.widget.EditText;
 
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.R;
-import com.shuruta.sergey.ftpclient.database.entity.Connection;
+import com.shuruta.sergey.ftpclient.entity.Connection;
+import com.shuruta.sergey.ftpclient.ui.DialogFactory;
 
 import java.io.File;
 
@@ -28,7 +31,12 @@ public class AddConActivity extends BaseActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addcon);
-        connection = new Connection(getIntent().getLongExtra(CONNECTION_ID, 0));
+        //AddConActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_addcon);
+        //connection = new Connection(getIntent().getLongExtra(CONNECTION_ID, 0));
+        //binding.setConnection(connection);
+        //binding.nabindTv.setText("Some text");
+
+
         conForm = new ConForm(getWindow().getDecorView(), this, connection);
         setupToolBar(R.drawable.ic_launcher,
                 R.string.app_name,
@@ -57,7 +65,7 @@ public class AddConActivity extends BaseActivity implements View.OnClickListener
     @Override
     public void onBackPressed() {
         if(isChanged) {
-            DialogUtility.showDialog(
+            DialogFactory.showDialog(
                     AddConActivity.this,
                     R.string.changes_not_saved_still_close_ask,
                     R.string.yes,

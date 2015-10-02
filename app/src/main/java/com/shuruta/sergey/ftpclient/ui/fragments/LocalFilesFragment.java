@@ -1,20 +1,21 @@
-package com.shuruta.sergey.ftpclient.ui;
+package com.shuruta.sergey.ftpclient.ui.fragments;
 
 import android.app.Activity;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
-import com.shuruta.sergey.ftpclient.FFile;
+import com.shuruta.sergey.ftpclient.interfaces.FFile;
+
 import java.util.ArrayList;
 
 /**
  * Created by Sergey Shuruta
  * 08/15/15 at 22:11
  */
-public class LFilesFragment extends FilesFragment {
+public class LocalFilesFragment extends FFilesFragment {
 
     private LocalFragmentListener mActivityListener;
-    public static final String TAG = LFilesFragment.class.getSimpleName();
+    public static final String TAG = LocalFilesFragment.class.getSimpleName();
 
     public interface LocalFragmentListener {
         boolean isLocalListReading();
@@ -66,5 +67,10 @@ public class LFilesFragment extends FilesFragment {
     @Override
     public void onFileClick(FFile ftpFile) {
         if(mActivityListener.isLocalListReading()) return;
+    }
+
+    @Override
+    public void reload() {
+
     }
 }

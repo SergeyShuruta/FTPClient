@@ -1,4 +1,4 @@
-package com.shuruta.sergey.ftpclient.ui;
+package com.shuruta.sergey.ftpclient.ui.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,9 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shuruta.sergey.ftpclient.FFile;
+import com.shuruta.sergey.ftpclient.interfaces.FFile;
 import com.shuruta.sergey.ftpclient.R;
-import com.shuruta.sergey.ftpclient.database.entity.Connection;
+import com.shuruta.sergey.ftpclient.entity.Connection;
+import com.shuruta.sergey.ftpclient.ui.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,18 +26,19 @@ import de.greenrobot.event.EventBus;
  * Created by Sergey Shuruta
  * 04.09.2015 at 13:20
  */
-public abstract class FilesFragment extends Fragment {
+public abstract class FFilesFragment extends Fragment {
 
     private RecyclerView mFileRecyclerView;
-    private FtpFileAdapter mFileAdapter;
+    private FFileAdapter mFileAdapter;
 
     private List<FFile> mFilesList = new ArrayList<>();
 
-    public static final String TAG = FilesFragment.class.getSimpleName();
+    public static final String TAG = FFilesFragment.class.getSimpleName();
 
     public abstract void onBack();
     public abstract void onDirClick(FFile ftpFile);
     public abstract void onFileClick(FFile ftpFile);
+    public abstract void reload();
 
     private interface OnFileMenuClickListener {
         public void onMenuClick(View view, Connection connection);
@@ -51,7 +53,7 @@ public abstract class FilesFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mFileRecyclerView.setLayoutManager(layoutManager);
-        mFileAdapter = new FtpFileAdapter(mFilesList, new FileMenuClickListener());
+        mFileAdapter = new FFileAdapter(mFilesList, new FileMenuClickListener());
         mFileRecyclerView.setAdapter(mFileAdapter);
         mFileRecyclerView.setItemAnimator(new DefaultItemAnimator());
         return view;
@@ -65,12 +67,12 @@ public abstract class FilesFragment extends Fragment {
         }
     }
 
-    private class FtpFileAdapter extends RecyclerView.Adapter<FtpFileAdapter.ViewHolder> {
+    private class FFileAdapter extends RecyclerView.Adapter<FFileAdapter.ViewHolder> {
 
         private List<FFile> files;
         private OnFileMenuClickListener listener;
 
-        public FtpFileAdapter(List<FFile> files, OnFileMenuClickListener listener) {
+        public FFileAdapter(List<FFile> files, OnFileMenuClickListener listener) {
             this.files = files;
             this.listener = listener;
         }
@@ -86,7 +88,7 @@ public abstract class FilesFragment extends Fragment {
             final FFile file = files.get(i);
             String name = file.getName().equals(".") ? getString(R.string.back) : file.getName();
             viewHolder.nameTextView.setText(name);
-            viewHolder.sizTextView.setText(file.getSizeString());
+            viewHolder.sizTextView.setText(file.getFormatSize());
             viewHolder.iconImageView.setImageDrawable(file.getIcon());
 /*
             viewHolder.menuImageView.setOnClickListener(new View.OnClickListener() {
@@ -119,10 +121,10 @@ public abstract class FilesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 FFile file = files.get(getPosition());
-                if(file.isBack()) {
+                if(file.isBackButton()) {
                     onBack();
                 } else {
-                    if(file.isDirectory())
+                    if(file.isDir())
                         onDirClick(file);
                     if(file.isFile())
                         onFileClick(file);
