@@ -1,126 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/theme_background"
-    tools:context=".AddConActivity">
-
-    <include layout="@layout/toolbar" />
-
-    <ScrollView
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="connection" type="com.shuruta.sergey.ftpclient.entity.Connection" />
+    </data>
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scrollView"
-        android:layout_above="@+id/saveButton"
-        android:layout_below="@+id/toolbar">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/theme_background"
+        tools:context=".AddConActivity">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <include layout="@layout/toolbar" />
+
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp">
+            android:id="@+id/scrollView"
+            android:layout_above="@+id/saveButton"
+            android:layout_below="@+id/toolbar">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/FormTextView"
-                android:text="@string/form_con_name"
-                android:singleLine="true" />
-
-            <EditText
-                android:id="@+id/nameEditText"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:singleLine="true" />
+                android:layout_height="match_parent"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/FormTextView"
-                android:text="@string/form_host"
-                android:singleLine="true" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FormTextView"
+                    android:text="@string/form_con_name"
+                    android:singleLine="true" />
 
-            <EditText
-                android:id="@+id/hostEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:singleLine="true"
-                android:inputType="textUri" />
+                <EditText
+                    android:id="@+id/nameEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/FormEditText"
+                    android:text="@{connection.getName()}"
+                    android:singleLine="true" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/FormTextView"
-                android:text="@string/form_port"
-                android:singleLine="true" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FormTextView"
+                    android:text="@string/form_host"
+                    android:singleLine="true" />
 
-            <EditText
-                android:id="@+id/portEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:text="21"
-                android:singleLine="true"
-                android:numeric="integer"
-                android:inputType="number" />
+                <EditText
+                    android:id="@+id/hostEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/FormEditText"
+                    android:text="@{connection.getHost()}"
+                    android:singleLine="true"
+                    android:inputType="textUri" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/FormTextView"
-                android:text="@string/form_remote_directory"
-                android:singleLine="true" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FormTextView"
+                    android:text="@string/form_port"
+                    android:singleLine="true" />
 
-            <EditText
-                android:id="@+id/dirEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:singleLine="true" />
+                <EditText
+                    android:id="@+id/portEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/FormEditText"
+                    android:text="@{connection.getPort()}"
+                    android:singleLine="true"
+                    android:numeric="integer"
+                    android:inputType="number" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/FormTextView"
-                android:text="@string/form_login"
-                android:singleLine="true" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FormTextView"
+                    android:text="@string/form_remote_directory"
+                    android:singleLine="true" />
 
-            <EditText
-                android:id="@+id/loginEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:singleLine="true" />
+                <EditText
+                    android:id="@+id/dirEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/FormEditText"
+                    android:text="@{connection.getDir()}"
+                    android:singleLine="true" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/FormTextView"
-                android:text="@string/form_password"
-                android:singleLine="true" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FormTextView"
+                    android:text="@string/form_login"
+                    android:singleLine="true" />
 
-            <EditText
-                android:id="@+id/passwEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/FormEditText"
-                android:singleLine="true"
-                android:inputType="textPassword" />
-        </LinearLayout>
-    </ScrollView>
+                <EditText
+                    android:id="@+id/loginEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/FormEditText"
+                    android:text="@{connection.getLogin()}"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FormTextView"
+                    android:text="@string/form_password"
+                    android:singleLine="true" />
+
+                <EditText
+                    android:id="@+id/passwEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/FormEditText"
+                    android:text="@{connection.getPassw()}"
+                    android:singleLine="true"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+        </ScrollView>
 
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/save"
-        android:layout_alignParentBottom="true" />
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/save"
+            android:layout_alignParentBottom="true" />
 
-</RelativeLayout>
+    </RelativeLayout>
+</layout>

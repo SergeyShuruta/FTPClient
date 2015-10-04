@@ -93,16 +93,32 @@ public class Connection extends BaseObservable {
         notifyPropertyChanged(BR.name);
     }
 
+    @Bindable
     public String getName() {
         return name;
     }
 
+    @Bindable
     public void setHost(String host) {
         this.host = host;
+        notifyPropertyChanged(BR.host);
     }
 
+    @Bindable
     public String getHost() {
         return host;
+    }
+
+    @Bindable
+    public void setStringPort(String port) {
+        this.port = Integer.parseInt(port);
+        notifyPropertyChanged(BR.stringPort);
+    }
+
+
+    @Bindable
+    public String getStringPort(String port) {
+        return String.valueOf(port);
     }
 
     public void setPort(int port) {
@@ -113,12 +129,15 @@ public class Connection extends BaseObservable {
         return port;
     }
 
+    @Bindable
     public String getDir() {
         return dir;
     }
 
+    @Bindable
     public void setDir(String dir) {
         this.dir = dir;
+        notifyPropertyChanged(BR.dir);
     }
 
     public void backDir() {
@@ -141,18 +160,24 @@ public class Connection extends BaseObservable {
         Log.d("TEST", "this.dir=" + this.dir);
     }
 
+    @Bindable
     public void setLogin(String login) {
         this.login = login;
+        notifyPropertyChanged(BR.login);
     }
 
+    @Bindable
     public String getLogin() {
         return login;
     }
 
+    @Bindable
     public void setPassw(String passw) {
         this.passw = passw;
+        notifyPropertyChanged(BR.passw);
     }
 
+    @Bindable
     public String getPassw() {
         return passw;
     }

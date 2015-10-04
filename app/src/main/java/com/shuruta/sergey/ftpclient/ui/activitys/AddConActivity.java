@@ -6,12 +6,14 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.R;
+import com.shuruta.sergey.ftpclient.databinding.ActivityAddconBinding;
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.ui.DialogFactory;
 
@@ -22,22 +24,20 @@ import java.io.File;
  */
 public class AddConActivity extends BaseActivity implements View.OnClickListener {
 
-    private ConForm conForm;
+    //private ConForm conForm;
     private Connection connection;
-    private boolean isChanged = false;
+    private ActivityAddconBinding binding;
+    //private boolean isChanged = false;
     public static final String CONNECTION_ID = "connection_id";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_addcon);
-        //AddConActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_addcon);
-        //connection = new Connection(getIntent().getLongExtra(CONNECTION_ID, 0));
-        //binding.setConnection(connection);
-        //binding.nabindTv.setText("Some text");
-
-
-        conForm = new ConForm(getWindow().getDecorView(), this, connection);
+        //setContentView(R.layout.activity_addcon);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_addcon);
+        connection = new Connection(getIntent().getLongExtra(CONNECTION_ID, 0));
+        binding.setConnection(connection);
+        //conForm = new ConForm(getWindow().getDecorView(), this, connection);
         setupToolBar(R.drawable.ic_launcher,
                 R.string.app_name,
                 getString(connection.getId() == 0 ? R.string.new_connection : R.string.edit_connection_x, connection.getName()),
@@ -50,45 +50,25 @@ public class AddConActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void saveConnection() {
-        if(!conForm.isFormValid()) return;
-        String dir = conForm.dirEditText.getText().toString();
-        connection.setName(conForm.nameEditText.getText().toString());
-        connection.setHost(conForm.hostEditText.getText().toString());
-        connection.setPort(Integer.parseInt(conForm.portEditText.getText().toString()));
-        connection.setDir(dir.isEmpty() ? File.separator : dir);
-        connection.setLogin(conForm.loginEditText.getText().toString());
-        connection.setPassw(conForm.passwEditText.getText().toString());
+        Log.d("TEST", binding.nameEditText.getText().toString());
+        String dir = binding.dirEditText.getText().toString();
+        dir = dir.isEmpty() ? File.separator : dir;
+        connection.setName(binding.nameEditText.getText().toString());
+        connection.setHost(binding.hostEditText.getText().toString());
+        //connection.setPort(Integer.parseInt(binding.portEditText.getText().toString()));
+        //connection.setDir(dir);
+        connection.setLogin(binding.loginEditText.getText().toString());
+        connection.setPassw(binding.passwEditText.getText().toString());
         CustomApplication.getInstance().getDatabaseAdapter().saveConnection(connection);
-        finish();
     }
 
     @Override
     public void onBackPressed() {
-        if(isChanged) {
-            DialogFactory.showDialog(
-                    AddConActivity.this,
-                    R.string.changes_not_saved_still_close_ask,
-                    R.string.yes,
-                    R.string.no,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            saveConnection();
-                        }
-                    },
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    }
-            );
-        } else {
-            super.onBackPressed();
-        }
+        saveConnection();
+        super.onBackPressed();
     }
 
-    private class ConForm {
+/*    private class ConForm {
 
         public final EditText
                 nameEditText,
@@ -157,5 +137,5 @@ public class AddConActivity extends BaseActivity implements View.OnClickListener
 
             }
         };
-    }
+    }*/
 }
