@@ -20,24 +20,20 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
     }
 
-    public Menu setupToolBar(Integer logoRes, Integer titleRes, Integer subTitleRes, Integer menuRes, Toolbar.OnMenuItemClickListener listener) {
-        return setupToolBar(logoRes, titleRes, null != subTitleRes ? getString(subTitleRes) : null, menuRes, false, listener);
-    }
-
-    public Menu setupToolBar(Integer logoRes, Integer titleRes, String subTitleRes, Integer menuRes, boolean isBacked, Toolbar.OnMenuItemClickListener listener) {
+    public void setupToolBar(Integer logoRes, Integer titleRes, String subTitleRes, boolean isBacked) {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if(null != logoRes) mToolbar.setLogo(logoRes);
         if(null != titleRes) mToolbar.setTitle(titleRes);
         if(null != subTitleRes) mToolbar.setSubtitle(subTitleRes);
-        if(null != menuRes) mToolbar.inflateMenu(menuRes);
-        if(null != listener) mToolbar.setOnMenuItemClickListener(listener);
         mToolbar.setTitleTextColor(getResources().getColor(R.color.actionbar_text_primary));
         mToolbar.setSubtitleTextColor(getResources().getColor(R.color.actionbar_text_secondary));
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(isBacked);
         if (isBacked) {
             //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         }
-        return mToolbar.getMenu();
     }
 
 }

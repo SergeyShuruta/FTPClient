@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -28,7 +29,7 @@ import de.greenrobot.event.EventBus;
  * Date: 08/15/15
  * Time: 22:11
  */
-public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpFragmentListener, Toolbar.OnMenuItemClickListener {
+public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpFragmentListener {
 
     private FtpService mFtpConnectionService;
     private Menu menu;
@@ -48,7 +49,7 @@ public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files);
-        menu = setupToolBar(R.drawable.ic_launcher, R.string.app_name, R.string.list_of_connections, R.menu.menu_files, FilesActivity.this);
+        setupToolBar(R.drawable.ic_launcher, R.string.app_name, getString(R.string.list_of_connections), false);
 
         mFtpFilesFragment = new FtpFilesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -65,14 +66,24 @@ public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpF
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_files, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.action_refresh:
                 getCurrentFragment().reload();
                 return true;
             default:
-                return super.onOptionsItemSelected(menuItem);
+                return super.onOptionsItemSelected(item);
         }
+
     }
 
     @Override
@@ -109,7 +120,7 @@ public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpF
 
     public void onEventMainThread(EventBusMessenger event) {
         Log.d(TAG, "onEvent: " + event.state);
-        MenuItem menuItem = menu.findItem(R.id.action_refresh);
+        //MenuItem menuItem = menu.findItem(R.id.action_refresh);
         switch (event.state) {
             case READ_FTP_LIST_START:
                 if(isFtpListReading) break;
@@ -118,14 +129,14 @@ public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpF
                 Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
                 rotation.setRepeatCount(Animation.INFINITE);
                 iv.startAnimation(rotation);
-                menuItem.setActionView(iv);
+                //menuItem.setActionView(iv);
                 isFtpListReading = true;
                 break;
             case READ_FTP_LIST_FINISH:
-                if(null != menuItem.getActionView()) {
+                /*if(null != menuItem.getActionView()) {
                     menuItem.getActionView().clearAnimation();
                     menuItem.setActionView(null);
-                }
+                }*/
                 isFtpListReading = false;
                 break;
         }

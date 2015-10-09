@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.ObservableField;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.BR;
@@ -40,13 +41,9 @@ public class Connection extends BaseObservable {
                     + Connection.PORT     + " INTEGER NOT NULL,"
                     + Connection.DIR      + " TEXT NOT NULL DEFAULT '" + File.separator + "',"
                     + Connection.LOGIN    + " TEXT,"
-                    + Connection.PASSW + " TEXT, "
-                    + Connection.DATE + " INTEGER NOT NULL"
+                    + Connection.PASSW    + " TEXT, "
+                    + Connection.DATE     + " INTEGER NOT NULL"
                 + ")";
-    }
-
-    public boolean isAnonymous() {
-        return login.isEmpty() && passw.isEmpty();
     }
 
     private long    id;
@@ -56,9 +53,12 @@ public class Connection extends BaseObservable {
     private String  dir;
     private String  login;
     private String  passw;
-    private long    date;
 
+    private boolean isChanged = false;
     private boolean isActive = false;
+
+
+    public ObservableField<String> text = new ObservableField<>();
 
     public Connection(long id) {
         this(CustomApplication.getInstance().getDatabaseAdapter().getConnection(id));
@@ -66,25 +66,41 @@ public class Connection extends BaseObservable {
 
     public Connection(Cursor cursor) {
         if(null == cursor) return;
-        setId(cursor.getLong(cursor.getColumnIndex(Connection._ID)));
-        setName(cursor.getString(cursor.getColumnIndex(Connection.NAME)));
-        setHost(cursor.getString(cursor.getColumnIndex(Connection.HOST)));
-        setPort(cursor.getInt(cursor.getColumnIndex(Connection.PORT)));
-        setDir(cursor.getString(cursor.getColumnIndex(Connection.DIR)));
-        setLogin(cursor.getString(cursor.getColumnIndex(Connection.LOGIN)));
-        setPassw(cursor.getString(cursor.getColumnIndex(Connection.PASSW)));
-    }
-
-    public String getStringId() {
-        return String.valueOf(id);
-    }
-
-    private void setId(long id) {
-        this.id = id;
+        this.id = cursor.getLong(cursor.getColumnIndex(Connection._ID));
+        this.name = cursor.getString(cursor.getColumnIndex(Connection.NAME));
+        this.host = cursor.getString(cursor.getColumnIndex(Connection.HOST));
+        this.port = cursor.getInt(cursor.getColumnIndex(Connection.PORT));
+        this.dir = cursor.getString(cursor.getColumnIndex(Connection.DIR));
+        this.login = cursor.getString(cursor.getColumnIndex(Connection.LOGIN));
+        this.passw = cursor.getString(cursor.getColumnIndex(Connection.PASSW));
     }
 
     public long getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getDir() {
+        return dir;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassw() {
+        return passw;
     }
 
     @Bindable
@@ -94,38 +110,19 @@ public class Connection extends BaseObservable {
     }
 
     @Bindable
-    public String getName() {
-        return name;
-    }
-
-    @Bindable
     public void setHost(String host) {
         this.host = host;
         notifyPropertyChanged(BR.host);
     }
 
     @Bindable
-    public String getHost() {
-        return host;
-    }
+    public void setPort(String port) {
+        setPort(port.length() > 0 ? Integer.parseInt(port) : 0);
+   }
 
-    public String getStringPort() {
-        return String.valueOf(port);
-    }
-
-    @Bindable
     public void setPort(int port) {
         this.port = port;
         notifyPropertyChanged(BR.port);
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    @Bindable
-    public String getDir() {
-        return dir;
     }
 
     @Bindable
@@ -134,60 +131,41 @@ public class Connection extends BaseObservable {
         notifyPropertyChanged(BR.dir);
     }
 
-    public void backDir() {
-        if(this.dir.isEmpty() || this.dir.equals(File.separator)) return;
-        String[] dirs = this.dir.split(File.separator);
-        this.dir = File.separator;
-        for(String d : dirs) {
-            if(d.isEmpty()) continue;
-            if(dirs[dirs.length - 1].equals(d)) continue;
-            this.dir += d + File.separator;
-        }
-    }
-
-    public void addDir(String dir) {
-        if(dir.isEmpty()) return;
-        Log.d("TEST", "addDir(" + dir + ")");
-        String[] dirs = this.dir.split(File.separator);
-        if(0 != dirs.length && dirs[dirs.length - 1].equals(dir)) return;
-        this.dir += dir + File.separator;
-        Log.d("TEST", "this.dir=" + this.dir);
-    }
-
+    @Bindable
     public void setLogin(String login) {
         this.login = login;
+        notifyPropertyChanged(BR.login);
     }
 
-    public String getLogin() {
-        return login;
-    }
-
+    @Bindable
     public void setPassw(String passw) {
         this.passw = passw;
-    }
-
-    public String getPassw() {
-        return passw;
-    }
-
-    private void setDate(long date) {
-        this.date = date;
-    }
-
-    public long getDate() {
-        return date;
+        notifyPropertyChanged(BR.passw);
     }
 
     public boolean isNewRow() {
+
         return 0 == id;
     }
 
     public boolean isActive() {
+
         return isActive;
     }
 
     public void setActive(boolean isActive) {
+
         this.isActive = isActive;
+    }
+
+    public boolean isChanged() {
+
+        return isChanged;
+    }
+
+    public boolean isAnonymous() {
+
+        return login.isEmpty() && passw.isEmpty();
     }
 
     public ContentValues getContentValues() {
@@ -214,5 +192,27 @@ public class Connection extends BaseObservable {
         }
         cursor.close();
         return connections;
+    }
+
+    public void backDir() {
+        if(this.dir.isEmpty() || this.dir.equals(File.separator)) return;
+        String[] dirs = this.dir.split(File.separator);
+        this.dir = File.separator;
+        for(String d : dirs) {
+            if(d.isEmpty()) continue;
+            if(dirs[dirs.length - 1].equals(d)) continue;
+            this.dir += d + File.separator;
+        }
+    }
+
+    public void addDir(String dir) {
+        if(dir.isEmpty()) return;
+        String[] dirs = this.dir.split(File.separator);
+        if(0 != dirs.length && dirs[dirs.length - 1].equals(dir)) return;
+        this.dir += dir + File.separator;
+    }
+
+    public void save() {
+        CustomApplication.getInstance().getDatabaseAdapter().saveConnection(this);
     }
 }

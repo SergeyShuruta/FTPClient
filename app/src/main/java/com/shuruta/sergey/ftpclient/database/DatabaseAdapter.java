@@ -64,7 +64,7 @@ public class DatabaseAdapter extends SQLiteOpenHelper {
         if(connection.isNewRow()) {
             db.insert(Connection.TABLE, null, values);
         } else {
-            db.update(Connection.TABLE, values, Connection._ID + "=?", new String[]{connection.getStringId()});
+            db.update(Connection.TABLE, values, Connection._ID + "=?", new String[]{String.valueOf(connection.getId())});
         }
         db.close();
     }

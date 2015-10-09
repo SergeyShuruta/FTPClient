@@ -13,6 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +38,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 
 
-public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
+public class MainActivity extends BaseActivity {
 
     private ConnectionsAdapter connectionsAdapter;
     private List<Connection> connections = new ArrayList<>();
@@ -53,8 +55,27 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        setupToolBar(R.drawable.ic_launcher, R.string.app_name, R.string.list_of_connections, R.menu.menu_start, MainActivity.this);
+        setupToolBar(R.drawable.ic_launcher, R.string.app_name, getString(R.string.list_of_connections), false);
         initUI();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_start, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.new_connection:
+                startActivity(new Intent(MainActivity.this, AddConActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void initUI() {
@@ -119,17 +140,6 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
     protected void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.new_connection:
-                startActivity(new Intent(MainActivity.this, AddConActivity.class));
-                return true;
-            default:
-                return super.onOptionsItemSelected(menuItem);
-        }
     }
 
     private class ConnectionMenuClickListener implements OnConnectionMenuClickListener {

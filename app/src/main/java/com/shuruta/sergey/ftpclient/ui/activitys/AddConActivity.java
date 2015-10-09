@@ -1,22 +1,16 @@
 package com.shuruta.sergey.ftpclient.ui.activitys;
 
-import android.app.Activity;
-import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.Toast;
 
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.databinding.ActivityAddconBinding;
 import com.shuruta.sergey.ftpclient.entity.Connection;
-import com.shuruta.sergey.ftpclient.ui.DialogFactory;
 
 import java.io.File;
 
@@ -39,9 +33,20 @@ public class AddConActivity extends BaseActivity implements View.OnClickListener
 
         setupToolBar(null,
                 R.string.app_name,
-                getString(connection.getId() == 0 ? R.string.new_connection : R.string.edit_connection_x, connection.getName()),
-                null, true, null);
+                getString(connection.getId() == 0 ? R.string.new_connection : R.string.edit_connection_x, connection.getName()), true);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -49,17 +54,14 @@ public class AddConActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void saveConnection() {
-
-        String strPort = binding.portEditText.getText().toString();
-        String dir = binding.dirEditText.getText().toString();
-        dir = dir.isEmpty() ? File.separator : dir;
         connection.setName(binding.nameEditText.getText().toString());
         connection.setHost(binding.hostEditText.getText().toString());
-        connection.setPort(strPort.length() > 0 ? Integer.parseInt(strPort) : 21);
-        connection.setDir(dir);
+        connection.setPort(binding.portEditText.getText().toString());
+        connection.setDir(binding.dirEditText.getText().toString());
         connection.setLogin(binding.loginEditText.getText().toString());
         connection.setPassw(binding.passwEditText.getText().toString());
-        CustomApplication.getInstance().getDatabaseAdapter().saveConnection(connection);
+        if(connection.getName().isEmpty()) return;
+        connection.save();
     }
 
     @Override

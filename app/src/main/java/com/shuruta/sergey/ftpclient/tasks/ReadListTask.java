@@ -44,7 +44,7 @@ public class ReadListTask extends Task {
 
     @Override
     public void run() {
-        EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_START));
+            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_START));
 
         FTPFile[] list = new FTPFile[0];
         try {
