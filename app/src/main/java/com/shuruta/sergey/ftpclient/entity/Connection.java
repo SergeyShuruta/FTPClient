@@ -109,20 +109,14 @@ public class Connection extends BaseObservable {
         return host;
     }
 
-    @Bindable
-    public void setStringPort(String port) {
-        this.port = Integer.parseInt(port);
-        notifyPropertyChanged(BR.stringPort);
-    }
-
-
-    @Bindable
-    public String getStringPort(String port) {
+    public String getStringPort() {
         return String.valueOf(port);
     }
 
+    @Bindable
     public void setPort(int port) {
         this.port = port;
+        notifyPropertyChanged(BR.port);
     }
 
     public int getPort() {
@@ -160,24 +154,18 @@ public class Connection extends BaseObservable {
         Log.d("TEST", "this.dir=" + this.dir);
     }
 
-    @Bindable
     public void setLogin(String login) {
         this.login = login;
-        notifyPropertyChanged(BR.login);
     }
 
-    @Bindable
     public String getLogin() {
         return login;
     }
 
-    @Bindable
     public void setPassw(String passw) {
         this.passw = passw;
-        notifyPropertyChanged(BR.passw);
     }
 
-    @Bindable
     public String getPassw() {
         return passw;
     }

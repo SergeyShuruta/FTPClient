@@ -21,10 +21,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public Menu setupToolBar(Integer logoRes, Integer titleRes, Integer subTitleRes, Integer menuRes, Toolbar.OnMenuItemClickListener listener) {
-        return setupToolBar(logoRes, titleRes, null != subTitleRes ? getString(subTitleRes) : null, menuRes, listener);
+        return setupToolBar(logoRes, titleRes, null != subTitleRes ? getString(subTitleRes) : null, menuRes, false, listener);
     }
 
-    public Menu setupToolBar(Integer logoRes, Integer titleRes, String subTitleRes, Integer menuRes, Toolbar.OnMenuItemClickListener listener) {
+    public Menu setupToolBar(Integer logoRes, Integer titleRes, String subTitleRes, Integer menuRes, boolean isBacked, Toolbar.OnMenuItemClickListener listener) {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if(null != logoRes) mToolbar.setLogo(logoRes);
         if(null != titleRes) mToolbar.setTitle(titleRes);
@@ -33,6 +33,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         if(null != listener) mToolbar.setOnMenuItemClickListener(listener);
         mToolbar.setTitleTextColor(getResources().getColor(R.color.actionbar_text_primary));
         mToolbar.setSubtitleTextColor(getResources().getColor(R.color.actionbar_text_secondary));
+        if (isBacked) {
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         return mToolbar.getMenu();
     }
 

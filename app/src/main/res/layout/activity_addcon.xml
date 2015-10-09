@@ -71,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/FormEditText"
-                    android:text="@{connection.getPort()}"
+                    android:text="@{connection.getStringPort()}"
                     android:singleLine="true"
                     android:numeric="integer"
                     android:inputType="number" />
@@ -119,18 +119,8 @@
                     android:layout_height="wrap_content"
                     style="@style/FormEditText"
                     android:text="@{connection.getPassw()}"
-                    android:singleLine="true"
-                    android:inputType="textPassword" />
+                    android:singleLine="true" />
             </LinearLayout>
         </ScrollView>
-
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/save"
-            android:layout_alignParentBottom="true" />
-
     </RelativeLayout>
 </layout>
