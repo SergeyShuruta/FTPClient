@@ -26,14 +26,15 @@ import de.greenrobot.event.EventBus;
  * Created by Sergey Shuruta
  * 04.09.2015 at 13:20
  */
-public abstract class FFilesFragment extends Fragment {
+public abstract class FilesFragment extends Fragment {
 
     private RecyclerView mFileRecyclerView;
     private FFileAdapter mFileAdapter;
 
     private List<FFile> mFilesList = new ArrayList<>();
+    private boolean canDo = false;
 
-    public static final String TAG = FFilesFragment.class.getSimpleName();
+    public static final String TAG = FilesFragment.class.getSimpleName();
 
     public abstract void onBack();
     public abstract void onDirClick(FFile ftpFile);
@@ -133,8 +134,13 @@ public abstract class FFilesFragment extends Fragment {
         }
     }
 
+    public void setEnabled(boolean isEnabled) {
+        this.canDo = isEnabled;
+        mFileRecyclerView.setEnabled(isEnabled);
+    }
+
     protected void startReadList() {
-        mFileRecyclerView.setEnabled(false);
+        canDo = true;
     }
 
     protected void displayList(List<FFile> files) {
@@ -148,7 +154,11 @@ public abstract class FFilesFragment extends Fragment {
     }
 
     protected void finishReadList() {
-        mFileRecyclerView.setEnabled(true);
+        canDo = false;
+    }
+
+    public boolean isCanDo() {
+        return canDo;
     }
 
     @Override

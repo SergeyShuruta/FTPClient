@@ -46,9 +46,8 @@ public class ReadListTask extends Task {
     public void run() {
             EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_START));
 
-        FTPFile[] list = new FTPFile[0];
         try {
-            list = ftpClient.list(connection.getDir());
+            prepareAndPutToCache(ftpClient.list(connection.getDir()));
             EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_OK));
         } catch (IOException e) {
             EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_ERROR));
@@ -69,6 +68,11 @@ public class ReadListTask extends Task {
             EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_ERROR));
             e.printStackTrace();
         }
+
+        EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_FINISH));
+    }
+
+    private void prepareAndPutToCache(FTPFile[] list) {
         List<FFile> ftpFiles = new ArrayList<>();
         for(int i = 0; i < list.length; i++) {
             if(list[i].getName().equals("..")) continue;
@@ -85,6 +89,5 @@ public class ReadListTask extends Task {
             }
         });
         CacheManager.getInstance().putFtpFiles(ftpFiles);
-        EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_FINISH));
     }
 }

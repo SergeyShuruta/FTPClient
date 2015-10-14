@@ -13,33 +13,45 @@
         android:layout_alignParentLeft="true"
         android:scaleType="center" />
 
-    <TextView
-        android:id="@+id/nameTextView"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Argest connection"
-        style="@style/CardTitleText"
+        android:layout_height="match_parent"
+        android:id="@+id/text_container"
+        android:layout_alignTop="@+id/iconImageView"
+        android:layout_alignBottom="@+id/iconImageView"
+        android:layout_toRightOf="@+id/iconImageView"
         android:layout_toLeftOf="@+id/menuImageView"
-        android:layout_toRightOf="@+id/iconImageView" />
+        android:gravity="center_vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="750 kb"
-        style="@style/CardDescText"
-        android:id="@+id/sizeTextView"
-        android:layout_below="@+id/nameTextView"
-        android:layout_alignRight="@+id/nameTextView"
-        android:layout_toRightOf="@+id/iconImageView" />
+        <TextView
+            android:id="@+id/nameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Argest connection"
+            style="@style/CardTitleText"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="750 kb"
+            style="@style/CardDescText"
+            android:id="@+id/sizeTextView"/>
+    </LinearLayout>
 
     <ImageView
-        android:layout_width="28dp"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/card_collection_icon"
+        android:layout_height="wrap_content"
         android:id="@+id/menuImageView"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_menu_moreoverflow_normal_holo_light"
-        android:layout_centerVertical="true"
         android:alpha="0.6"
-        android:layout_marginRight="@dimen/card_padding_left" />
+        android:scaleType="center"
+        android:layout_alignTop="@+id/iconImageView"
+        android:layout_alignBottom="@+id/iconImageView" />
+
+    <View android:id="@+id/divider" android:layout_height="1px" android:layout_width="match_parent" android:background="@color/divider"
+        android:layout_alignParentBottom="false"
+        android:layout_below="@+id/iconImageView" />
 
 </RelativeLayout>

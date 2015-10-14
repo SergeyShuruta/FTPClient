@@ -1,5 +1,7 @@
 package com.shuruta.sergey.ftpclient.cache;
 
+import android.util.Log;
+
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class CacheManager {
     }
 
     public void putFtpFiles(List<FFile> ftpFiles) {
+        Log.d("TEST", "Put files: " + ftpFiles.size());
         this.ftpFiles.clear();
         this.ftpFiles.addAll(ftpFiles);
     }

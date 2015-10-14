@@ -15,9 +15,11 @@
     <color name="light_text">#ffffffff</color>
     <color name="field_error">#ff8a7c</color>
 
-    <color name="card_normal">#fefefe</color>
-    <color name="card_pressed">#f9f9f9</color>
+    <color name="recyclerview_normal">#ffffff</color>
+    <color name="recyclerview_disable">#b9b9b9</color>
+    <color name="card_normal">#00ffffff</color>
+    <color name="card_pressed">#99525252</color>
 
-    <color name="actionbar_text_primary">#FFFFFFFF</color>
-    <color name="actionbar_text_secondary">#FFf2f2f2</color>
+    <color name="actionbar_text_primary">#ffffff</color>
+    <color name="actionbar_text_secondary">#f2f2f2</color>
 </resources>

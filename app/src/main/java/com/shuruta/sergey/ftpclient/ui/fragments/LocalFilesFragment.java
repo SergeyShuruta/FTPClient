@@ -12,16 +12,16 @@ import java.util.ArrayList;
  * Created by Sergey Shuruta
  * 08/15/15 at 22:11
  */
-public class LocalFilesFragment extends FFilesFragment {
+public class LocalFilesFragment extends FilesFragment {
 
-    private LocalFragmentListener mActivityListener;
+    //private LocalFragmentListener mActivityListener;
     public static final String TAG = LocalFilesFragment.class.getSimpleName();
 
-    public interface LocalFragmentListener {
+/*    public interface LocalFragmentListener {
         boolean isLocalListReading();
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
@@ -29,7 +29,7 @@ public class LocalFilesFragment extends FFilesFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement LocalFragmentListener");
         }
-    }
+    }*/
 
     @Override
     public void onResume() {
@@ -56,17 +56,17 @@ public class LocalFilesFragment extends FFilesFragment {
 
     @Override
     public void onBack() {
-        if(mActivityListener.isLocalListReading()) return;
+        /*if(mActivityListener.isLocalListReading()) return;*/
     }
 
     @Override
     public void onDirClick(FFile ftpFile) {
-        if(mActivityListener.isLocalListReading()) return;
+        /*if(mActivityListener.isLocalListReading()) return;*/
     }
 
     @Override
     public void onFileClick(FFile ftpFile) {
-        if(mActivityListener.isLocalListReading()) return;
+        /*if(mActivityListener.isLocalListReading()) return;*/
     }
 
     @Override

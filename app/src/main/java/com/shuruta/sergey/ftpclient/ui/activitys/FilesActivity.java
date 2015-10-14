@@ -6,12 +6,12 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -19,7 +19,7 @@ import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.ui.fragments.FtpFilesFragment;
-import com.shuruta.sergey.ftpclient.ui.fragments.FFilesFragment;
+import com.shuruta.sergey.ftpclient.ui.fragments.FilesFragment;
 import com.shuruta.sergey.ftpclient.ui.fragments.LocalFilesFragment;
 
 import de.greenrobot.event.EventBus;
@@ -29,14 +29,11 @@ import de.greenrobot.event.EventBus;
  * Date: 08/15/15
  * Time: 22:11
  */
-public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpFragmentListener {
+public class FilesActivity extends BaseActivity {
 
-    private FtpService mFtpConnectionService;
-    private Menu menu;
-    private boolean isFtpListReading, bound;
     private ListType mSelectedList = ListType.FTP;
 
-    private FFilesFragment mFtpFilesFragment, mLocalFilesFragment;
+    private FilesFragment mFtpFilesFragment, mLocalFilesFragment;
 
     public enum ListType {
         FTP,
@@ -55,7 +52,22 @@ public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpF
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.ftpFrameLayout, mFtpFilesFragment);
 
-        if(null != getSupportFragmentManager().findFragmentById(R.id.localFrameLayout)) {
+/*        findViewById(R.id.ftpFrameLayout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectList(ListType.FTP);
+            }
+        });
+
+
+        findViewById(R.id.localFrameLayout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectList(ListType.LOCAL);
+            }
+        });*/
+
+        if(null != findViewById(R.id.localFrameLayout)) {
             mLocalFilesFragment = new LocalFilesFragment();
             fragmentTransaction.replace(R.id.localFrameLayout, mLocalFilesFragment);
             mSelectedList = ListType.LOCAL;
@@ -63,6 +75,12 @@ public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpF
 
 
         fragmentTransaction.commit();
+    }
+
+    private void selectList(ListType listType) {
+        mSelectedList = listType;
+        mFtpFilesFragment.setEnabled(mSelectedList.equals(ListType.FTP));
+        mLocalFilesFragment.setEnabled(mSelectedList.equals(ListType.FTP));
     }
 
     @Override
@@ -99,20 +117,6 @@ public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpF
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        bindService(new Intent(FilesActivity.this, FtpService.class), mServiceConnection, 0);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (!bound) return;
-        unbindService(mServiceConnection);
-        bound = false;
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
         // TODO onBack()
@@ -123,26 +127,20 @@ public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpF
         //MenuItem menuItem = menu.findItem(R.id.action_refresh);
         switch (event.state) {
             case READ_FTP_LIST_START:
-                if(isFtpListReading) break;
-                LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+                //if(isFtpListReading) break;
+/*                LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
                 ImageView iv = (ImageView)inflater.inflate(R.layout.refresh, null);
                 Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
                 rotation.setRepeatCount(Animation.INFINITE);
-                iv.startAnimation(rotation);
-                //menuItem.setActionView(iv);
-                isFtpListReading = true;
+                iv.startAnimation(rotation);*/
                 break;
             case READ_FTP_LIST_FINISH:
-                /*if(null != menuItem.getActionView()) {
-                    menuItem.getActionView().clearAnimation();
-                    menuItem.setActionView(null);
-                }*/
-                isFtpListReading = false;
+
                 break;
         }
     }
 
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
+/*    private ServiceConnection mServiceConnection = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName name, IBinder binder) {
             Log.d(TAG, "onServiceConnected()");
@@ -154,19 +152,21 @@ public class FilesActivity extends BaseActivity implements FtpFilesFragment.FtpF
             Log.d(TAG, "onServiceDisconnected()");
             bound = false;
         }
-    };
+    };*/
 
-    @Override
+/*    @Override
     public FtpService getFtpConnectionService() {
         return mFtpConnectionService;
-    }
+    }*/
 
+/*
     @Override
     public boolean isFtpListReading() {
         return isFtpListReading;
     }
+*/
 
-    private FFilesFragment getCurrentFragment() {
+    private FilesFragment getCurrentFragment() {
         if(mSelectedList.equals(ListType.FTP)) {
             return mFtpFilesFragment;
         } else {
