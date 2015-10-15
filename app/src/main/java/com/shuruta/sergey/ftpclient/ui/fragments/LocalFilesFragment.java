@@ -1,11 +1,8 @@
 package com.shuruta.sergey.ftpclient.ui.fragments;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-
-import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.adapters.LocalFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
@@ -36,36 +33,32 @@ public class LocalFilesFragment extends FilesFragment {
         Log.d(TAG, "onEvent: " + event.state);
         switch (event.state) {
             case REFRESH:
-                if(!isSelected() || !isCanDo()) return;
                 new ReadLocalFilesAsyncTask().execute(START_DIR);
                 break;
-            case SELECT_FTP:
-                setSelected(false);
-                break;
-            case SELECT_LOCAL:
-                setSelected(true);
-                break;
             case BACK:
-                if(isSelected() && isCanDo()) {
-                    onBack();
-                }
+                onBack();
                 break;
         }
     }
 
     @Override
     public void onBack() {
-        /*if(mActivityListener.isLocalListReading()) return;*/
+
     }
 
     @Override
     public void onDirClick(FFile ftpFile) {
-        /*if(mActivityListener.isLocalListReading()) return;*/
+
     }
 
     @Override
     public void onFileClick(FFile ftpFile) {
-        /*if(mActivityListener.isLocalListReading()) return;*/
+
+    }
+
+    @Override
+    public int getListType() {
+        return FilesFragment.TYPE_LIST_LOCAL;
     }
 
     private class ReadLocalFilesAsyncTask extends AsyncTask<String, Boolean, Boolean> {

@@ -31,7 +31,7 @@ public class CacheManager {
     }
 
     public List<FFile> getFtpFiles() {
-        return new ArrayList<FFile>(ftpFiles);
+        return new ArrayList<FFile>(this.ftpFiles);
     }
 
     public List<FFile> getLocalFiles() {
@@ -40,9 +40,9 @@ public class CacheManager {
 
 
     public void putFtpFiles(List<FFile> ftpFiles) {
-        Log.d(TAG, "Put ftp files: " + ftpFiles.size());
         this.ftpFiles.clear();
         this.ftpFiles.addAll(ftpFiles);
+        Log.d("TEST", "Put ftp files: " + this.ftpFiles.size());
     }
 
     public void putLocalFiles(List<FFile> localFiles) {

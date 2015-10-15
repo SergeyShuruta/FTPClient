@@ -48,7 +48,6 @@ public class ReadListTask extends Task {
         Bundle bundle = new Bundle();
         bundle.putLong("connection_id", connection.getId());
         EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_START));
-
         try {
             prepareAndPutToCache(ftpClient.list(connection.getDir()));
             EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_OK));
@@ -71,7 +70,6 @@ public class ReadListTask extends Task {
             EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_ERROR));
             e.printStackTrace();
         }
-
         EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_FINISH));
     }
 

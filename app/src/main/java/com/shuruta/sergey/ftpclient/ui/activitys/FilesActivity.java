@@ -60,7 +60,6 @@ public class FilesActivity extends BaseActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     @Override
@@ -97,31 +96,4 @@ public class FilesActivity extends BaseActivity {
                 break;
         }
     }
-
-/*    private ServiceConnection mServiceConnection = new ServiceConnection() {
-
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            Log.d(TAG, "onServiceConnected()");
-            mFtpConnectionService = ((FtpService.ConnectionBinder) binder).getService();
-            bound = true;
-        }
-
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG, "onServiceDisconnected()");
-            bound = false;
-        }
-    };*/
-
-/*    @Override
-    public FtpService getFtpConnectionService() {
-        return mFtpConnectionService;
-    }*/
-
-/*
-    @Override
-    public boolean isFtpListReading() {
-        return isFtpListReading;
-    }
-*/
-
 }

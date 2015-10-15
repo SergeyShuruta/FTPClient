@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -37,20 +38,20 @@ public abstract class FilesFragment extends Fragment {
     private FFileAdapter mFileAdapter;
 
     private List<FFile> mFilesList = new ArrayList<>();
-    private boolean canDo = false;
-    private boolean isSelected = true;
+    private boolean canDo = true;
+    private boolean isSelected = false;
     protected Context mContext;
 
+    public static final int TYPE_LIST_FTP = 1;
+    public static final int TYPE_LIST_LOCAL = 2;
+
+    public static final String PARAM_LIST_SELECT = "select_list";
     public static final String TAG = FilesFragment.class.getSimpleName();
 
     public abstract void onBack();
     public abstract void onDirClick(FFile ftpFile);
     public abstract void onFileClick(FFile ftpFile);
-
-    public enum ListType {
-        FTP,
-        LOCAL
-    }
+    public abstract int getListType();
 
     private interface OnFileMenuClickListener {
         public void onMenuClick(View view, Connection connection);
@@ -82,8 +83,30 @@ public abstract class FilesFragment extends Fragment {
         mFileAdapter = new FFileAdapter(mFilesList, new FileMenuClickListener());
         mFileRecyclerView.setAdapter(mFileAdapter);
         mFileRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mFileRecyclerView.setEnabled(false);
+        mFileRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!isSelected) {
+                    Log.d("TEST", "Send msg! " + getListType());
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(PARAM_LIST_SELECT, getListType());
+                    EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.SELECT_LIST));
+                }
+                return false;
+            }
+        });
+        setSelected(getListType() == TYPE_LIST_FTP);
         return view;
+    }
+
+    public void onEvent(EventBusMessenger event) {
+        Log.d("TEST", "onEvent: " + event.state);
+        switch (event.state) {
+            case SELECT_LIST:
+                Log.d("TEST", "SELECT_LIST: " + event.bandle.getInt(PARAM_LIST_SELECT));
+                setSelected(event.bandle.getInt(PARAM_LIST_SELECT) == getListType());
+                break;
+        }
     }
 
     private class FileMenuClickListener implements OnFileMenuClickListener {
@@ -147,6 +170,13 @@ public abstract class FilesFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
+                if(!isSelected) {
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(PARAM_LIST_SELECT, getListType());
+                    EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.SELECT_LIST));
+                    return;
+                }
+                if(!canDo) return;
                 FFile file = files.get(getPosition());
                 if(file.isBackButton()) {
                     onBack();
@@ -160,8 +190,9 @@ public abstract class FilesFragment extends Fragment {
         }
     }
 
-    public void setSelected(boolean isSelecetd) {
-        mFileRecyclerView.setEnabled(isSelecetd);
+    private void setSelected(boolean isSelecetd) {
+        // ToDo
+        // mFileRecyclerView.setEnabled(isSelecetd);
         this.isSelected = isSelecetd;
     }
 
@@ -170,6 +201,7 @@ public abstract class FilesFragment extends Fragment {
     }
 
     protected void displayList(List<FFile> files) {
+        Log.d("TEST", "displayList(" + files.size() + ")");
         mFilesList.clear();
         mFilesList.addAll(files);
         mFileAdapter.notifyDataSetChanged();
@@ -181,14 +213,6 @@ public abstract class FilesFragment extends Fragment {
 
     protected void finishReadList() {
         canDo = true;
-    }
-
-    public boolean isSelected() {
-        return this.isSelected;
-    }
-
-    public boolean isCanDo() {
-        return canDo;
     }
 
     @Override

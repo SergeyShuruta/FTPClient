@@ -30,8 +30,7 @@ public class EventBusMessenger {
         READ_FTP_LIST_OK,
         READ_FTP_LIST_ERROR,
         READ_FTP_LIST_FINISH,
-        SELECT_FTP,
-        SELECT_LOCAL,
+        SELECT_LIST,
         REFRESH,
         BACK,
     }

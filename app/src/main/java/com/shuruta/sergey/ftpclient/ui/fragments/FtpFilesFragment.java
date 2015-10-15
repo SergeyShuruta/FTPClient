@@ -5,8 +5,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
@@ -25,6 +27,11 @@ public class FtpFilesFragment extends FilesFragment {
     private boolean bound;
 
     public static final String TAG = FtpFilesFragment.class.getSimpleName();
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
 
     @Override
     public void onResume() {
@@ -50,25 +57,16 @@ public class FtpFilesFragment extends FilesFragment {
         Log.d(TAG, "onEvent: " + event.state);
         switch (event.state) {
             case REFRESH:
-                if(!isSelected() || !isCanDo()) return;
                 mFtpConnectionService.readList();
                 break;
-            case SELECT_FTP:
-                setSelected(true);
-                break;
-            case SELECT_LOCAL:
-                setSelected(false);
-                break;
             case BACK:
-                if(isSelected() && isCanDo()) {
-                    onBack();
-                }
+                onBack();
                 break;
             case READ_FTP_LIST_START:
                 startReadList();
                 break;
             case READ_FTP_LIST_OK:
-                displayList(CacheManager.getInstance().getLocalFiles());
+                displayList(CacheManager.getInstance().getFtpFiles());
                 break;
             case READ_FTP_LIST_ERROR:
                 errorReadList();
@@ -80,30 +78,21 @@ public class FtpFilesFragment extends FilesFragment {
 
     @Override
     public void onBack() {
-        if(!isSelected() || !isCanDo()) return;
         mFtpConnectionService.back();
     }
 
     @Override
     public void onDirClick(FFile ftpFile) {
-        if(isSelected()) {
-            EventBus.getDefault().post(new EventBusMessenger(EventBusMessenger.State.SELECT_FTP));
-        } else {
-            if(isCanDo()) {
-                mFtpConnectionService.readList(ftpFile.getName());
-            }
-        }
+        mFtpConnectionService.readList(ftpFile.getName());
     }
 
     @Override
     public void onFileClick(FFile ftpFile) {
-        if(isSelected()) {
-            EventBus.getDefault().post(new EventBusMessenger(EventBusMessenger.State.SELECT_FTP));
-        } else {
-            if(isCanDo()) {
-                // todo
-            }
-        }
+    }
+
+    @Override
+    public int getListType() {
+        return FilesFragment.TYPE_LIST_FTP;
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
