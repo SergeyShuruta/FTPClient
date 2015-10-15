@@ -1,6 +1,7 @@
 package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
@@ -35,7 +36,9 @@ public class ConnectionTask extends Task {
 
     @Override
     public void run() {
-        EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.CONNECTION_START));
+        Bundle bundle = new Bundle();
+        bundle.putLong("connection_id", connection.getId());
+        EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_START));
 
         try {
             ftpClient.connect(connection.getHost(), connection.getPort());
@@ -44,25 +47,25 @@ public class ConnectionTask extends Task {
             ftpClient.changeDirectory(File.separator);
         } catch (IOException e) {
             e.printStackTrace();
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.CONNECTION_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR));
         } catch (FTPIllegalReplyException e) {
             e.printStackTrace();
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.CONNECTION_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR));
         } catch (FTPException e) {
             Log.d(TAG, "Already connected: " + e.getCode());
             e.printStackTrace();
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.CONNECTION_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR));
         }
 
         if(ftpClient.isConnected()) {
             if(ftpClient.isAuthenticated()) {
-                EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.CONNECTION_OK));
+                EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_OK));
             } else {
-                EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.CONNECTION_ERROR_AUTHORIZATION));
+                EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR_AUTHORIZATION));
             }
         } else {
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.CONNECTION_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR));
         }
-        EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.CONNECTION_FINISH));
+        EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_FINISH));
     }
 }

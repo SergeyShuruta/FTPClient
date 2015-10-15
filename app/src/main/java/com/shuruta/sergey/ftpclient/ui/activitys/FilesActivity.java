@@ -1,22 +1,13 @@
 package com.shuruta.sergey.ftpclient.ui.activitys;
 
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
+
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
-import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.ui.fragments.FtpFilesFragment;
 import com.shuruta.sergey.ftpclient.ui.fragments.FilesFragment;
@@ -31,14 +22,7 @@ import de.greenrobot.event.EventBus;
  */
 public class FilesActivity extends BaseActivity {
 
-    private ListType mSelectedList = ListType.FTP;
-
     private FilesFragment mFtpFilesFragment, mLocalFilesFragment;
-
-    public enum ListType {
-        FTP,
-        LOCAL
-    }
 
     public static final String TAG = FilesActivity.class.getSimpleName();
 
@@ -51,36 +35,11 @@ public class FilesActivity extends BaseActivity {
         mFtpFilesFragment = new FtpFilesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.ftpFrameLayout, mFtpFilesFragment);
-
-/*        findViewById(R.id.ftpFrameLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectList(ListType.FTP);
-            }
-        });
-
-
-        findViewById(R.id.localFrameLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectList(ListType.LOCAL);
-            }
-        });*/
-
         if(null != findViewById(R.id.localFrameLayout)) {
             mLocalFilesFragment = new LocalFilesFragment();
             fragmentTransaction.replace(R.id.localFrameLayout, mLocalFilesFragment);
-            mSelectedList = ListType.LOCAL;
         }
-
-
         fragmentTransaction.commit();
-    }
-
-    private void selectList(ListType listType) {
-        mSelectedList = listType;
-        mFtpFilesFragment.setEnabled(mSelectedList.equals(ListType.FTP));
-        mLocalFilesFragment.setEnabled(mSelectedList.equals(ListType.FTP));
     }
 
     @Override
@@ -96,7 +55,7 @@ public class FilesActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                getCurrentFragment().reload();
+                EventBus.getDefault().post(new EventBusMessenger(EventBusMessenger.State.REFRESH));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -118,8 +77,7 @@ public class FilesActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        // TODO onBack()
+        EventBus.getDefault().post(new EventBusMessenger(EventBusMessenger.State.BACK));
     }
 
     public void onEventMainThread(EventBusMessenger event) {
@@ -166,11 +124,4 @@ public class FilesActivity extends BaseActivity {
     }
 */
 
-    private FilesFragment getCurrentFragment() {
-        if(mSelectedList.equals(ListType.FTP)) {
-            return mFtpFilesFragment;
-        } else {
-            return mLocalFilesFragment;
-        }
-    }
 }

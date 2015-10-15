@@ -1,6 +1,7 @@
 package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
@@ -44,32 +45,34 @@ public class ReadListTask extends Task {
 
     @Override
     public void run() {
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_START));
+        Bundle bundle = new Bundle();
+        bundle.putLong("connection_id", connection.getId());
+        EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_START));
 
         try {
             prepareAndPutToCache(ftpClient.list(connection.getDir()));
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_OK));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_OK));
         } catch (IOException e) {
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_ERROR));
             e.printStackTrace();
         } catch (FTPIllegalReplyException e) {
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_ERROR));
             e.printStackTrace();
         } catch (FTPException e) {
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_ERROR));
             e.printStackTrace();
         } catch (FTPDataTransferException e) {
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_ERROR));
             e.printStackTrace();
         } catch (FTPAbortedException e) {
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_ERROR));
             e.printStackTrace();
         } catch (FTPListParseException e) {
-            EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_ERROR));
+            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_ERROR));
             e.printStackTrace();
         }
 
-        EventBus.getDefault().post(new EventBusMessenger(connection.getId(), EventBusMessenger.State.READ_FTP_LIST_FINISH));
+        EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.READ_FTP_LIST_FINISH));
     }
 
     private void prepareAndPutToCache(FTPFile[] list) {

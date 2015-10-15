@@ -15,6 +15,9 @@ import java.util.List;
 public class CacheManager {
 
     private List<FFile> ftpFiles = new ArrayList<>();
+    private List<FFile> localFiles = new ArrayList<>();
+
+    public static final String TAG = CacheManager.class.getSimpleName();
 
     private static CacheManager instance;
 
@@ -31,9 +34,20 @@ public class CacheManager {
         return new ArrayList<FFile>(ftpFiles);
     }
 
+    public List<FFile> getLocalFiles() {
+        return new ArrayList<FFile>(localFiles);
+    }
+
+
     public void putFtpFiles(List<FFile> ftpFiles) {
-        Log.d("TEST", "Put files: " + ftpFiles.size());
+        Log.d(TAG, "Put ftp files: " + ftpFiles.size());
         this.ftpFiles.clear();
         this.ftpFiles.addAll(ftpFiles);
+    }
+
+    public void putLocalFiles(List<FFile> localFiles) {
+        Log.d(TAG, "Put local files: " + localFiles.size());
+        this.localFiles.clear();
+        this.localFiles.addAll(localFiles);
     }
 }

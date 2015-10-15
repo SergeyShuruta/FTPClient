@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity {
     public void onEventMainThread(EventBusMessenger event) {
         Connection connection = null;
         for(int position = 0; position < connections.size(); position++)
-            if(connections.get(position).getId() == event.conId) {
+            if(connections.get(position).getId() == event.bandle.getLong("connection_id")) {
                 connection = connections.get(position);
                 break;
             }

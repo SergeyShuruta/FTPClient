@@ -1,10 +1,13 @@
 package com.shuruta.sergey.ftpclient.ui.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.entity.Connection;
@@ -33,17 +38,37 @@ public abstract class FilesFragment extends Fragment {
 
     private List<FFile> mFilesList = new ArrayList<>();
     private boolean canDo = false;
+    private boolean isSelected = true;
+    protected Context mContext;
 
     public static final String TAG = FilesFragment.class.getSimpleName();
 
     public abstract void onBack();
     public abstract void onDirClick(FFile ftpFile);
     public abstract void onFileClick(FFile ftpFile);
-    public abstract void reload();
+
+    public enum ListType {
+        FTP,
+        LOCAL
+    }
 
     private interface OnFileMenuClickListener {
         public void onMenuClick(View view, Connection connection);
     }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mContext = activity;
+/*
+        try {
+            mActivityListener = (FtpFragmentListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement FilesFragmentListener");
+        }
+*/
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,6 +82,7 @@ public abstract class FilesFragment extends Fragment {
         mFileAdapter = new FFileAdapter(mFilesList, new FileMenuClickListener());
         mFileRecyclerView.setAdapter(mFileAdapter);
         mFileRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mFileRecyclerView.setEnabled(false);
         return view;
     }
 
@@ -134,13 +160,13 @@ public abstract class FilesFragment extends Fragment {
         }
     }
 
-    public void setEnabled(boolean isEnabled) {
-        this.canDo = isEnabled;
-        mFileRecyclerView.setEnabled(isEnabled);
+    public void setSelected(boolean isSelecetd) {
+        mFileRecyclerView.setEnabled(isSelecetd);
+        this.isSelected = isSelecetd;
     }
 
     protected void startReadList() {
-        canDo = true;
+        canDo = false;
     }
 
     protected void displayList(List<FFile> files) {
@@ -154,7 +180,11 @@ public abstract class FilesFragment extends Fragment {
     }
 
     protected void finishReadList() {
-        canDo = false;
+        canDo = true;
+    }
+
+    public boolean isSelected() {
+        return this.isSelected;
     }
 
     public boolean isCanDo() {

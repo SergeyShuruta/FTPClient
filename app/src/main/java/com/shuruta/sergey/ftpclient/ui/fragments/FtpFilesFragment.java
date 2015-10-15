@@ -13,6 +13,8 @@ import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * Created by Sergey Shuruta
  * 08/15/15 at 22:11
@@ -23,22 +25,6 @@ public class FtpFilesFragment extends FilesFragment {
     private boolean bound;
 
     public static final String TAG = FtpFilesFragment.class.getSimpleName();
-
-    private Context mContext;
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mContext = activity;
-/*
-        try {
-            mActivityListener = (FtpFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement FilesFragmentListener");
-        }
-*/
-    }
 
     @Override
     public void onResume() {
@@ -63,11 +49,26 @@ public class FtpFilesFragment extends FilesFragment {
     public void onEventMainThread(EventBusMessenger event) {
         Log.d(TAG, "onEvent: " + event.state);
         switch (event.state) {
+            case REFRESH:
+                if(!isSelected() || !isCanDo()) return;
+                mFtpConnectionService.readList();
+                break;
+            case SELECT_FTP:
+                setSelected(true);
+                break;
+            case SELECT_LOCAL:
+                setSelected(false);
+                break;
+            case BACK:
+                if(isSelected() && isCanDo()) {
+                    onBack();
+                }
+                break;
             case READ_FTP_LIST_START:
                 startReadList();
                 break;
             case READ_FTP_LIST_OK:
-                displayList(CacheManager.getInstance().getFtpFiles());
+                displayList(CacheManager.getInstance().getLocalFiles());
                 break;
             case READ_FTP_LIST_ERROR:
                 errorReadList();
@@ -79,25 +80,30 @@ public class FtpFilesFragment extends FilesFragment {
 
     @Override
     public void onBack() {
-        if(isCanDo()) return;
+        if(!isSelected() || !isCanDo()) return;
         mFtpConnectionService.back();
     }
 
     @Override
     public void onDirClick(FFile ftpFile) {
-        if(isCanDo()) return;
-        mFtpConnectionService.readList(ftpFile.getName());
+        if(isSelected()) {
+            EventBus.getDefault().post(new EventBusMessenger(EventBusMessenger.State.SELECT_FTP));
+        } else {
+            if(isCanDo()) {
+                mFtpConnectionService.readList(ftpFile.getName());
+            }
+        }
     }
 
     @Override
     public void onFileClick(FFile ftpFile) {
-        if(isCanDo()) return;
-    }
-
-    @Override
-    public void reload() {
-        if(isCanDo()) return;
-        mFtpConnectionService.readList();
+        if(isSelected()) {
+            EventBus.getDefault().post(new EventBusMessenger(EventBusMessenger.State.SELECT_FTP));
+        } else {
+            if(isCanDo()) {
+                // todo
+            }
+        }
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {

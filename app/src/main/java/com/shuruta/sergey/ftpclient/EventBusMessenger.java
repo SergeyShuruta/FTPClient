@@ -1,5 +1,7 @@
 package com.shuruta.sergey.ftpclient;
 
+import android.os.Bundle;
+
 /**
  * Author: Sergey Shuruta
  * Date: 08/15/15
@@ -7,11 +9,14 @@ package com.shuruta.sergey.ftpclient;
  */
 public class EventBusMessenger {
 
-    public final long conId;
+    public final Bundle bandle;
     public final State state;
 
-    public EventBusMessenger(long conId, State state) {
-        this.conId = conId;
+    public EventBusMessenger(State state) {
+        this(null, state);
+    }
+    public EventBusMessenger(Bundle bandle, State state) {
+        this.bandle = bandle;
         this.state = state;
     }
 
@@ -25,5 +30,9 @@ public class EventBusMessenger {
         READ_FTP_LIST_OK,
         READ_FTP_LIST_ERROR,
         READ_FTP_LIST_FINISH,
+        SELECT_FTP,
+        SELECT_LOCAL,
+        REFRESH,
+        BACK,
     }
 }
