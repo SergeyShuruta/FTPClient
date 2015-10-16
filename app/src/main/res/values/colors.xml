@@ -15,8 +15,8 @@
     <color name="light_text">#ffffffff</color>
     <color name="field_error">#ff8a7c</color>
 
-    <color name="recyclerview_normal">#ffffff</color>
-    <color name="recyclerview_disable">#b9b9b9</color>
+    <color name="recyclerview_selected">#ffffff</color>
+    <color name="recyclerview_not_selected">#f2f2f2</color>
     <color name="card_normal">#00ffffff</color>
     <color name="card_pressed">#99525252</color>
 

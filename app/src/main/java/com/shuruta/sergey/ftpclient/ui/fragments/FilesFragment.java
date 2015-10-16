@@ -16,8 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
-import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.entity.Connection;
@@ -41,17 +41,16 @@ public abstract class FilesFragment extends Fragment {
     private boolean canDo = true;
     private boolean isSelected = false;
     protected Context mContext;
+    private int listType;
 
-    public static final int TYPE_LIST_FTP = 1;
-    public static final int TYPE_LIST_LOCAL = 2;
 
-    public static final String PARAM_LIST_SELECT = "select_list";
     public static final String TAG = FilesFragment.class.getSimpleName();
 
+    public abstract List<FFile> getFiles();
+    public abstract void onRefreshList();
     public abstract void onBack();
     public abstract void onDirClick(FFile ftpFile);
     public abstract void onFileClick(FFile ftpFile);
-    public abstract int getListType();
 
     private interface OnFileMenuClickListener {
         public void onMenuClick(View view, Connection connection);
@@ -61,15 +60,11 @@ public abstract class FilesFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
-/*
-        try {
-            mActivityListener = (FtpFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement FilesFragmentListener");
-        }
-*/
     }
 
+    public void setListType(int listType) {
+        this.listType = listType;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,24 +82,43 @@ public abstract class FilesFragment extends Fragment {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (!isSelected) {
-                    Log.d("TEST", "Send msg! " + getListType());
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(PARAM_LIST_SELECT, getListType());
-                    EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.SELECT_LIST));
+                    EventBusMessenger.sendMessage(FilesFragment.this.listType, EventBusMessenger.Event.SELECT);
                 }
                 return false;
             }
         });
-        setSelected(getListType() == TYPE_LIST_FTP);
+        setSelected(this.listType == Constants.TYPE_FTP);
         return view;
     }
 
-    public void onEvent(EventBusMessenger event) {
-        Log.d("TEST", "onEvent: " + event.state);
-        switch (event.state) {
-            case SELECT_LIST:
-                Log.d("TEST", "SELECT_LIST: " + event.bandle.getInt(PARAM_LIST_SELECT));
-                setSelected(event.bandle.getInt(PARAM_LIST_SELECT) == getListType());
+    public void onEventMainThread(EventBusMessenger event) {
+
+        if(event.event.equals(EventBusMessenger.Event.SELECT)) {
+            setSelected(event.getType() == this.listType);
+            return;
+        }
+
+        if(!event.isValidListType(this.listType)) return;
+        Log.d("TEST", "Event for: " + this.listType);
+        switch (event.event) {
+            case REFRESH:
+                if(isSelected)
+                    onRefreshList();
+                break;
+            case BACK:
+                if(isSelected)
+                    onBack();
+                break;
+            case START:
+                canDo = false;
+                break;
+            case OK:
+                displayList();
+                break;
+            case ERROR:
+                Toast.makeText(getActivity(), R.string.connection_error, Toast.LENGTH_SHORT).show();
+            case FINISH:
+                canDo = true;
                 break;
         }
     }
@@ -171,9 +185,7 @@ public abstract class FilesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(!isSelected) {
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(PARAM_LIST_SELECT, getListType());
-                    EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.SELECT_LIST));
+                    EventBusMessenger.sendMessage(FilesFragment.this.listType, EventBusMessenger.Event.SELECT);
                     return;
                 }
                 if(!canDo) return;
@@ -191,34 +203,22 @@ public abstract class FilesFragment extends Fragment {
     }
 
     private void setSelected(boolean isSelecetd) {
-        // ToDo
-        // mFileRecyclerView.setEnabled(isSelecetd);
         this.isSelected = isSelecetd;
+        mFileRecyclerView.setBackgroundColor(getResources().getColor(this.isSelected ? R.color.recyclerview_selected : R.color.recyclerview_not_selected));
     }
 
-    protected void startReadList() {
-        canDo = false;
-    }
 
-    protected void displayList(List<FFile> files) {
-        Log.d("TEST", "displayList(" + files.size() + ")");
+    private void displayList() {
         mFilesList.clear();
-        mFilesList.addAll(files);
+        mFilesList.addAll(getFiles());
         mFileAdapter.notifyDataSetChanged();
-    }
-
-    protected void errorReadList() {
-        Toast.makeText(getActivity(), R.string.connection_error, Toast.LENGTH_SHORT).show();
-    }
-
-    protected void finishReadList() {
-        canDo = true;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+        displayList();
     }
 
     @Override

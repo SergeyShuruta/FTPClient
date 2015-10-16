@@ -10,10 +10,13 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
+
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
@@ -28,15 +31,9 @@ public class FtpFilesFragment extends FilesFragment {
 
     public static final String TAG = FtpFilesFragment.class.getSimpleName();
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
+    public FtpFilesFragment() {
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        displayList(CacheManager.getInstance().getFtpFiles());
+        setListType(Constants.TYPE_FTP);
     }
 
     @Override
@@ -53,46 +50,33 @@ public class FtpFilesFragment extends FilesFragment {
         bound = false;
     }
 
-    public void onEventMainThread(EventBusMessenger event) {
-        Log.d(TAG, "onEvent: " + event.state);
-        switch (event.state) {
-            case REFRESH:
-                mFtpConnectionService.readList();
-                break;
-            case BACK:
-                onBack();
-                break;
-            case READ_FTP_LIST_START:
-                startReadList();
-                break;
-            case READ_FTP_LIST_OK:
-                displayList(CacheManager.getInstance().getFtpFiles());
-                break;
-            case READ_FTP_LIST_ERROR:
-                errorReadList();
-            case READ_FTP_LIST_FINISH:
-                finishReadList();
-                break;
-        }
+    @Override
+    public List<FFile> getFiles() {
+
+        return CacheManager.getInstance().getFtpFiles();
+    }
+
+    @Override
+    public void onRefreshList() {
+
+        mFtpConnectionService.readList();
     }
 
     @Override
     public void onBack() {
+
         mFtpConnectionService.back();
     }
 
     @Override
     public void onDirClick(FFile ftpFile) {
+
         mFtpConnectionService.readList(ftpFile.getName());
     }
 
     @Override
     public void onFileClick(FFile ftpFile) {
-    }
 
-    @Override
-    public int getListType() {
-        return FilesFragment.TYPE_LIST_FTP;
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {

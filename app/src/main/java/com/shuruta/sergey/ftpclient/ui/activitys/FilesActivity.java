@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.ui.fragments.FtpFilesFragment;
@@ -55,45 +56,29 @@ public class FilesActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                EventBus.getDefault().post(new EventBusMessenger(EventBusMessenger.State.REFRESH));
+                EventBusMessenger.sendMessage(Constants.TYPE_FTP,EventBusMessenger.Event.REFRESH);
+                EventBusMessenger.sendMessage(Constants.TYPE_LOCAL, EventBusMessenger.Event.REFRESH);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        EventBus.getDefault().register(this);
+//    }
+//
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        EventBus.getDefault().unregister(this);
+//    }
 
     @Override
     public void onBackPressed() {
-        EventBus.getDefault().post(new EventBusMessenger(EventBusMessenger.State.BACK));
-    }
-
-    public void onEventMainThread(EventBusMessenger event) {
-        Log.d(TAG, "onEvent: " + event.state);
-        //MenuItem menuItem = menu.findItem(R.id.action_refresh);
-        switch (event.state) {
-            case READ_FTP_LIST_START:
-                //if(isFtpListReading) break;
-/*                LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-                ImageView iv = (ImageView)inflater.inflate(R.layout.refresh, null);
-                Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
-                rotation.setRepeatCount(Animation.INFINITE);
-                iv.startAnimation(rotation);*/
-                break;
-            case READ_FTP_LIST_FINISH:
-
-                break;
-        }
+        EventBusMessenger.sendMessage(Constants.TYPE_FTP, EventBusMessenger.Event.BACK);
+        EventBusMessenger.sendMessage(Constants.TYPE_LOCAL, EventBusMessenger.Event.BACK);
     }
 }

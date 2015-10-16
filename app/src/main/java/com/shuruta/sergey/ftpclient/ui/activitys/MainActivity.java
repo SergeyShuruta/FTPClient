@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.services.FtpService;
@@ -91,41 +92,47 @@ public class MainActivity extends BaseActivity {
     }
 
     public void onEventMainThread(EventBusMessenger event) {
-        Connection connection = null;
-        for(int position = 0; position < connections.size(); position++)
-            if(connections.get(position).getId() == event.bandle.getLong("connection_id")) {
-                connection = connections.get(position);
-                break;
+        if(event.isValidListType(Constants.TYPE_CONNECTION)) {
+            Log.d(TAG, "onEvent: " + event.event + " for connections");
+            long connectionId = event.bundle.getLong(Constants.PARAM_CONNECTION_ID, 0);
+            if(0 == connectionId) return;
+            Connection connection = null;
+            for(int position = 0; position < connections.size(); position++)
+                if(connections.get(position).getId() == connectionId) {
+                    connection = connections.get(position);
+                    break;
+                }
+            if(null == connection) return;
+            switch (event.event) {
+                case START:
+                    connection.setActive(true);
+                    connectionsAdapter.notifyDataSetChanged();
+                    break;
+                case OK:
+                    mFtpConnectionService.readList();
+                    break;
+                case ERROR:
+                    Toast.makeText(MainActivity.this, R.string.connection_error, Toast.LENGTH_SHORT).show();
+                    break;
+                case FINISH:
+                    connection.setActive(false);
+                    connectionsAdapter.notifyDataSetChanged();
+                    break;
             }
-        if(null == connection) return;
-        Log.d(TAG, "onEvent: " + event.state);
-        switch (event.state) {
-            case CONNECTION_START:
-                connection.setActive(true);
-                connectionsAdapter.notifyDataSetChanged();
-                break;
-            case CONNECTION_OK:
-                mFtpConnectionService.readList();
-                break;
-            case CONNECTION_ERROR:
-                Toast.makeText(MainActivity.this, R.string.connection_error, Toast.LENGTH_SHORT).show();
-                connection.setActive(false);
-                connectionsAdapter.notifyDataSetChanged();
-                break;
-            case CONNECTION_FINISH:
-                break;
-            case READ_FTP_LIST_START:
-                break;
-            case READ_FTP_LIST_OK:
-                startActivity(new Intent(MainActivity.this, FilesActivity.class));
-                break;
-            case READ_FTP_LIST_ERROR:
-                Toast.makeText(MainActivity.this, R.string.connection_error, Toast.LENGTH_SHORT).show();
-                break;
-            case READ_FTP_LIST_FINISH:
-                connection.setActive(false);
-                connectionsAdapter.notifyDataSetChanged();
-                break;
+        }
+
+        if(event.isValidListType(Constants.TYPE_FTP)) {
+            Log.d(TAG, "onEvent: " + event.event + " for ftp");
+            switch (event.event) {
+                case START:
+                    break;
+                case OK:
+                    startActivity(new Intent(MainActivity.this, FilesActivity.class));
+                    break;
+                case ERROR:
+                    Toast.makeText(MainActivity.this, R.string.connection_error, Toast.LENGTH_SHORT).show();
+                    break;
+            }
         }
     }
 

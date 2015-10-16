@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_enabled="true" android:drawable="@color/recyclerview_normal"></item>
-    <item android:state_enabled="false" android:drawable="@color/recyclerview_disable"></item>
+    <item android:state_enabled="true" android:drawable="@color/recyclerview_selected"></item>
+    <item android:state_enabled="false" android:drawable="@color/recyclerview_not_selected"></item>
 </selector>

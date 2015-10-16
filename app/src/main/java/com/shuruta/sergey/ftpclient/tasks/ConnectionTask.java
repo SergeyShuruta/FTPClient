@@ -38,7 +38,7 @@ public class ConnectionTask extends Task {
     public void run() {
         Bundle bundle = new Bundle();
         bundle.putLong("connection_id", connection.getId());
-        EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_START));
+        EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.START, bundle);
 
         try {
             ftpClient.connect(connection.getHost(), connection.getPort());
@@ -47,25 +47,25 @@ public class ConnectionTask extends Task {
             ftpClient.changeDirectory(File.separator);
         } catch (IOException e) {
             e.printStackTrace();
-            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR));
+            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
         } catch (FTPIllegalReplyException e) {
             e.printStackTrace();
-            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR));
+            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
         } catch (FTPException e) {
             Log.d(TAG, "Already connected: " + e.getCode());
             e.printStackTrace();
-            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR));
+            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
         }
 
         if(ftpClient.isConnected()) {
             if(ftpClient.isAuthenticated()) {
-                EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_OK));
+                EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.OK, bundle);
             } else {
-                EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR_AUTHORIZATION));
+                EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
             }
         } else {
-            EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_ERROR));
+            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
         }
-        EventBus.getDefault().post(new EventBusMessenger(bundle, EventBusMessenger.State.CONNECTION_FINISH));
+        EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.FINISH, bundle);
     }
 }

@@ -2,6 +2,8 @@ package com.shuruta.sergey.ftpclient;
 
 import android.os.Bundle;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * Author: Sergey Shuruta
  * Date: 08/15/15
@@ -9,28 +11,62 @@ import android.os.Bundle;
  */
 public class EventBusMessenger {
 
-    public final Bundle bandle;
-    public final State state;
+    private final Integer type;
+    public final Event event;
+    public final Bundle bundle;
 
-    public EventBusMessenger(State state) {
-        this(null, state);
-    }
-    public EventBusMessenger(Bundle bandle, State state) {
-        this.bandle = bandle;
-        this.state = state;
+    public static void sendMessage(int type, Event event, Bundle bundle) {
+        EventBus.getDefault().post(new EventBusMessenger(type, event, bundle));
     }
 
-    public enum State {
-        CONNECTION_START,
-        CONNECTION_OK,
-        CONNECTION_ERROR,
-        CONNECTION_ERROR_AUTHORIZATION,
-        CONNECTION_FINISH,
-        READ_FTP_LIST_START,
-        READ_FTP_LIST_OK,
-        READ_FTP_LIST_ERROR,
-        READ_FTP_LIST_FINISH,
-        SELECT_LIST,
+    public static void sendMessage(int type, Event event) {
+        EventBus.getDefault().post(new EventBusMessenger(type, event, null));
+    }
+
+    public static void sendConnectionMessage(Event event, Bundle bundle) {
+        EventBus.getDefault().post(new EventBusMessenger(Constants.TYPE_CONNECTION, event, bundle));
+    }
+
+    public static void sendConnectionMessage(Event event) {
+        EventBus.getDefault().post(new EventBusMessenger(Constants.TYPE_CONNECTION, event, null));
+    }
+
+    public static void sendFtpMessage(Event event, Bundle bundle) {
+        EventBus.getDefault().post(new EventBusMessenger(Constants.TYPE_FTP, event, bundle));
+    }
+
+    public static void sendFtpMessage(Event event) {
+        EventBus.getDefault().post(new EventBusMessenger(Constants.TYPE_FTP, event, null));
+    }
+
+    public static void sendLocalMessage(Event event, Bundle bundle) {
+        EventBus.getDefault().post(new EventBusMessenger(Constants.TYPE_LOCAL, event, bundle));
+    }
+
+    public static void sendLocalMessage(Event event) {
+        EventBus.getDefault().post(new EventBusMessenger(Constants.TYPE_LOCAL, event, null));
+    }
+
+    private EventBusMessenger(int type, Event event, Bundle bundle) {
+        this.type = type;
+        this.event = event;
+        this.bundle = bundle;
+    }
+
+    public boolean isValidListType(int type) {
+        return this.type.equals(type);
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public enum Event {
+        START,
+        OK,
+        ERROR,
+        FINISH,
+        SELECT,
         REFRESH,
         BACK,
     }

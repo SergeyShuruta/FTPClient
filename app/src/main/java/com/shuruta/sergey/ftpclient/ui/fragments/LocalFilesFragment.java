@@ -3,6 +3,8 @@ package com.shuruta.sergey.ftpclient.ui.fragments;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.adapters.LocalFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
@@ -23,22 +25,23 @@ public class LocalFilesFragment extends FilesFragment {
     public static final String TAG = LocalFilesFragment.class.getSimpleName();
     private static final String START_DIR = Environment.getExternalStorageDirectory().toString();
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        displayList(CacheManager.getInstance().getLocalFiles());
+
+    public LocalFilesFragment() {
+
+        setListType(Constants.TYPE_LOCAL);
+        new ReadLocalFilesAsyncTask().execute(START_DIR);
     }
 
-    public void onEventMainThread(EventBusMessenger event) {
-        Log.d(TAG, "onEvent: " + event.state);
-        switch (event.state) {
-            case REFRESH:
-                new ReadLocalFilesAsyncTask().execute(START_DIR);
-                break;
-            case BACK:
-                onBack();
-                break;
-        }
+    @Override
+    public List<FFile> getFiles() {
+
+        return CacheManager.getInstance().getLocalFiles();
+    }
+
+    @Override
+    public void onRefreshList() {
+        Log.d("TEST", "onRefreshList(LOCAL)");
+        new ReadLocalFilesAsyncTask().execute(START_DIR);
     }
 
     @Override
@@ -56,17 +59,11 @@ public class LocalFilesFragment extends FilesFragment {
 
     }
 
-    @Override
-    public int getListType() {
-        return FilesFragment.TYPE_LIST_LOCAL;
-    }
-
     private class ReadLocalFilesAsyncTask extends AsyncTask<String, Boolean, Boolean> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            startReadList();
         }
 
         @Override
@@ -93,8 +90,11 @@ public class LocalFilesFragment extends FilesFragment {
                 result = true;
             } catch (Exception e) {
                 e.printStackTrace();
+                EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.ERROR);
             }
             CacheManager.getInstance().putLocalFiles(files);
+            EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.OK);
+            EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.FINISH);
             return result;
 
 
@@ -104,10 +104,8 @@ public class LocalFilesFragment extends FilesFragment {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if(!result) {
-                errorReadList();
+
             }
-            finishReadList();
-            displayList(CacheManager.getInstance().getLocalFiles());
         }
     }
 }

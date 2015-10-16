@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.tasks.ConnectionTask;
@@ -47,11 +48,8 @@ public class FtpService extends Service {
     }
 
     public void onEventMainThread(EventBusMessenger event) {
-        Log.d(TAG, "onEvent: " + event.state);
-        switch (event.state) {
-            case CONNECTION_OK:
-                executorService.execute(new ReadListTask(this, ftpClient, connection));
-                break;
+        if (event.isValidListType(Constants.TYPE_CONNECTION) && event.event.equals(EventBusMessenger.Event.OK)) {
+            executorService.execute(new ReadListTask(this, ftpClient, connection));
         }
     }
 
