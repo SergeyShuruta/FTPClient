@@ -1,24 +1,19 @@
 package com.shuruta.sergey.ftpclient.ui.fragments;
 
-import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
 
 import com.shuruta.sergey.ftpclient.Constants;
+import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
-import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.util.List;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * Created by Sergey Shuruta
@@ -31,9 +26,10 @@ public class FtpFilesFragment extends FilesFragment {
 
     public static final String TAG = FtpFilesFragment.class.getSimpleName();
 
-    public FtpFilesFragment() {
-
-        setListType(Constants.TYPE_FTP);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initList(Constants.TYPE_FTP, CustomApplication.getInstance().getCurrentConnection().getDir());
     }
 
     @Override
@@ -57,21 +53,9 @@ public class FtpFilesFragment extends FilesFragment {
     }
 
     @Override
-    public void onRefreshList() {
+    public void readList(String patch) {
 
-        mFtpConnectionService.readList();
-    }
-
-    @Override
-    public void onBack() {
-
-        mFtpConnectionService.back();
-    }
-
-    @Override
-    public void onDirClick(FFile ftpFile) {
-
-        mFtpConnectionService.readList(ftpFile.getName());
+        mFtpConnectionService.readList(patch);
     }
 
     @Override

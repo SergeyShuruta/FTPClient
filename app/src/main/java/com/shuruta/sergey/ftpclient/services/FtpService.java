@@ -47,12 +47,6 @@ public class FtpService extends Service {
         return new ConnectionBinder();
     }
 
-    public void onEventMainThread(EventBusMessenger event) {
-        if (event.isValidListType(Constants.TYPE_CONNECTION) && event.event.equals(EventBusMessenger.Event.OK)) {
-            executorService.execute(new ReadListTask(this, ftpClient, connection));
-        }
-    }
-
     public class ConnectionBinder extends Binder {
 
         public FtpService getService() {
@@ -66,20 +60,21 @@ public class FtpService extends Service {
         executorService.execute(new ConnectionTask(this, ftpClient, connection));
     }
 
-    public void readList() {
+/*    public void readList() {
         readList(new String());
-    }
+    }*/
 
+/*
     public void back() {
         Log.d(TAG, "back()");
         connection.backDir();
         executorService.execute(new ReadListTask(this, ftpClient, connection));
     }
+*/
 
-    public void readList(String fileName) {
-        Log.d(TAG, "readList(" + fileName + ")");
-        connection.addDir(fileName);
-        executorService.execute(new ReadListTask(this, ftpClient, connection));
+    public void readList(String path) {
+        Log.d(TAG, "readList(" + path + ")");
+        executorService.execute(new ReadListTask(this, ftpClient, path));
     }
 
 /*    public void disconnect() {

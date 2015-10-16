@@ -22,6 +22,7 @@
     <string name="yes">Yes</string>
     <string name="connection_error">Connection error</string>
     <string name="form_remote_directory">Remote directory:</string>
+    <string name="form_local_directory">Local directory:</string>
     <string name="back">Back</string>
     <string name="refresh">Refresh</string>
     <string name="list_of_connections">List of connections</string>

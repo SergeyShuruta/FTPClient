@@ -109,7 +109,7 @@ public class MainActivity extends BaseActivity {
                     connectionsAdapter.notifyDataSetChanged();
                     break;
                 case OK:
-                    mFtpConnectionService.readList();
+                    mFtpConnectionService.readList(connection.getDir());
                     break;
                 case ERROR:
                     Toast.makeText(MainActivity.this, R.string.connection_error, Toast.LENGTH_SHORT).show();
@@ -117,6 +117,7 @@ public class MainActivity extends BaseActivity {
                 case FINISH:
                     connection.setActive(false);
                     connectionsAdapter.notifyDataSetChanged();
+                    CustomApplication.getInstance().setCurrentConnection(connection);
                     break;
             }
         }
@@ -253,7 +254,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onClick(View v) {
-                mFtpConnectionService.startConnection(connections.get(getPosition()));
+                mFtpConnectionService.startConnection(connections.get(getAdapterPosition()));
             }
         }
     }

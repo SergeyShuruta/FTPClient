@@ -1,10 +1,12 @@
 package com.shuruta.sergey.ftpclient.ui.fragments;
 
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.Constants;
+import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.adapters.LocalFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
@@ -23,13 +25,11 @@ import java.util.List;
 public class LocalFilesFragment extends FilesFragment {
 
     public static final String TAG = LocalFilesFragment.class.getSimpleName();
-    private static final String START_DIR = Environment.getExternalStorageDirectory().toString();
 
-
-    public LocalFilesFragment() {
-
-        setListType(Constants.TYPE_LOCAL);
-        new ReadLocalFilesAsyncTask().execute(START_DIR);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initList(Constants.TYPE_LOCAL, CustomApplication.getInstance().getCurrentConnection().getLocalDir());
     }
 
     @Override
@@ -39,19 +39,9 @@ public class LocalFilesFragment extends FilesFragment {
     }
 
     @Override
-    public void onRefreshList() {
-        Log.d("TEST", "onRefreshList(LOCAL)");
-        new ReadLocalFilesAsyncTask().execute(START_DIR);
-    }
+    public void readList(String patch) {
 
-    @Override
-    public void onBack() {
-
-    }
-
-    @Override
-    public void onDirClick(FFile ftpFile) {
-
+        new ReadLocalFilesAsyncTask().execute(patch);
     }
 
     @Override

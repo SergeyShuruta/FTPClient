@@ -95,6 +95,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/FormTextView"
+                    android:text="@string/form_local_directory"
+                    android:singleLine="true" />
+
+                <EditText
+                    android:id="@+id/ldirEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/FormEditText"
+                    android:text="@{connection.getLocalDir()}"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FormTextView"
                     android:text="@string/form_login"
                     android:singleLine="true" />
 

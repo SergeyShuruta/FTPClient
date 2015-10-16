@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.shuruta.sergey.ftpclient.Constants;
+import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.ui.fragments.FtpFilesFragment;

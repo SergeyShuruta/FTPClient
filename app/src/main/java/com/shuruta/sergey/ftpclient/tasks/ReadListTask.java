@@ -33,45 +33,43 @@ import it.sauronsoftware.ftp4j.FTPListParseException;
  */
 public class ReadListTask extends Task {
 
-    private FTPClient ftpClient;
-    private Connection connection;
+    private final FTPClient ftpClient;
+    private final String path;
 
     public static final String TAG = FtpService.TAG + "." + ReadListTask.class.getSimpleName();
 
-    public ReadListTask(Context context, FTPClient ftpClient, Connection connection) {
+    public ReadListTask(Context context, FTPClient ftpClient, String path) {
         super(context);
         this.ftpClient = ftpClient;
-        this.connection = connection;
+        this.path = path;
     }
 
     @Override
     public void run() {
-        Bundle bundle = new Bundle();
-        bundle.putLong(Constants.PARAM_CONNECTION_ID, connection.getId());
-        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.START, bundle);
+        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.START);
         try {
-            prepareAndPutToCache(ftpClient.list(connection.getDir()));
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.OK, bundle);
+            prepareAndPutToCache(ftpClient.list(path));
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.OK);
         } catch (IOException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR, bundle);
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
             e.printStackTrace();
         } catch (FTPIllegalReplyException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR, bundle);
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
             e.printStackTrace();
         } catch (FTPException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR, bundle);
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
             e.printStackTrace();
         } catch (FTPDataTransferException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR, bundle);
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
             e.printStackTrace();
         } catch (FTPAbortedException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR, bundle);
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
             e.printStackTrace();
         } catch (FTPListParseException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR, bundle);
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
             e.printStackTrace();
         }
-        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.FINISH, bundle);
+        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.FINISH);
     }
 
     private void prepareAndPutToCache(FTPFile[] list) {

@@ -58,6 +58,7 @@ public class AddConActivity extends BaseActivity implements View.OnClickListener
         connection.setHost(binding.hostEditText.getText().toString());
         connection.setPort(binding.portEditText.getText().toString());
         connection.setDir(binding.dirEditText.getText().toString());
+        connection.setLocalDir(binding.ldirEditText.getText().toString());
         connection.setLogin(binding.loginEditText.getText().toString());
         connection.setPassw(binding.passwEditText.getText().toString());
         if(connection.getName().isEmpty()) return;

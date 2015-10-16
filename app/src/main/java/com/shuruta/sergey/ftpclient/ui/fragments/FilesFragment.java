@@ -17,12 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shuruta.sergey.ftpclient.Constants;
+import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.ui.DividerItemDecoration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,14 +44,12 @@ public abstract class FilesFragment extends Fragment {
     private boolean isSelected = false;
     protected Context mContext;
     private int listType;
-
+    //private String path = File.separator;
 
     public static final String TAG = FilesFragment.class.getSimpleName();
 
     public abstract List<FFile> getFiles();
-    public abstract void onRefreshList();
-    public abstract void onBack();
-    public abstract void onDirClick(FFile ftpFile);
+    public abstract void readList(String patch);
     public abstract void onFileClick(FFile ftpFile);
 
     private interface OnFileMenuClickListener {
@@ -62,8 +62,9 @@ public abstract class FilesFragment extends Fragment {
         mContext = activity;
     }
 
-    public void setListType(int listType) {
+    public void initList(int listType, String path) {
         this.listType = listType;
+        //this.path = path;
     }
 
     @Override
@@ -102,12 +103,15 @@ public abstract class FilesFragment extends Fragment {
         Log.d("TEST", "Event for: " + this.listType);
         switch (event.event) {
             case REFRESH:
-                if(isSelected)
-                    onRefreshList();
+                if(isSelected) {
+                    readList(CustomApplication.getInstance().getPath(listType));
+                }
                 break;
             case BACK:
-                if(isSelected)
-                    onBack();
+                if(isSelected) {
+                    backDir();
+                    readList(CustomApplication.getInstance().getPath(listType));
+                }
                 break;
             case START:
                 canDo = false;
@@ -191,22 +195,25 @@ public abstract class FilesFragment extends Fragment {
                 if(!canDo) return;
                 FFile file = files.get(getPosition());
                 if(file.isBackButton()) {
-                    onBack();
+                    backDir();
+                    readList(CustomApplication.getInstance().getPath(listType));
                 } else {
-                    if(file.isDir())
-                        onDirClick(file);
-                    if(file.isFile())
+                    if(file.isDir()) {
+                        addDir(file.getName());
+                        Log.d("TEST", "Path: " + CustomApplication.getInstance().getPath(listType));
+                        readList(CustomApplication.getInstance().getPath(listType));
+                    } else if(file.isFile()) {
                         onFileClick(file);
+                    }
                 }
             }
         }
     }
 
-    private void setSelected(boolean isSelecetd) {
-        this.isSelected = isSelecetd;
+    private void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
         mFileRecyclerView.setBackgroundColor(getResources().getColor(this.isSelected ? R.color.recyclerview_selected : R.color.recyclerview_not_selected));
     }
-
 
     private void displayList() {
         mFilesList.clear();
@@ -225,6 +232,28 @@ public abstract class FilesFragment extends Fragment {
     public void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
+    }
+
+    private void backDir() {
+        String path = CustomApplication.getInstance().getPath(listType);
+        if(path.isEmpty() || path.equals(File.separator)) return;
+        String[] dirs = path.split(File.separator);
+        path = File.separator;
+        for(String d : dirs) {
+            if(d.isEmpty()) continue;
+            if(dirs[dirs.length - 1].equals(d)) continue;
+            path += d + File.separator;
+        }
+        CustomApplication.getInstance().setPath(listType, path);
+    }
+
+    private void addDir(String dir) {
+        if(dir.isEmpty()) return;
+        String path = CustomApplication.getInstance().getPath(listType);
+        String[] dirs = path.split(File.separator);
+        if(0 != dirs.length && dirs[dirs.length - 1].equals(dir)) return;
+        path += dir + File.separator;
+        CustomApplication.getInstance().setPath(listType, path);
     }
 
 }
