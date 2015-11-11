@@ -29,6 +29,8 @@ public class LocalFilesFragment extends FilesFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("TEST", "Start read local list!");
+        readList(CustomApplication.getInstance().getPath(Constants.TYPE_LOCAL));
         initList(Constants.TYPE_LOCAL, CustomApplication.getInstance().getCurrentConnection().getLocalDir());
     }
 
@@ -86,8 +88,6 @@ public class LocalFilesFragment extends FilesFragment {
             EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.OK);
             EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.FINISH);
             return result;
-
-
         }
 
         @Override
