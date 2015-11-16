@@ -29,7 +29,6 @@ public class LocalFilesFragment extends FilesFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("TEST", "Start read local list!");
         readList(CustomApplication.getInstance().getPath(Constants.TYPE_LOCAL));
         initList(Constants.TYPE_LOCAL, CustomApplication.getInstance().getCurrentConnection().getLocalDir());
     }
@@ -82,20 +81,17 @@ public class LocalFilesFragment extends FilesFragment {
                 result = true;
             } catch (Exception e) {
                 e.printStackTrace();
-                EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.ERROR);
+                return false;
             }
             CacheManager.getInstance().putLocalFiles(files);
-            EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.OK);
-            EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.FINISH);
             return result;
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            if(!result) {
-
-            }
+            EventBusMessenger.sendLocalMessage(result ? EventBusMessenger.Event.OK : EventBusMessenger.Event.ERROR);
+            EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.FINISH);
         }
     }
 }

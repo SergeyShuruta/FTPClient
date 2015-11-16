@@ -5,13 +5,36 @@
     android:background="@color/theme_background"
     tools:context=".MainActivity">
 
+    <LinearLayout
+        android:id="@+id/pathContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View android:layout_width="match_parent" android:layout_height="2px" android:background="@color/divider" />
+
+        <TextView
+            android:id="@+id/patchTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/theme_default_primary"
+            android:textColor="@color/actionbar_text_secondary"
+            android:text="/test/second_text/www/url.../dir/"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp" />
+
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fileRecyclerView"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         style="@style/RecyclerView"
-        tools:context=".MainActivity"/>
+        tools:context=".MainActivity"
+        android:layout_below="@+id/pathContainer" />
 
     <TextView android:text="@string/hello_world"
         android:layout_width="match_parent"
