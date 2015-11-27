@@ -31,9 +31,9 @@ public class AddConActivity extends BaseActivity implements View.OnClickListener
         connection = new Connection(getIntent().getLongExtra(CONNECTION_ID, 0));
         binding.setConnection(connection);
 
-        setupToolBar(null,
-                R.string.app_name,
-                getString(connection.getId() == 0 ? R.string.new_connection : R.string.edit_connection_x, connection.getName()), true);
+        setupToolBar(R.string.app_name
+                ,getString(connection.getId() == 0 ? R.string.new_connection : R.string.edit_connection_x
+                ,connection.getName()), ToolBarButton.ACCEPT);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class AddConActivity extends BaseActivity implements View.OnClickListener
         connection.setHost(binding.hostEditText.getText().toString());
         connection.setPort(binding.portEditText.getText().toString());
         connection.setDir(binding.dirEditText.getText().toString());
-        connection.setLocalDir(binding.ldirEditText.getText().toString());
+        connection.setLocalDir(binding.dirEditText.getText().toString());
         connection.setLogin(binding.loginEditText.getText().toString());
         connection.setPassw(binding.passwEditText.getText().toString());
         if(connection.getName().isEmpty()) return;

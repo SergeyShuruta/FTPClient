@@ -8,7 +8,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.Constants;
-import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
@@ -19,17 +18,17 @@ import java.util.List;
  * Created by Sergey Shuruta
  * 08/15/15 at 22:11
  */
-public class FtpFilesFragment extends FilesFragment {
+public class FtpFragment extends FilesFragment {
 
     private FtpService mFtpConnectionService;
     private boolean bound;
 
-    public static final String TAG = FtpFilesFragment.class.getSimpleName();
+    public static final String TAG = FtpFragment.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initList(Constants.TYPE_FTP, CustomApplication.getInstance().getCurrentConnection().getDir());
+        initList(Constants.TYPE_FTP);
     }
 
     @Override
@@ -56,6 +55,12 @@ public class FtpFilesFragment extends FilesFragment {
     public void readList(String patch) {
 
         mFtpConnectionService.readList(patch);
+    }
+
+    @Override
+    public void disconnect() {
+        super.disconnect();
+        mFtpConnectionService.disconnect();
     }
 
     @Override

@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.5" />
 
-        <View android:layout_height="match_parent" android:layout_width="2px" android:background="@color/divider" />
+        <View android:layout_height="match_parent" android:layout_width="2px" android:background="@color/theme_default_primary_dark" />
 
         <FrameLayout
             android:id="@+id/localFrameLayout"

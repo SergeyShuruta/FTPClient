@@ -10,6 +10,7 @@ import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.tasks.ConnectionTask;
+import com.shuruta.sergey.ftpclient.tasks.DisconnectTask;
 import com.shuruta.sergey.ftpclient.tasks.ReadListTask;
 
 import java.util.concurrent.ExecutorService;
@@ -22,7 +23,6 @@ import it.sauronsoftware.ftp4j.FTPCommunicationListener;
  */
 public class FtpService extends Service {
 
-    private Connection connection;
     ExecutorService executorService;
     private FTPClient ftpClient;
 
@@ -56,7 +56,6 @@ public class FtpService extends Service {
 
     public void startConnection(Connection connection) {
         Log.d(TAG, "startConnection()");
-        this.connection = connection;
         executorService.execute(new ConnectionTask(this, ftpClient, connection));
     }
 
@@ -77,10 +76,10 @@ public class FtpService extends Service {
         executorService.execute(new ReadListTask(this, ftpClient, path));
     }
 
-/*    public void disconnect() {
+    public void disconnect() {
         Log.d(TAG, "disconnect()");
-        mFTPManager.disconnect();
-    }*/
+        executorService.execute(new DisconnectTask(this, ftpClient));
+    }
 
     FTPCommunicationListener ftpCommunicationListener = new FTPCommunicationListener()
     {

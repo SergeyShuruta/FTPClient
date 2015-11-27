@@ -11,14 +11,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <View android:layout_width="match_parent" android:layout_height="2px" android:background="@color/divider" />
+        <View android:layout_width="match_parent" android:layout_height="2px" android:background="@color/theme_default_primary_dark" />
 
         <TextView
             android:id="@+id/patchTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/theme_default_primary"
-            android:textColor="@color/actionbar_text_secondary"
+            android:textColor="@color/toolbar_text_secondary"
             android:text="/test/second_text/www/url.../dir/"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"

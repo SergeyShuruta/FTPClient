@@ -2,7 +2,6 @@ package com.shuruta.sergey.ftpclient.ui.activitys;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.support.v7.app.AppCompatActivity;
 
 import com.shuruta.sergey.ftpclient.R;
@@ -15,24 +14,37 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected Toolbar mToolbar = null;
 
+    public enum ToolBarButton {
+        ACCEPT,
+        BACK,
+        CLOSE
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-    public void setupToolBar(Integer logoRes, Integer titleRes, String subTitleRes, boolean isBacked) {
+    public void setupToolBar(Integer titleRes, String subTitleRes, ToolBarButton toolBarButton) {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(null != logoRes) mToolbar.setLogo(logoRes);
         if(null != titleRes) mToolbar.setTitle(titleRes);
         if(null != subTitleRes) mToolbar.setSubtitle(subTitleRes);
-        mToolbar.setTitleTextColor(getResources().getColor(R.color.actionbar_text_primary));
-        mToolbar.setSubtitleTextColor(getResources().getColor(R.color.actionbar_text_secondary));
+        mToolbar.setTitleTextColor(getResources().getColor(R.color.toolbar_text_primary));
+        mToolbar.setSubtitleTextColor(getResources().getColor(R.color.toolbar_text_secondary));
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(isBacked);
-        if (isBacked) {
-            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        if(null != toolBarButton) {
+            switch (toolBarButton) {
+                case ACCEPT:
+                    getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_accept);
+                    break;
+                case BACK:
+                    getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_cancel);
+                    break;
+                case CLOSE:
+                    getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_remove);
+                    break;
+            }
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 

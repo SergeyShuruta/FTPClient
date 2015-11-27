@@ -47,7 +47,7 @@
         <item name="selectableItemBackground">@color/theme_default_primary_dark</item>
         <!--<item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
         <item name="colorControlHighlight">@color/colorSecondary</item>-->
-        <item name="colorControlHighlight">@color/actionbar_text_primary</item>
+        <item name="colorControlHighlight">@color/toolbar_text_primary</item>
 
         <item name="android:background">@color/theme_default_primary</item>
     </style>

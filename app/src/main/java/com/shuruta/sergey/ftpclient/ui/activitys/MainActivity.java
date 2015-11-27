@@ -56,7 +56,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        setupToolBar(R.drawable.ic_launcher, R.string.app_name, getString(R.string.list_of_connections), false);
+        setupToolBar(R.string.app_name, getString(R.string.list_of_connections), null);
         initUI();
     }
 

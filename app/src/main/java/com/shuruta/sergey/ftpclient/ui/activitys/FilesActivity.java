@@ -2,20 +2,16 @@ package com.shuruta.sergey.ftpclient.ui.activitys;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.shuruta.sergey.ftpclient.Constants;
-import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.R;
-import com.shuruta.sergey.ftpclient.ui.fragments.FtpFilesFragment;
+import com.shuruta.sergey.ftpclient.ui.fragments.FtpFragment;
 import com.shuruta.sergey.ftpclient.ui.fragments.FilesFragment;
-import com.shuruta.sergey.ftpclient.ui.fragments.LocalFilesFragment;
-
-import de.greenrobot.event.EventBus;
+import com.shuruta.sergey.ftpclient.ui.fragments.LocalFragment;
 
 /**
  * Author: Sergey Shuruta
@@ -32,13 +28,13 @@ public class FilesActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files);
-        setupToolBar(R.drawable.ic_launcher, R.string.app_name, getString(R.string.list_of_connections), false);
+        setupToolBar(R.string.app_name, getString(R.string.list_of_connections), ToolBarButton.CLOSE);
 
-        mFtpFilesFragment = new FtpFilesFragment();
+        mFtpFilesFragment = new FtpFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.ftpFrameLayout, mFtpFilesFragment);
         if(null != findViewById(R.id.localFrameLayout)) {
-            mLocalFilesFragment = new LocalFilesFragment();
+            mLocalFilesFragment = new LocalFragment();
             fragmentTransaction.replace(R.id.localFrameLayout, mLocalFilesFragment);
         }
         fragmentTransaction.commit();
@@ -56,6 +52,9 @@ public class FilesActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                EventBusMessenger.sendMessage(Constants.TYPE_FTP, EventBusMessenger.Event.CLOSE);
+                return true;
             case R.id.action_refresh:
                 EventBusMessenger.sendMessage(Constants.TYPE_FTP,EventBusMessenger.Event.REFRESH);
                 EventBusMessenger.sendMessage(Constants.TYPE_LOCAL, EventBusMessenger.Event.REFRESH);

@@ -52,6 +52,10 @@ public abstract class FilesFragment extends Fragment {
     public abstract void readList(String patch);
     public abstract void onFileClick(FFile ftpFile);
 
+    public void disconnect() {
+
+    }
+
     private interface OnFileMenuClickListener {
         public void onMenuClick(View view, Connection connection);
     }
@@ -62,9 +66,8 @@ public abstract class FilesFragment extends Fragment {
         mContext = activity;
     }
 
-    public void initList(int listType, String path) {
+    public void initList(int listType) {
         this.listType = listType;
-        //this.path = path;
     }
 
     @Override
@@ -123,6 +126,14 @@ public abstract class FilesFragment extends Fragment {
                 Toast.makeText(getActivity(), R.string.connection_error, Toast.LENGTH_SHORT).show();
             case FINISH:
                 canDo = true;
+                break;
+            case CLOSE:
+                disconnect();
+                break;
+            case DISCONNECT_ERROR:
+                Toast.makeText(mContext, getString(R.string.disconnect_error), Toast.LENGTH_SHORT).show();
+            case DISCONNECT:
+                getActivity().finish();
                 break;
         }
     }
@@ -188,7 +199,7 @@ public abstract class FilesFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                if(!isSelected) {
+                if (!isSelected) {
                     EventBusMessenger.sendMessage(FilesFragment.this.listType, EventBusMessenger.Event.SELECT);
                     return;
                 }

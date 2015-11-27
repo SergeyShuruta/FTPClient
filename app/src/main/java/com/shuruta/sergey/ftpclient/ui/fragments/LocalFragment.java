@@ -2,8 +2,6 @@ package com.shuruta.sergey.ftpclient.ui.fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
@@ -22,15 +20,15 @@ import java.util.List;
  * Created by Sergey Shuruta
  * 08/15/15 at 22:11
  */
-public class LocalFilesFragment extends FilesFragment {
+public class LocalFragment extends FilesFragment {
 
-    public static final String TAG = LocalFilesFragment.class.getSimpleName();
+    public static final String TAG = LocalFragment.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         readList(CustomApplication.getInstance().getPath(Constants.TYPE_LOCAL));
-        initList(Constants.TYPE_LOCAL, CustomApplication.getInstance().getCurrentConnection().getLocalDir());
+        initList(Constants.TYPE_LOCAL);
     }
 
     @Override

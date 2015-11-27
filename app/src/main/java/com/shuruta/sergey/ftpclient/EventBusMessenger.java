@@ -69,5 +69,8 @@ public class EventBusMessenger {
         SELECT,
         REFRESH,
         BACK,
+        CLOSE,
+        DISCONNECT,
+        DISCONNECT_ERROR,
     }
 }
