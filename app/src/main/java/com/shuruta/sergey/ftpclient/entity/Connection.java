@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableField;
+import android.os.Environment;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.BR;
@@ -69,7 +70,11 @@ public class Connection extends BaseObservable {
     }
 
     public Connection(Cursor cursor) {
-        if(null == cursor) return;
+        if(null == cursor) {
+            this.dir = File.separator;
+            this.ldir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+            return;
+        }
         this.id = cursor.getLong(cursor.getColumnIndex(Connection._ID));
         this.name = cursor.getString(cursor.getColumnIndex(Connection.NAME));
         this.host = cursor.getString(cursor.getColumnIndex(Connection.HOST));
@@ -190,7 +195,8 @@ public class Connection extends BaseObservable {
         values.put(NAME,  name);
         values.put(HOST,  host);
         values.put(PORT,  port);
-        values.put(DIR,  dir);
+        values.put(DIR,  prepareDir(dir));
+        values.put(L_DIR,  prepareDir(ldir));
         values.put(LOGIN, login);
         values.put(PASSW, passw);
         values.put(DATE, Calendar.getInstance().getTimeInMillis() / 1000);
@@ -212,6 +218,13 @@ public class Connection extends BaseObservable {
 
     public void save() {
         CustomApplication.getInstance().getDatabaseAdapter().saveConnection(this);
+    }
+
+    private String prepareDir(String dir) {
+        if(null == dir || dir.isEmpty()) dir = File.separator;
+        if(!dir.substring(dir.length()-1).equals(File.separator)) dir = dir.concat(File.separator);
+        if(!dir.substring(0, 1).equals(File.separator)) dir = File.separator.concat(dir);
+        return dir;
     }
 
 }

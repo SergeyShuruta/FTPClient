@@ -36,6 +36,7 @@ import de.greenrobot.event.EventBus;
  */
 public abstract class FilesFragment extends Fragment {
 
+    private TextView mPatchTextView;
     private RecyclerView mFileRecyclerView;
     private FFileAdapter mFileAdapter;
 
@@ -44,7 +45,6 @@ public abstract class FilesFragment extends Fragment {
     private boolean isSelected = false;
     protected Context mContext;
     private int listType;
-    //private String path = File.separator;
 
     public static final String TAG = FilesFragment.class.getSimpleName();
 
@@ -73,6 +73,7 @@ public abstract class FilesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_files_list, null);
+        mPatchTextView = (TextView) view.findViewById(R.id.patchTextView);
         mFileRecyclerView = (RecyclerView) view.findViewById(R.id.fileRecyclerView);
         mFileRecyclerView.setHasFixedSize(true);
         mFileRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
@@ -106,15 +107,13 @@ public abstract class FilesFragment extends Fragment {
         Log.d("TEST", "Event for: " + this.listType);
         switch (event.event) {
             case REFRESH:
-                if(isSelected) {
-                    readList(CustomApplication.getInstance().getPath(listType));
-                }
+                if(!isSelected) break;
+                readList(CustomApplication.getInstance().getPath(listType));
                 break;
             case BACK:
-                if(isSelected) {
-                    backDir();
-                    readList(CustomApplication.getInstance().getPath(listType));
-                }
+                if(!isSelected) break;
+                backDir();
+                readList(CustomApplication.getInstance().getPath(listType));
                 break;
             case START:
                 canDo = false;
@@ -123,7 +122,13 @@ public abstract class FilesFragment extends Fragment {
                 displayList();
                 break;
             case ERROR:
-                Toast.makeText(getActivity(), R.string.connection_error, Toast.LENGTH_SHORT).show();
+                if(!isSelected) break;
+                backDir();
+                Toast.makeText(getActivity(),
+                        this.listType == Constants.TYPE_FTP
+                        ? R.string.connection_error
+                        : R.string.read_error,
+                        Toast.LENGTH_SHORT).show();
             case FINISH:
                 canDo = true;
                 break;
@@ -230,6 +235,7 @@ public abstract class FilesFragment extends Fragment {
         mFilesList.clear();
         mFilesList.addAll(getFiles());
         mFileAdapter.notifyDataSetChanged();
+        mPatchTextView.setText(CustomApplication.getInstance().getPath(listType));
     }
 
     @Override

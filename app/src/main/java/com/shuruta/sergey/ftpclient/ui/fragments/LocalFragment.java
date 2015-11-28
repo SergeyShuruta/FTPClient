@@ -57,7 +57,7 @@ public class LocalFragment extends FilesFragment {
 
         @Override
         protected Boolean doInBackground(String... params) {
-            boolean result = false;
+            boolean result;
             List<FFile> files = new ArrayList<>();
             try {
                 String path = params[0];
