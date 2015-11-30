@@ -20,11 +20,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         CLOSE
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     public void setupToolBar(Integer titleRes, String subTitleRes, ToolBarButton toolBarButton) {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if(null != titleRes) mToolbar.setTitle(titleRes);

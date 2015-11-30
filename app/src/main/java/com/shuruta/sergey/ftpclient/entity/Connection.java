@@ -7,12 +7,15 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableField;
 import android.os.Environment;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.BR;
 import com.shuruta.sergey.ftpclient.CustomApplication;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -20,7 +23,7 @@ import java.util.List;
 /**
  * Created by Sergey on 24.07.2015.
  */
-public class Connection extends BaseObservable {
+public class Connection extends BaseObservable implements Parcelable {
 
     public static final String TABLE = "connections";
 
@@ -33,7 +36,6 @@ public class Connection extends BaseObservable {
     public static final String LOGIN = "login";
     public static final String PASSW = "password";
     public static final String DATE  = "date";
-
 
     public static String getCreateTableSQL() {
 
@@ -49,6 +51,17 @@ public class Connection extends BaseObservable {
                     + Connection.DATE     + " INTEGER NOT NULL"
                 + ")";
     }
+
+    public static final Parcelable.Creator<Connection> CREATOR = new Parcelable.Creator<Connection>() {
+
+        public Connection createFromParcel(Parcel in) {
+            return new Connection(in);
+        }
+
+        public Connection[] newArray(int size) {
+            return new Connection[size];
+        }
+    };
 
     private long    id;
     private String  name;
@@ -83,6 +96,18 @@ public class Connection extends BaseObservable {
         this.ldir = cursor.getString(cursor.getColumnIndex(Connection.L_DIR));
         this.login = cursor.getString(cursor.getColumnIndex(Connection.LOGIN));
         this.passw = cursor.getString(cursor.getColumnIndex(Connection.PASSW));
+    }
+
+    private Connection(Parcel parcel) {
+        id = parcel.readLong();
+        name = parcel.readString();
+        host = parcel.readString();
+        port = parcel.readInt();
+        dir = parcel.readString();
+        ldir = parcel.readString();
+        login = parcel.readString();
+        passw = parcel.readString();
+        parcel.readBooleanArray(new boolean[]{isChanged, isActive});
     }
 
     public long getId() {
@@ -225,6 +250,28 @@ public class Connection extends BaseObservable {
         if(!dir.substring(dir.length()-1).equals(File.separator)) dir = dir.concat(File.separator);
         if(!dir.substring(0, 1).equals(File.separator)) dir = File.separator.concat(dir);
         return dir;
+    }
+
+    public boolean isCanSave() {
+        return this.name != null && this.name.length() > 0;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(name);
+        dest.writeString(host);
+        dest.writeInt(port);
+        dest.writeString(dir);
+        dest.writeString(ldir);
+        dest.writeString(login);
+        dest.writeString(passw);
+        dest.writeBooleanArray(new boolean[]{isChanged, isActive});
     }
 
 }
