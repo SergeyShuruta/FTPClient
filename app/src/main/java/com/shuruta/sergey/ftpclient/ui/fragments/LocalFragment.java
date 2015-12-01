@@ -1,3 +1,4 @@
+/*
 package com.shuruta.sergey.ftpclient.ui.fragments;
 
 import android.os.AsyncTask;
@@ -16,10 +17,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+*/
 /**
  * Created by Sergey Shuruta
  * 08/15/15 at 22:11
- */
+ *//*
+
 public class LocalFragment extends FilesFragment {
 
     public static final String TAG = LocalFragment.class.getSimpleName();
@@ -93,3 +96,4 @@ public class LocalFragment extends FilesFragment {
         }
     }
 }
+*/

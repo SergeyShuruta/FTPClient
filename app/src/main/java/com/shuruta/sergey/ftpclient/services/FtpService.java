@@ -7,11 +7,13 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.Constants;
-import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.tasks.ConnectionTask;
 import com.shuruta.sergey.ftpclient.tasks.DisconnectTask;
-import com.shuruta.sergey.ftpclient.tasks.ReadListTask;
+import com.shuruta.sergey.ftpclient.tasks.FtpReadListTask;
+import com.shuruta.sergey.ftpclient.tasks.LocalReadListTask;
+import com.shuruta.sergey.ftpclient.tasks.Task;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,7 +34,6 @@ public class FtpService extends Service {
     public void onCreate() {
         super.onCreate();
         this.ftpClient = new FTPClient();
-        this.ftpClient.setType(FTPClient.TYPE_BINARY);
         this.ftpClient.addCommunicationListener(ftpCommunicationListener);
         executorService = Executors.newFixedThreadPool(10);
     }
@@ -59,21 +60,13 @@ public class FtpService extends Service {
         executorService.execute(new ConnectionTask(this, ftpClient, connection));
     }
 
-/*    public void readList() {
-        readList(new String());
-    }*/
-
-/*
-    public void back() {
-        Log.d(TAG, "back()");
-        connection.backDir();
-        executorService.execute(new ReadListTask(this, ftpClient, connection));
-    }
-*/
-
-    public void readList(String path) {
-        Log.d(TAG, "readList(" + path + ")");
-        executorService.execute(new ReadListTask(this, ftpClient, path));
+    public void readList(int listType) {
+        Log.d(TAG, "readList(" + listType + ")");
+        String path = CustomApplication.getInstance().getPath(listType);
+        Task task = listType == Constants.TYPE_FTP
+                ? new FtpReadListTask(this, ftpClient, path)
+                : new LocalReadListTask(this, path);
+        executorService.execute(task);
     }
 
     public void disconnect() {

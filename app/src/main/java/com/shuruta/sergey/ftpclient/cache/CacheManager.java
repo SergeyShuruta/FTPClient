@@ -2,6 +2,7 @@ package com.shuruta.sergey.ftpclient.cache;
 
 import android.util.Log;
 
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.util.ArrayList;
@@ -30,24 +31,19 @@ public class CacheManager {
         return instance;
     }
 
-    public List<FFile> getFtpFiles() {
-        return new ArrayList<FFile>(this.ftpFiles);
+    public List<FFile> getFiles(int listType) {
+        return new ArrayList<FFile>(listType == Constants.TYPE_FTP ? this.ftpFiles : this.localFiles);
     }
 
-    public List<FFile> getLocalFiles() {
-        return new ArrayList<FFile>(localFiles);
-    }
-
-
-    public void putFtpFiles(List<FFile> ftpFiles) {
-        this.ftpFiles.clear();
-        this.ftpFiles.addAll(ftpFiles);
-        Log.d("TEST", "Put ftp files: " + this.ftpFiles.size());
-    }
-
-    public void putLocalFiles(List<FFile> localFiles) {
-        Log.d(TAG, "Put local files: " + localFiles.size());
-        this.localFiles.clear();
-        this.localFiles.addAll(localFiles);
+    public void putFiles(List<FFile> ftpFiles, int listType) {
+        if(listType == Constants.TYPE_FTP) {
+            this.ftpFiles.clear();
+            this.ftpFiles.addAll(ftpFiles);
+            Log.d("TEST", "Put ftp files: " + this.ftpFiles.size());
+        } else if(listType == Constants.TYPE_LOCAL) {
+            this.localFiles.clear();
+            this.localFiles.addAll(ftpFiles);
+            Log.d("TEST", "Put local files: " + this.localFiles.size());
+        }
     }
 }

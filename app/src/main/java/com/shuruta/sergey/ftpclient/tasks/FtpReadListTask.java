@@ -1,11 +1,16 @@
 package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
+import android.os.Bundle;
+
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
+import com.shuruta.sergey.ftpclient.utils.Utils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,14 +29,14 @@ import it.sauronsoftware.ftp4j.FTPListParseException;
  * Date: 08/15/15
  * Time: 22:11
  */
-public class ReadListTask extends Task {
+public class FtpReadListTask extends Task {
 
     private final FTPClient ftpClient;
     private final String path;
 
-    public static final String TAG = FtpService.TAG + "." + ReadListTask.class.getSimpleName();
+    public static final String TAG = FtpService.TAG + "." + FtpReadListTask.class.getSimpleName();
 
-    public ReadListTask(Context context, FTPClient ftpClient, String path) {
+    public FtpReadListTask(Context context, FTPClient ftpClient, String path) {
         super(context);
         this.ftpClient = ftpClient;
         this.path = path;
@@ -40,47 +45,41 @@ public class ReadListTask extends Task {
     @Override
     public void run() {
         EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.START);
+        Bundle bundle = new Bundle();
         try {
-            prepareAndPutToCache(ftpClient.list(path));
+            FTPFile[] filesArray = ftpClient.list(path);
+            List<FFile> files = new ArrayList<>();
+            for(int i = 0; i < filesArray.length; i++) {
+                if(filesArray[i].getName().equals("..")) continue;
+                files.add(FTPFileAdapter.create(filesArray[i]));
+            }
+            Utils.sortFiles(files);
+            CacheManager.getInstance().putFiles(files, Constants.TYPE_FTP);
             EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.OK);
         } catch (IOException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
         } catch (FTPIllegalReplyException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
         } catch (FTPException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
         } catch (FTPDataTransferException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
         } catch (FTPAbortedException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
         } catch (FTPListParseException e) {
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR);
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
         }
+        if(bundle.containsKey(EventBusMessenger.MSG))
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR, bundle);
         EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.FINISH);
-    }
-
-    private void prepareAndPutToCache(FTPFile[] list) {
-        List<FFile> ftpFiles = new ArrayList<>();
-        for(int i = 0; i < list.length; i++) {
-            if(list[i].getName().equals("..")) continue;
-            ftpFiles.add(FTPFileAdapter.create(list[i]));
-        }
-        Collections.sort(ftpFiles, new Comparator<FFile>() {
-            @Override
-            public int compare(final FFile object1, final FFile object2) {
-                if (object1.isDir() && object2.isFile())
-                    return -1;
-                if (object1.isFile() && object2.isDir())
-                    return 1;
-                return object1.getName().compareTo(object2.getName());
-            }
-        });
-        CacheManager.getInstance().putFtpFiles(ftpFiles);
     }
 }

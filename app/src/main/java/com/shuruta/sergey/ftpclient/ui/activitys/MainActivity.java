@@ -109,7 +109,7 @@ public class MainActivity extends BaseActivity {
                     connectionsAdapter.notifyDataSetChanged();
                     break;
                 case OK:
-                    mFtpConnectionService.readList(connection.getDir());
+                    mFtpConnectionService.readList(Constants.TYPE_FTP);
                     break;
                 case ERROR:
                     Toast.makeText(MainActivity.this, R.string.connection_error, Toast.LENGTH_SHORT).show();

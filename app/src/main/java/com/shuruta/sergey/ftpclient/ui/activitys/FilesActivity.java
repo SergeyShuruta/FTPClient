@@ -9,9 +9,7 @@ import android.view.MenuItem;
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.R;
-import com.shuruta.sergey.ftpclient.ui.fragments.FtpFragment;
 import com.shuruta.sergey.ftpclient.ui.fragments.FilesFragment;
-import com.shuruta.sergey.ftpclient.ui.fragments.LocalFragment;
 
 /**
  * Author: Sergey Shuruta
@@ -29,12 +27,18 @@ public class FilesActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files);
         setupToolBar(R.string.app_name, getString(R.string.list_of_connections), ToolBarButton.CLOSE);
-
-        mFtpFilesFragment = new FtpFragment();
+        Bundle argsFtp = new Bundle();
+        argsFtp.putInt(FilesFragment.LIST_TYPE, Constants.TYPE_FTP);
+        argsFtp.putBoolean(FilesFragment.IS_SELECTED, true);
+        mFtpFilesFragment = new FilesFragment();
+        mFtpFilesFragment.setArguments(argsFtp);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.ftpFrameLayout, mFtpFilesFragment);
         if(null != findViewById(R.id.localFrameLayout)) {
-            mLocalFilesFragment = new LocalFragment();
+            Bundle argsLocal = new Bundle();
+            argsLocal.putInt(FilesFragment.LIST_TYPE, Constants.TYPE_LOCAL);
+            mLocalFilesFragment = new FilesFragment();
+            mLocalFilesFragment.setArguments(argsLocal);
             fragmentTransaction.replace(R.id.localFrameLayout, mLocalFilesFragment);
         }
         fragmentTransaction.commit();
@@ -63,18 +67,6 @@ public class FilesActivity extends BaseActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        EventBus.getDefault().register(this);
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        EventBus.getDefault().unregister(this);
-//    }
 
     @Override
     public void onBackPressed() {

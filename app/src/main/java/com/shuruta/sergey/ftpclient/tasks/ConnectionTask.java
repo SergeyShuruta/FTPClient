@@ -41,7 +41,8 @@ public class ConnectionTask extends Task {
         EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.START, bundle);
 
         try {
-            ftpClient.connect(connection.getHost(), connection.getPort());
+            if(!ftpClient.isConnected())
+                ftpClient.connect(connection.getHost(), connection.getPort());
             ftpClient.login(connection.getLogin(), connection.getPassw());
             ftpClient.setType(FTPClient.TYPE_BINARY);
             ftpClient.changeDirectory(File.separator);

@@ -27,6 +27,23 @@ public class DialogFactory {
             }
         });
     }
+
+    public static void showMessage(Context context, String message) {
+        showMessage(context, message, null);
+    }
+
+    public static void showMessage(Context context, String message, DialogInterface.OnClickListener okListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(message)
+                .setPositiveButton(R.string.ok, okListener == null ? new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                } : okListener);
+        builder.create().show();
+    }
+
     public static void showDialog(Context context, int message, int positiveMsg, int negativeMsg, DialogInterface.OnClickListener okListener, DialogInterface.OnClickListener cancelListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(message)

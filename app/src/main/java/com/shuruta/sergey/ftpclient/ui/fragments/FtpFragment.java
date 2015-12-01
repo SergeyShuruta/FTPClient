@@ -1,3 +1,4 @@
+/*
 package com.shuruta.sergey.ftpclient.ui.fragments;
 
 import android.content.ComponentName;
@@ -14,10 +15,12 @@ import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.util.List;
 
+*/
 /**
  * Created by Sergey Shuruta
  * 08/15/15 at 22:11
- */
+ *//*
+
 public class FtpFragment extends FilesFragment {
 
     private FtpService mFtpConnectionService;
@@ -28,10 +31,11 @@ public class FtpFragment extends FilesFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initList(Constants.TYPE_FTP);
+        //initList(Constants.TYPE_FTP);
     }
 
-    @Override
+*/
+/*    @Override
     public void onStart() {
         super.onStart();
         mContext.bindService(new Intent(mContext, FtpService.class), mServiceConnection, 0);
@@ -43,32 +47,40 @@ public class FtpFragment extends FilesFragment {
         if (!bound) return;
         mContext.unbindService(mServiceConnection);
         bound = false;
-    }
+    }*//*
 
-    @Override
+
+*/
+/*    @Override
     public List<FFile> getFiles() {
 
-        return CacheManager.getInstance().getFtpFiles();
-    }
+        return CacheManager.getInstance().getFiles();
+    }*//*
 
-    @Override
+
+*/
+/*    @Override
     public void readList(String patch) {
 
         mFtpConnectionService.readList(patch);
-    }
+    }*//*
 
-    @Override
+
+*/
+/*    @Override
     public void disconnect() {
         super.disconnect();
         mFtpConnectionService.disconnect();
-    }
+    }*//*
+
 
     @Override
     public void onFileClick(FFile ftpFile) {
 
     }
 
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
+*/
+/*    private ServiceConnection mServiceConnection = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName name, IBinder binder) {
             Log.d(TAG, "onServiceConnected()");
@@ -80,5 +92,7 @@ public class FtpFragment extends FilesFragment {
             Log.d(TAG, "onServiceDisconnected()");
             bound = false;
         }
-    };
+    };*//*
+
 }
+*/

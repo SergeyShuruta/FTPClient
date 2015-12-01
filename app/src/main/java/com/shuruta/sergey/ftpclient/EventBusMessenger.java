@@ -15,6 +15,8 @@ public class EventBusMessenger {
     public final Event event;
     public final Bundle bundle;
 
+    public static final String MSG = "message";
+
     public static void sendMessage(int type, Event event, Bundle bundle) {
         EventBus.getDefault().post(new EventBusMessenger(type, event, bundle));
     }
@@ -70,7 +72,7 @@ public class EventBusMessenger {
         REFRESH,
         BACK,
         CLOSE,
-        DISCONNECT,
+        DISCONNECTED,
         DISCONNECT_ERROR,
     }
 }
