@@ -41,11 +41,21 @@ public class ConnectionTask extends Task {
         EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.START, bundle);
 
         try {
-            if(!ftpClient.isConnected())
-                ftpClient.connect(connection.getHost(), connection.getPort());
+            if(ftpClient.isConnected()) {
+                ftpClient.disconnect(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ftpClient.connect(connection.getHost(), connection.getPort());
+            ftpClient.setPassive(true);
+            ftpClient.setAutoNoopTimeout(connection.getNoop() * 1000);
             ftpClient.login(connection.getLogin(), connection.getPassw());
             ftpClient.setType(FTPClient.TYPE_BINARY);
             ftpClient.changeDirectory(File.separator);
+            ftpClient.setCompressionEnabled(ftpClient.isCompressionSupported());
         } catch (IOException e) {
             e.printStackTrace();
             EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);

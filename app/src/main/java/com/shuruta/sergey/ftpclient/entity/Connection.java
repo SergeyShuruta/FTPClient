@@ -12,6 +12,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.BR;
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
 
 import java.io.File;
@@ -35,6 +36,7 @@ public class Connection extends BaseObservable implements Parcelable {
     public static final String L_DIR = "local_dir";
     public static final String LOGIN = "login";
     public static final String PASSW = "password";
+    public static final String NOOP  = "noop";
     public static final String DATE  = "date";
 
     public static String getCreateTableSQL() {
@@ -48,6 +50,7 @@ public class Connection extends BaseObservable implements Parcelable {
                     + Connection.L_DIR    + " TEXT NOT NULL DEFAULT '" + File.separator + "',"
                     + Connection.LOGIN    + " TEXT,"
                     + Connection.PASSW    + " TEXT, "
+                    + Connection.NOOP     + " INTEGER NOT NULL,"
                     + Connection.DATE     + " INTEGER NOT NULL"
                 + ")";
     }
@@ -71,6 +74,7 @@ public class Connection extends BaseObservable implements Parcelable {
     private String  ldir;
     private String  login;
     private String  passw;
+    private int     noop;
 
     private boolean isChanged = false;
     private boolean isActive = false;
@@ -86,16 +90,18 @@ public class Connection extends BaseObservable implements Parcelable {
         if(null == cursor) {
             this.dir = File.separator;
             this.ldir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+            this.noop = Constants.NOOP_TIMEOUT_DEFAULT;
             return;
         }
-        this.id = cursor.getLong(cursor.getColumnIndex(Connection._ID));
-        this.name = cursor.getString(cursor.getColumnIndex(Connection.NAME));
-        this.host = cursor.getString(cursor.getColumnIndex(Connection.HOST));
-        this.port = cursor.getInt(cursor.getColumnIndex(Connection.PORT));
-        this.dir = cursor.getString(cursor.getColumnIndex(Connection.DIR));
-        this.ldir = cursor.getString(cursor.getColumnIndex(Connection.L_DIR));
+        this.id    = cursor.getLong(cursor.getColumnIndex(Connection._ID));
+        this.name  = cursor.getString(cursor.getColumnIndex(Connection.NAME));
+        this.host  = cursor.getString(cursor.getColumnIndex(Connection.HOST));
+        this.port  = cursor.getInt(cursor.getColumnIndex(Connection.PORT));
+        this.dir   = cursor.getString(cursor.getColumnIndex(Connection.DIR));
+        this.ldir  = cursor.getString(cursor.getColumnIndex(Connection.L_DIR));
         this.login = cursor.getString(cursor.getColumnIndex(Connection.LOGIN));
         this.passw = cursor.getString(cursor.getColumnIndex(Connection.PASSW));
+        this.noop  = cursor.getInt(cursor.getColumnIndex(Connection.NOOP));
     }
 
     private Connection(Parcel parcel) {
@@ -107,6 +113,7 @@ public class Connection extends BaseObservable implements Parcelable {
         ldir = parcel.readString();
         login = parcel.readString();
         passw = parcel.readString();
+        noop = parcel.readInt();
         parcel.readBooleanArray(new boolean[]{isChanged, isActive});
     }
 
@@ -142,6 +149,10 @@ public class Connection extends BaseObservable implements Parcelable {
         return passw;
     }
 
+    public int getNoop() {
+        return noop;
+    }
+
     @Bindable
     public void setName(String name) {
         this.name = name;
@@ -159,6 +170,7 @@ public class Connection extends BaseObservable implements Parcelable {
         setPort(port.length() > 0 ? Integer.parseInt(port) : 0);
    }
 
+    @Bindable
     public void setPort(int port) {
         this.port = port;
         notifyPropertyChanged(BR.port);
@@ -169,7 +181,6 @@ public class Connection extends BaseObservable implements Parcelable {
         this.dir = dir;
         notifyPropertyChanged(BR.dir);
     }
-
 
     @Bindable
     public void setLocalDir(String ldir) {
@@ -187,6 +198,12 @@ public class Connection extends BaseObservable implements Parcelable {
     public void setPassw(String passw) {
         this.passw = passw;
         notifyPropertyChanged(BR.passw);
+    }
+
+    @Bindable
+    public void setNoop(int noop) {
+        this.noop = noop;
+        notifyPropertyChanged(BR.noop);
     }
 
     public boolean isNewRow() {
@@ -220,11 +237,12 @@ public class Connection extends BaseObservable implements Parcelable {
         values.put(NAME,  name);
         values.put(HOST,  host);
         values.put(PORT,  port);
-        values.put(DIR,  prepareDir(dir));
-        values.put(L_DIR,  prepareDir(ldir));
+        values.put(DIR,   prepareDir(dir));
+        values.put(L_DIR, prepareDir(ldir));
         values.put(LOGIN, login);
         values.put(PASSW, passw);
-        values.put(DATE, Calendar.getInstance().getTimeInMillis() / 1000);
+        values.put(NOOP,  noop);
+        values.put(DATE,  Calendar.getInstance().getTimeInMillis() / 1000);
         return values;
     }
 
@@ -271,6 +289,7 @@ public class Connection extends BaseObservable implements Parcelable {
         dest.writeString(ldir);
         dest.writeString(login);
         dest.writeString(passw);
+        dest.writeInt(noop);
         dest.writeBooleanArray(new boolean[]{isChanged, isActive});
     }
 

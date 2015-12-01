@@ -29,5 +29,6 @@
     <string name="edit_connection_x">Edit: %s</string>
     <string name="disconnect_error">Disconnect error!</string>
     <string name="read_error">Read error</string>
+    <string name="form_noop">Noop Timeout:</string>
 
 </resources>

@@ -135,6 +135,23 @@
                     style="@style/FormEditText"
                     android:text="@{connection.getPassw()}"
                     android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FormTextView"
+                    android:text="@string/form_noop"
+                    android:singleLine="true" />
+
+                <EditText
+                    android:id="@+id/noopEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/FormEditText"
+                    android:text="@{String.valueOf(connection.getNoop())}"
+                    android:singleLine="true"
+                    android:numeric="integer"
+                    android:inputType="number" />
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>
