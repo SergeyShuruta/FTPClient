@@ -46,4 +46,9 @@ public class CacheManager {
             Log.d("TEST", "Put local files: " + this.localFiles.size());
         }
     }
+
+    public void clearCache() {
+        this.ftpFiles.clear();
+        this.localFiles.clear();
+    }
 }

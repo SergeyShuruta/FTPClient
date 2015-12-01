@@ -158,6 +158,9 @@ public class FilesFragment extends Fragment {
                 break;
             case ERROR:
                 backDir();
+                // check internet connection
+                // try few times
+                mFtpConnectionService.startConnection(CustomApplication.getInstance().getCurrentConnection());
 /*                if(event.bundle.containsKey(EventBusMessenger.MSG)) {
                     DialogFactory.showMessage(mContext, event.bundle.getString(EventBusMessenger.MSG), new DialogInterface.OnClickListener() {
                         @Override

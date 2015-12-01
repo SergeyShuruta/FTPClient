@@ -2,6 +2,7 @@ package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
 
+import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
@@ -35,7 +36,7 @@ public class DisconnectTask extends Task {
 
     @Override
     public void run() {
-
+        CacheManager.getInstance().clearCache();
         try {
             ftpClient.disconnect(true);
         } catch (IOException e) {

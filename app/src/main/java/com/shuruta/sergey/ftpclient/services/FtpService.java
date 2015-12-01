@@ -33,8 +33,6 @@ public class FtpService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        this.ftpClient = new FTPClient();
-        this.ftpClient.addCommunicationListener(ftpCommunicationListener);
         executorService = Executors.newFixedThreadPool(10);
     }
 
@@ -57,6 +55,8 @@ public class FtpService extends Service {
 
     public void startConnection(Connection connection) {
         Log.d(TAG, "startConnection()");
+        this.ftpClient = new FTPClient();
+        this.ftpClient.addCommunicationListener(ftpCommunicationListener);
         executorService.execute(new ConnectionTask(this, ftpClient, connection));
     }
 
