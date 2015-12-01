@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.entity.Connection;
@@ -37,17 +38,8 @@ public class ConnectionTask extends Task {
     @Override
     public void run() {
         Bundle bundle = new Bundle();
-        bundle.putLong("connection_id", connection.getId());
+        bundle.putLong(Constants.PARAM_CONNECTION_ID, connection.getId());
         EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.START, bundle);
-
-        try {
-            if(ftpClient.isConnected()) {
-                ftpClient.disconnect(true);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         try {
             ftpClient.connect(connection.getHost(), connection.getPort());
             ftpClient.setPassive(true);
@@ -57,17 +49,17 @@ public class ConnectionTask extends Task {
             ftpClient.changeDirectory(File.separator);
             ftpClient.setCompressionEnabled(ftpClient.isCompressionSupported());
         } catch (IOException e) {
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
-            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
         } catch (FTPIllegalReplyException e) {
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
-            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
         } catch (FTPException e) {
-            Log.d(TAG, "Already connected: " + e.getCode());
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
-            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
         }
-
+        if(bundle.containsKey(EventBusMessenger.MSG))
+            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
         if(ftpClient.isConnected()) {
             if(ftpClient.isAuthenticated()) {
                 EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.OK, bundle);

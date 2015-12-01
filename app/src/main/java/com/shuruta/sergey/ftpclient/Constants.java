@@ -6,6 +6,7 @@ package com.shuruta.sergey.ftpclient;
  */
 public class Constants {
 
+    public static final int PORT_DEFAULT = 21;
     public static final int NOOP_TIMEOUT_DEFAULT = 240;
 
     public static final int TYPE_CONNECTION = 1;

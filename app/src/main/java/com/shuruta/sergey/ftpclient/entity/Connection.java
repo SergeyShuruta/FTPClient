@@ -90,6 +90,7 @@ public class Connection extends BaseObservable implements Parcelable {
         if(null == cursor) {
             this.dir = File.separator;
             this.ldir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+            this.port = Constants.PORT_DEFAULT;
             this.noop = Constants.NOOP_TIMEOUT_DEFAULT;
             return;
         }
