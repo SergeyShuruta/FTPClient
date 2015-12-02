@@ -15,11 +15,4 @@
         tools:context=".MainActivity"
         android:layout_below="@+id/toolbar" />
 
-    <TextView android:text="@string/hello_world"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/messageTextView"
-        android:layout_alignParentBottom="true"
-        style="@style/MessageTextView" />
-
 </RelativeLayout>

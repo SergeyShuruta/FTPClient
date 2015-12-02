@@ -10,7 +10,6 @@ import android.os.IBinder;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -165,7 +164,7 @@ public class MainActivity extends BaseActivity {
                             startActivity(intent);
                             break;
                         case R.id.remove:
-                            DialogFactory.showDialog(MainActivity.this, R.string.delete_connection_ask, new DialogInterface.OnClickListener() {
+                            DialogFactory.showDialog(MainActivity.this, R.string.connection_delete_ask, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     CustomApplication.getInstance().getDatabaseAdapter().removeConnection(connection.getId());

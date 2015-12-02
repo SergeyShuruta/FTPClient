@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +33,7 @@ import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.ui.DialogFactory;
 import com.shuruta.sergey.ftpclient.ui.DividerItemDecoration;
+import com.shuruta.sergey.ftpclient.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,8 +54,7 @@ public class FilesFragment extends Fragment {
     private FFileAdapter mFileAdapter;
 
     private List<FFile> mFilesList = new ArrayList<>();
-    private boolean canDo = true;
-    private boolean isSelected = false;
+    private boolean isSelected;
     protected Context mContext;
     private int listType;
     private boolean bound;
@@ -116,6 +118,7 @@ public class FilesFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mFileRecyclerView.setLayoutManager(layoutManager);
         mFileAdapter = new FFileAdapter(mFilesList, new FileMenuClickListener());
+        mFileAdapter.setIsActive(true);
         mFileRecyclerView.setAdapter(mFileAdapter);
         mFileRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mFileRecyclerView.setOnTouchListener(new View.OnTouchListener() {
@@ -139,7 +142,6 @@ public class FilesFragment extends Fragment {
         }
 
         if(!event.isValidListType(this.listType)) return;
-        Log.d("TEST", "Event for: " + this.listType);
         switch (event.event) {
             case REFRESH:
                 if(!isSelected) break;
@@ -151,41 +153,50 @@ public class FilesFragment extends Fragment {
                 mFtpConnectionService.readList(listType);
                 break;
             case START:
-                canDo = false;
+                mFileAdapter.setIsActive(false);
                 break;
             case OK:
                 displayList();
                 break;
             case ERROR:
-                backDir();
-                // check internet connection
-                // try few times
-                mFtpConnectionService.startConnection(CustomApplication.getInstance().getCurrentConnection());
-/*                if(event.bundle.containsKey(EventBusMessenger.MSG)) {
-                    DialogFactory.showMessage(mContext, event.bundle.getString(EventBusMessenger.MSG), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mFtpConnectionService.startConnection(CustomApplication.getInstance().getCurrentConnection());
-                        }
-                    });
-                } else {*/
-                    Toast.makeText(getActivity(),
-                            this.listType == Constants.TYPE_FTP
-                                    ? R.string.connection_error
-                                    : R.string.read_error,
-                            Toast.LENGTH_SHORT).show();
-  /*              }*/
+                errorsProcessing();
             case FINISH:
-                canDo = true;
+                mFileAdapter.setIsActive(true);
                 break;
             case CLOSE:
                 mFtpConnectionService.disconnect();
                 break;
             case DISCONNECT_ERROR:
-                Toast.makeText(mContext, getString(R.string.disconnect_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, getString(R.string.error_disconnect), Toast.LENGTH_SHORT).show();
             case DISCONNECTED:
                 getActivity().finish();
                 break;
+        }
+    }
+
+    private void errorsProcessing() {
+        if(Utils.isNetworkConnected(mContext)) {
+            DialogFactory.showDialog(mContext, R.string.connection_lost_title, R.string.connection_lost_restore_ask, R.string.yes, R.string.no,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mFtpConnectionService.startConnection(CustomApplication.getInstance().getCurrentConnection());
+                        }
+                    },
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mFtpConnectionService.disconnect();
+                        }
+                    });
+        } else {
+            DialogFactory.showMessage(mContext, R.string.internet_connection_error_title, R.string.connection_will_be_closed,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mFtpConnectionService.disconnect();
+                        }
+                    });
         }
     }
 
@@ -201,6 +212,7 @@ public class FilesFragment extends Fragment {
 
         private List<FFile> files;
         private OnFileMenuClickListener listener;
+        private boolean isActiveState = true;
 
         public FFileAdapter(List<FFile> files, OnFileMenuClickListener listener) {
             this.files = files;
@@ -220,7 +232,14 @@ public class FilesFragment extends Fragment {
             viewHolder.nameTextView.setText(name);
             viewHolder.sizTextView.setText(file.getFormatSize());
             viewHolder.iconImageView.setImageDrawable(file.getIcon());
-/*
+            if(isActiveState) {
+                viewHolder.nameTextView.setTextColor(ContextCompat.getColor(mContext, R.color.primary_text));
+                viewHolder.sizTextView.setTextColor(ContextCompat.getColor(mContext, R.color.secondary_text));
+            } else {
+                viewHolder.nameTextView.setTextColor(ContextCompat.getColor(mContext, R.color.primary_text_disable));
+                viewHolder.sizTextView.setTextColor(ContextCompat.getColor(mContext, R.color.secondary_text_disable));
+            }
+            /*
             viewHolder.menuImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -254,7 +273,7 @@ public class FilesFragment extends Fragment {
                     EventBusMessenger.sendMessage(FilesFragment.this.listType, EventBusMessenger.Event.SELECT);
                     return;
                 }
-                if(!canDo) return;
+                if(!isActiveState) return;
                 FFile file = files.get(getPosition());
                 if(file.isBackButton()) {
                     backDir();
@@ -269,6 +288,11 @@ public class FilesFragment extends Fragment {
                     }
                 }
             }
+        }
+
+        public void setIsActive(boolean isActiveState) {
+            this.isActiveState = isActiveState;
+            notifyDataSetChanged();
         }
     }
 

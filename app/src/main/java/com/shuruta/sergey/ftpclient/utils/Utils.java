@@ -1,5 +1,9 @@
 package com.shuruta.sergey.ftpclient.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
@@ -51,5 +55,17 @@ public class Utils {
                 return object1.getName().compareTo(object2.getName());
             }
         });
+    }
+
+    public static boolean isNetworkConnected(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()
+                && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }
+        return false;
     }
 }

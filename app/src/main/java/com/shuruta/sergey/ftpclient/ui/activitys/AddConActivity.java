@@ -2,9 +2,7 @@ package com.shuruta.sergey.ftpclient.ui.activitys;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 
 import com.shuruta.sergey.ftpclient.R;
@@ -31,7 +29,7 @@ public class AddConActivity extends BaseActivity {
                 : (Connection) savedInstanceState.getParcelable(CONNECTION);
         binding.setConnection(connection);
         setupToolBar(R.string.app_name
-                , getString(connection.getId() == 0 ? R.string.new_connection : R.string.edit_connection_x
+                , getString(connection.getId() == 0 ? R.string.connection_new : R.string.connection_edit_x
                 , connection.getName()), ToolBarButton.ACCEPT);
     }
 
