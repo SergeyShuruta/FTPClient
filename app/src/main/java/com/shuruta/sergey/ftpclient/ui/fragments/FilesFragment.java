@@ -1,6 +1,7 @@
 package com.shuruta.sergey.ftpclient.ui.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -139,6 +140,23 @@ public class FilesFragment extends Fragment {
         if(event.event.equals(EventBusMessenger.Event.SELECT)) {
             setSelected(event.getType() == this.listType);
             return;
+        }
+
+        if(event.isValidListType(Constants.TYPE_CONNECTION)) {
+            switch (event.event) {
+                case START:
+                    // Start animation
+                    break;
+                case OK:
+                    mFtpConnectionService.readList(listType);
+                    break;
+                case ERROR:
+                    Toast.makeText(mContext, R.string.connection_error, Toast.LENGTH_SHORT).show();
+                    break;
+                case FINISH:
+                    // Finish animation
+                    break;
+            }
         }
 
         if(!event.isValidListType(this.listType)) return;

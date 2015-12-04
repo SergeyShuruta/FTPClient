@@ -108,6 +108,7 @@ public class MainActivity extends BaseActivity {
                     connectionsAdapter.notifyDataSetChanged();
                     break;
                 case OK:
+                    CustomApplication.getInstance().setCurrentConnection(connection);
                     mFtpConnectionService.readList(Constants.TYPE_FTP);
                     break;
                 case ERROR:
@@ -116,7 +117,6 @@ public class MainActivity extends BaseActivity {
                 case FINISH:
                     connection.setActive(false);
                     connectionsAdapter.notifyDataSetChanged();
-                    CustomApplication.getInstance().setCurrentConnection(connection);
                     break;
             }
         }

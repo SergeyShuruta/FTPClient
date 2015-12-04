@@ -1,5 +1,6 @@
 package com.shuruta.sergey.ftpclient;
 
+import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
