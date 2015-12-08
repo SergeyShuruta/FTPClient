@@ -3,9 +3,7 @@ package com.shuruta.sergey.ftpclient.ui.activitys;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.R;
@@ -46,26 +44,29 @@ public class FilesActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_files, menu);
+        getMenuInflater().inflate(R.menu.menu_file_list, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 EventBusMessenger.sendMessage(Constants.TYPE_FTP, EventBusMessenger.Event.CLOSE);
-                return true;
             case R.id.action_refresh:
+                // Do animation start
+                //LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                //ImageView iv = (ImageView)inflater.inflate(R.layout.refresh_action_view, null);
+                //Animation rotation = AnimationUtils.loadAnimation(this, R.anim.refresh);
+                //rotation.setRepeatCount(Animation.INFINITE);
+                //iv.startAnimation(rotation);
+                //item.getActionView().findViewById(R.id.action_refresh).startAnimation(rotation);
+                //refreshItem = item;
+                //refresh();
                 EventBusMessenger.sendMessage(Constants.TYPE_FTP,EventBusMessenger.Event.REFRESH);
                 EventBusMessenger.sendMessage(Constants.TYPE_LOCAL, EventBusMessenger.Event.REFRESH);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

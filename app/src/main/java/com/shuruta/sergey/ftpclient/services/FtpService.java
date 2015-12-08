@@ -9,10 +9,12 @@ import android.util.Log;
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.entity.Connection;
+import com.shuruta.sergey.ftpclient.interfaces.FFile;
 import com.shuruta.sergey.ftpclient.tasks.ConnectionTask;
 import com.shuruta.sergey.ftpclient.tasks.DisconnectTask;
 import com.shuruta.sergey.ftpclient.tasks.FtpReadListTask;
 import com.shuruta.sergey.ftpclient.tasks.LocalReadListTask;
+import com.shuruta.sergey.ftpclient.tasks.PrepForDownloadTask;
 import com.shuruta.sergey.ftpclient.tasks.Task;
 
 import java.util.concurrent.ExecutorService;
@@ -25,7 +27,7 @@ import it.sauronsoftware.ftp4j.FTPCommunicationListener;
  */
 public class FtpService extends Service {
 
-    ExecutorService executorService;
+    private ExecutorService executorService;
     private FTPClient ftpClient;
 
     public static final String TAG = FtpService.class.getSimpleName();
@@ -72,6 +74,11 @@ public class FtpService extends Service {
     public void disconnect() {
         Log.d(TAG, "disconnect()");
         executorService.execute(new DisconnectTask(this, ftpClient));
+    }
+
+    public void prepForDownload(FFile file) {
+        Log.d(TAG, "prepForDownload(" + file.getName() + ")");
+        executorService.execute(new PrepForDownloadTask(this, ftpClient, file));
     }
 
     FTPCommunicationListener ftpCommunicationListener = new FTPCommunicationListener()

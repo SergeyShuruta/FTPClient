@@ -17,10 +17,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,8 @@ import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.ui.DialogFactory;
 import com.shuruta.sergey.ftpclient.ui.DividerItemDecoration;
+import com.shuruta.sergey.ftpclient.ui.activitys.AddConActivity;
+import com.shuruta.sergey.ftpclient.ui.activitys.FilesActivity;
 import com.shuruta.sergey.ftpclient.utils.Utils;
 
 import java.io.File;
@@ -65,7 +69,40 @@ public class FilesFragment extends Fragment {
     public static final String IS_SELECTED = "is_selected";
 
     private interface OnFileMenuClickListener {
-        public void onMenuClick(View view, Connection connection);
+        public void onMenuClick(View view, FFile file);
+    }
+
+    private class FileMenuClickListener implements OnFileMenuClickListener {
+
+        @Override
+        public void onMenuClick(View view, final FFile file) {
+            PopupMenu popup = new PopupMenu(mContext, view);
+            popup.getMenuInflater().inflate(R.menu.menu_file, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.download:
+                            mFtpConnectionService.prepForDownload(file);
+                            //CustomApplication.getInstance().addToDownloadQueue();
+                            //Intent intent = new Intent(mContext, FilesActivity.class);
+                            //intent.putExtra(FilesFragment.LIST_TYPE, Constants.TYPE_LOCAL);
+                            //startActivity(intent);
+                            break;
+                        case R.id.remove:
+
+                            break;
+                        case R.id.rename:
+
+                            break;
+                        case R.id.properties:
+
+                            break;
+                    }
+                    return true;
+                }
+            });
+            popup.show();
+        }
     }
 
     @Override
@@ -218,14 +255,6 @@ public class FilesFragment extends Fragment {
         }
     }
 
-    private class FileMenuClickListener implements OnFileMenuClickListener {
-
-        @Override
-        public void onMenuClick(View view, final Connection connection) {
-
-        }
-    }
-
     private class FFileAdapter extends RecyclerView.Adapter<FFileAdapter.ViewHolder> {
 
         private List<FFile> files;
@@ -246,10 +275,18 @@ public class FilesFragment extends Fragment {
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, int i) {
             final FFile file = files.get(i);
-            String name = file.getName().equals(".") ? getString(R.string.back) : file.getName();
-            viewHolder.nameTextView.setText(name);
-            viewHolder.sizTextView.setText(file.getFormatSize());
-            viewHolder.iconImageView.setImageDrawable(file.getIcon());
+            boolean isBackBtn = file.getName().equals(".");
+            if(isBackBtn) {
+                viewHolder.nameTextView.setText(R.string.back);
+                viewHolder.sizTextView.setVisibility(View.GONE);
+                viewHolder.menuImageView.setVisibility(View.GONE);
+                viewHolder.iconImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_action_back));
+            } else {
+                viewHolder.nameTextView.setText(file.getName());
+                viewHolder.sizTextView.setText(file.getFormatSize());
+                viewHolder.iconImageView.setImageDrawable(file.getIcon());
+                viewHolder.setFile(file);
+            }
             if(isActiveState) {
                 viewHolder.nameTextView.setTextColor(ContextCompat.getColor(mContext, R.color.primary_text));
                 viewHolder.sizTextView.setTextColor(ContextCompat.getColor(mContext, R.color.secondary_text));
@@ -257,14 +294,6 @@ public class FilesFragment extends Fragment {
                 viewHolder.nameTextView.setTextColor(ContextCompat.getColor(mContext, R.color.primary_text_disable));
                 viewHolder.sizTextView.setTextColor(ContextCompat.getColor(mContext, R.color.secondary_text_disable));
             }
-            /*
-            viewHolder.menuImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onMenuClick(v, connection);
-                }
-            });
-*/
         }
 
         @Override
@@ -275,14 +304,25 @@ public class FilesFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
             private TextView nameTextView, sizTextView;
-            private ImageView iconImageView;
+            private ImageView iconImageView, menuImageView;
 
             public ViewHolder(View holderView) {
                 super(holderView);
                 this.nameTextView  = (TextView) holderView.findViewById(R.id.nameTextView);
                 this.sizTextView   = (TextView) holderView.findViewById(R.id.sizeTextView);
                 this.iconImageView = (ImageView) holderView.findViewById(R.id.iconImageView);
+                this.menuImageView = (ImageView) holderView.findViewById(R.id.menuImageView);
+                this.menuImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        listener.onMenuClick(v, (FFile)v.getTag());
+                    }
+                });
                 holderView.setOnClickListener(this);
+            }
+
+            public void setFile(FFile file) {
+                this.menuImageView.setTag(file);
             }
 
             @Override

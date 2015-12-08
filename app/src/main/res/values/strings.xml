@@ -33,5 +33,8 @@
     <string name="internet_connection_error_title">No internet connection</string>
     <string name="error_disconnect">Disconnect error</string>
     <string name="error_read">Read error</string>
+    <string name="download">Download</string>
+    <string name="rename">Rename</string>
+    <string name="properties">Properties</string>
 
 </resources>

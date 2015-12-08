@@ -1,6 +1,7 @@
 package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.EventBusMessenger;
@@ -45,11 +46,13 @@ public class LocalReadListTask extends Task {
     @Override
     public void run() {
         EventBusMessenger.sendLocalMessage(EventBusMessenger.Event.START);
+        Log.d("TEST", "Path: " + path);
         File dir = new File(path);
         File filesArray[] = dir.listFiles();
         List<FFile> files = new ArrayList<>();
         if(null != filesArray) {
             for (int i = 0; i < filesArray.length; i++) {
+                Log.d("TEST", "File: " + filesArray[i].getName());
                 if (filesArray[i].getName().equals("..")) continue;
                 files.add(LocalFileAdapter.create(filesArray[i]));
             }
