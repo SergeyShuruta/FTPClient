@@ -49,4 +49,5 @@ public class FTPFileAdapter extends FileAdapter {
     public boolean isBackButton() {
         return mFile.getName().equals(".");
     }
+
 }

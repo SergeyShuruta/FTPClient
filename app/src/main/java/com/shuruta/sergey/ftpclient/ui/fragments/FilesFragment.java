@@ -82,7 +82,9 @@ public class FilesFragment extends Fragment {
                 public boolean onMenuItemClick(MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.download:
-                            mFtpConnectionService.prepForDownload(file);
+                            mFtpConnectionService.prepForDownload(file
+                                    ,CustomApplication.getInstance().getPath(Constants.TYPE_FTP)
+                                    ,CustomApplication.getInstance().getPath(Constants.TYPE_LOCAL));
                             //CustomApplication.getInstance().addToDownloadQueue();
                             //Intent intent = new Intent(mContext, FilesActivity.class);
                             //intent.putExtra(FilesFragment.LIST_TYPE, Constants.TYPE_LOCAL);
@@ -282,6 +284,8 @@ public class FilesFragment extends Fragment {
                 viewHolder.menuImageView.setVisibility(View.GONE);
                 viewHolder.iconImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_action_back));
             } else {
+                viewHolder.menuImageView.setVisibility(View.VISIBLE);
+                viewHolder.sizTextView.setVisibility(file.isDir() ? View.GONE : View.VISIBLE);
                 viewHolder.nameTextView.setText(file.getName());
                 viewHolder.sizTextView.setText(file.getFormatSize());
                 viewHolder.iconImageView.setImageDrawable(file.getIcon());
@@ -397,6 +401,8 @@ public class FilesFragment extends Fragment {
         public void onServiceConnected(ComponentName name, IBinder binder) {
             Log.d(TAG, "onServiceConnected()");
             mFtpConnectionService = ((FtpService.ConnectionBinder) binder).getService();
+            if(Constants.TYPE_LOCAL == listType)
+                mFtpConnectionService.readList(listType);
             bound = true;
         }
 

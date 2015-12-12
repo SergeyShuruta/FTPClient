@@ -3,10 +3,13 @@ package com.shuruta.sergey.ftpclient.cache;
 import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.Constants;
+import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Author: Sergey Shuruta
@@ -17,6 +20,7 @@ public class CacheManager {
 
     private List<FFile> ftpFiles = new ArrayList<>();
     private List<FFile> localFiles = new ArrayList<>();
+    private Queue<DownloadEntity> downloads = new LinkedList<>();
 
     public static final String TAG = CacheManager.class.getSimpleName();
 
@@ -50,5 +54,13 @@ public class CacheManager {
     public void clearCache() {
         this.ftpFiles.clear();
         this.localFiles.clear();
+    }
+
+    public void addToDownload(DownloadEntity downloadEntity) {
+        this.downloads.add(downloadEntity);
+    }
+
+    public DownloadEntity getNextDownload() {
+        return this.downloads.poll();
     }
 }

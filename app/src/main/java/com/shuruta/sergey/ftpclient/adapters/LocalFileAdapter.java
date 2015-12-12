@@ -15,6 +15,14 @@ public class LocalFileAdapter extends FileAdapter {
 
     private File mFile;
 
+    public static FFile create(String path) {
+        return create(new File(path));
+    }
+
+    public static FFile create() {
+        return new LocalFileAdapter(new File("."));
+    }
+
     public static FFile create(File file) {
         return new LocalFileAdapter(file);
     }
@@ -30,7 +38,7 @@ public class LocalFileAdapter extends FileAdapter {
 
     @Override
     public long getSize() {
-        return 0;
+        return mFile.length();
     }
 
     @Override
@@ -51,5 +59,14 @@ public class LocalFileAdapter extends FileAdapter {
     @Override
     public boolean isBackButton() {
         return mFile.getName().equals(".");
+    }
+
+    public FFile copy() {
+        try {
+            return (FFile)super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

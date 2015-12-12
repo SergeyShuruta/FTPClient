@@ -76,9 +76,9 @@ public class FtpService extends Service {
         executorService.execute(new DisconnectTask(this, ftpClient));
     }
 
-    public void prepForDownload(FFile file) {
+    public void prepForDownload(FFile file, String from, String to) {
         Log.d(TAG, "prepForDownload(" + file.getName() + ")");
-        executorService.execute(new PrepForDownloadTask(this, ftpClient, file));
+        executorService.execute(new PrepForDownloadTask(FtpService.this, ftpClient, file, from, to));
     }
 
     FTPCommunicationListener ftpCommunicationListener = new FTPCommunicationListener()

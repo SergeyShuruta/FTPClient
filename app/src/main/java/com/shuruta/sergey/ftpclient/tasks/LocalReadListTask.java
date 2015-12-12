@@ -8,6 +8,7 @@ import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.adapters.LocalFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
+import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.utils.Utils;
@@ -51,6 +52,7 @@ public class LocalReadListTask extends Task {
         File filesArray[] = dir.listFiles();
         List<FFile> files = new ArrayList<>();
         if(null != filesArray) {
+            files.add(LocalFileAdapter.create());
             for (int i = 0; i < filesArray.length; i++) {
                 Log.d("TEST", "File: " + filesArray[i].getName());
                 if (filesArray[i].getName().equals("..")) continue;
