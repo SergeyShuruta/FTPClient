@@ -228,6 +228,28 @@ public class FilesFragment extends Fragment {
             case DISCONNECTED:
                 getActivity().finish();
                 break;
+            case START_PREP_DOWNLOAD:
+                // Show indeterminate progress dialog, if present - update
+                break;
+            case ERROR_PREP_DOWNLOAD:
+                // Hide indeterminate progress dialog
+                // Show error dialog
+                break;
+            case FINISH_PREP_DOWNLOAD:
+                // Hide if present indeterminate progress dialog
+                // If has download entities - Start download
+                break;
+            case START_DOWNLOAD:
+                // Show progress dialog
+                break;
+            case ERROR_DOWNLOAD:
+                // Hide progress dialog
+                // Show error dialog
+                break;
+            case FINISH_DOWNLOAD:
+                // Hide progress dialog
+                // If has download entities - Start download
+                break;
         }
     }
 

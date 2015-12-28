@@ -1,15 +1,19 @@
 package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
+import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
+import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.entity.DFile;
 import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
-import com.shuruta.sergey.ftpclient.utils.Utils;
 
 import java.io.File;
+import java.util.Iterator;
+
 import it.sauronsoftware.ftp4j.FTPClient;
 import it.sauronsoftware.ftp4j.FTPFile;
 
@@ -33,11 +37,17 @@ public class PrepForDownloadTask extends Task {
 
     @Override
     public void run() {
-        DownloadEntity downloadEntity = addToDownload(file, from, to);
-        do{
-            DFile file = downloadEntity.getNext();
-            Log.d("TEST", "Add to download: " + file.getFrom() + file.getName() + "|" + file.getTo());
-        } while (downloadEntity.next());
+        Bundle bundle = new Bundle();
+        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.START_PREP_DOWNLOAD);
+        try {
+            CacheManager.getInstance().addToDownload(addToDownload(file, from, to));
+        } catch (Exception e) {
+            bundle.putString(EventBusMessenger.MSG, e.getMessage());
+            e.printStackTrace();
+        }
+        if(bundle.containsKey(EventBusMessenger.MSG))
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR_PREP_DOWNLOAD, bundle);
+        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.FINISH_PREP_DOWNLOAD);
     }
 
     private DownloadEntity addToDownload(FFile file, String from, String to) {
