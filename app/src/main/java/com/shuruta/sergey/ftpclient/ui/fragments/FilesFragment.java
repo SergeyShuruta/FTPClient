@@ -1,17 +1,16 @@
 package com.shuruta.sergey.ftpclient.ui.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,16 +27,13 @@ import android.widget.Toast;
 
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
-import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 import com.shuruta.sergey.ftpclient.R;
-import com.shuruta.sergey.ftpclient.entity.Connection;
+import com.shuruta.sergey.ftpclient.interfaces.NavigationListener;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.ui.DialogFactory;
-import com.shuruta.sergey.ftpclient.ui.DividerItemDecoration;
-import com.shuruta.sergey.ftpclient.ui.activitys.AddConActivity;
-import com.shuruta.sergey.ftpclient.ui.activitys.FilesActivity;
 import com.shuruta.sergey.ftpclient.utils.Utils;
 
 import java.io.File;
@@ -50,7 +46,7 @@ import de.greenrobot.event.EventBus;
  * Created by Sergey Shuruta
  * 04.09.2015 at 13:20
  */
-public class FilesFragment extends Fragment {
+public class FilesFragment extends Fragment implements NavigationListener, CommunicationEvent.ListReadEventListener {
 
     private FtpService mFtpConnectionService;
 
@@ -63,6 +59,7 @@ public class FilesFragment extends Fragment {
     protected Context mContext;
     private int listType;
     private boolean bound;
+    private AlertDialog currentDialog;
 
     public static final String TAG = FilesFragment.class.getSimpleName();
     public static final String LIST_TYPE = "list_type";
@@ -82,9 +79,9 @@ public class FilesFragment extends Fragment {
                 public boolean onMenuItemClick(MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.download:
-                            mFtpConnectionService.prepForDownload(file
-                                    ,CustomApplication.getInstance().getPath(Constants.TYPE_FTP)
-                                    ,CustomApplication.getInstance().getPath(Constants.TYPE_LOCAL));
+                            mFtpConnectionService.preDownload(file
+                                    , CustomApplication.getInstance().getPath(Constants.TYPE_FTP)
+                                    , CustomApplication.getInstance().getPath(Constants.TYPE_LOCAL));
                             //CustomApplication.getInstance().addToDownloadQueue();
                             //Intent intent = new Intent(mContext, FilesActivity.class);
                             //intent.putExtra(FilesFragment.LIST_TYPE, Constants.TYPE_LOCAL);
@@ -148,68 +145,51 @@ public class FilesFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_files_list, null);
-        mPatchTextView = (TextView) view.findViewById(R.id.patchTextView);
-        mFileRecyclerView = (RecyclerView) view.findViewById(R.id.fileRecyclerView);
-        mFileRecyclerView.setHasFixedSize(true);
-        mFileRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mFileRecyclerView.setLayoutManager(layoutManager);
-        mFileAdapter = new FFileAdapter(mFilesList, new FileMenuClickListener());
-        mFileAdapter.setIsActive(true);
-        mFileRecyclerView.setAdapter(mFileAdapter);
-        mFileRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mFileRecyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (!isSelected) {
-                    EventBusMessenger.sendMessage(FilesFragment.this.listType, EventBusMessenger.Event.SELECT);
-                }
-                return false;
-            }
-        });
-        setSelected(isSelected);
-        return view;
+    public void onEventMainThread(CommunicationEvent event) {
+        event.setListener(FilesFragment.this);
     }
 
-    public void onEventMainThread(EventBusMessenger event) {
+    @Override
+    public void onListReadStart(int listTpe) {
+        if(this.listType != listTpe) return;
+        mFileAdapter.setIsActive(false);
+/*        currentDialog = DialogFactory.showProgressDialog(mContext, getString(R.string.connecting_to_server_x, CustomApplication.getInstance().getCurrentConnection().getName()), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mFtpConnectionService.disconnect();
+            }
+        });*/
+    }
+
+    @Override
+    public void onListReadError(int listTpe, String message) {
+        if(this.listType != listTpe) return;
+        errorsProcessing();
+        mFileAdapter.setIsActive(true);
+    }
+
+    @Override
+    public void onListReadFinish(int listTpe) {
+        if(this.listType != listTpe) return;
+        displayList();
+        mFileAdapter.setIsActive(true);
+    }
+
+    @Override
+    public void onListSelect(int listTpe) {
+        setSelected(listTpe == this.listType);
+    }
+
+/*    public void onEventMainThread(EventBusMessenger event) {
 
         if(event.event.equals(EventBusMessenger.Event.SELECT)) {
             setSelected(event.getType() == this.listType);
             return;
         }
 
-        if(event.isValidListType(Constants.TYPE_CONNECTION)) {
-            switch (event.event) {
-                case START:
-                    // Start animation
-                    break;
-                case OK:
-                    mFtpConnectionService.readList(listType);
-                    break;
-                case ERROR:
-                    Toast.makeText(mContext, R.string.connection_error, Toast.LENGTH_SHORT).show();
-                    break;
-                case FINISH:
-                    // Finish animation
-                    break;
-            }
-        }
-
         if(!event.isValidListType(this.listType)) return;
         switch (event.event) {
-            case REFRESH:
-                if(!isSelected) break;
-                mFtpConnectionService.readList(listType);
-                break;
-            case BACK:
-                if(!isSelected) break;
-                backDir();
-                mFtpConnectionService.readList(listType);
-                break;
-            case START:
+*//*            case START:
                 mFileAdapter.setIsActive(false);
                 break;
             case OK:
@@ -219,23 +199,18 @@ public class FilesFragment extends Fragment {
                 errorsProcessing();
             case FINISH:
                 mFileAdapter.setIsActive(true);
-                break;
-            case CLOSE:
-                mFtpConnectionService.disconnect();
-                break;
-            case DISCONNECT_ERROR:
-                Toast.makeText(mContext, getString(R.string.error_disconnect), Toast.LENGTH_SHORT).show();
-            case DISCONNECTED:
-                getActivity().finish();
-                break;
-            case START_PREP_DOWNLOAD:
+                break;*//*
+            case START_PREDOWNLOAD:
                 // Show indeterminate progress dialog, if present - update
                 break;
-            case ERROR_PREP_DOWNLOAD:
+            case ERROR_PREDOWNLOAD:
                 // Hide indeterminate progress dialog
                 // Show error dialog
                 break;
-            case FINISH_PREP_DOWNLOAD:
+            case FINISH_PREDOWNLOAD:
+                if(CacheManager.getInstance().isHasDownload()) {
+                    mFtpConnectionService.download();
+                }
                 // Hide if present indeterminate progress dialog
                 // If has download entities - Start download
                 break;
@@ -251,6 +226,57 @@ public class FilesFragment extends Fragment {
                 // If has download entities - Start download
                 break;
         }
+    }*/
+
+    @Override
+    public void onListRefresh() {
+        if(!isSelected) return;
+        mFtpConnectionService.readList(listType);
+    }
+
+    @Override
+    public void onListBack() {
+        if(!isSelected) return;
+        backDir();
+        mFtpConnectionService.readList(listType);
+    }
+
+    @Override
+    public void onDisconnect() {
+        if(Constants.TYPE_FTP != listType) return;
+        mFtpConnectionService.disconnect();
+    }
+
+    @Override
+    public void readList() {
+        mFtpConnectionService.readList(listType);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_files, null);
+        mPatchTextView = (TextView) view.findViewById(R.id.patchTextView);
+        mFileRecyclerView = (RecyclerView) view.findViewById(R.id.fileRecyclerView);
+        mFileRecyclerView.setHasFixedSize(true);
+        //mFileRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mFileRecyclerView.setLayoutManager(layoutManager);
+        mFileAdapter = new FFileAdapter(mFilesList, new FileMenuClickListener());
+        mFileAdapter.setIsActive(true);
+        mFileRecyclerView.setAdapter(mFileAdapter);
+        mFileRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mFileRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!isSelected) {
+                    CommunicationEvent.selectFilesPanel(FilesFragment.this.listType);
+                }
+                return false;
+            }
+        });
+        setSelected(isSelected);
+        return view;
     }
 
     private void errorsProcessing() {
@@ -354,7 +380,7 @@ public class FilesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!isSelected) {
-                    EventBusMessenger.sendMessage(FilesFragment.this.listType, EventBusMessenger.Event.SELECT);
+                    CommunicationEvent.selectFilesPanel(FilesFragment.this.listType);
                     return;
                 }
                 if(!isActiveState) return;
@@ -423,8 +449,7 @@ public class FilesFragment extends Fragment {
         public void onServiceConnected(ComponentName name, IBinder binder) {
             Log.d(TAG, "onServiceConnected()");
             mFtpConnectionService = ((FtpService.ConnectionBinder) binder).getService();
-            if(Constants.TYPE_LOCAL == listType)
-                mFtpConnectionService.readList(listType);
+            mFtpConnectionService.readList(listType);
             bound = true;
         }
 

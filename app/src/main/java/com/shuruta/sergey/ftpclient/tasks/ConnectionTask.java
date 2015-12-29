@@ -1,21 +1,15 @@
 package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.util.Log;
 
-import com.shuruta.sergey.ftpclient.Constants;
-import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.R;
+import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.entity.Connection;
 
 import java.io.File;
-import java.io.IOException;
 
-import de.greenrobot.event.EventBus;
 import it.sauronsoftware.ftp4j.FTPClient;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
 
 /**
  * Author: Sergey Shuruta
@@ -24,6 +18,7 @@ import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
  */
 public class ConnectionTask extends Task {
 
+    private Context context;
     private FTPClient ftpClient;
     private Connection connection;
 
@@ -31,44 +26,35 @@ public class ConnectionTask extends Task {
 
     public ConnectionTask(Context context, FTPClient ftpClient, Connection connection) {
         super(context);
+        this.context = context;
         this.ftpClient = ftpClient;
         this.connection = connection;
     }
 
     @Override
     public void run() {
-        Bundle bundle = new Bundle();
-        bundle.putLong(Constants.PARAM_CONNECTION_ID, connection.getId());
-        EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.START, bundle);
+        CommunicationEvent.send(CommunicationEvent.State.START, connection);
         try {
             ftpClient.connect(connection.getHost(), connection.getPort());
             ftpClient.setPassive(true);
-            ftpClient.setAutoNoopTimeout(connection.getNoop() * 1000);
-            ftpClient.login(connection.getLogin(), connection.getPassw());
             ftpClient.setType(FTPClient.TYPE_BINARY);
+            if(connection.isAuth()) {
+                ftpClient.login(connection.getLogin(), connection.getPassw());
+            }
             ftpClient.changeDirectory(File.separator);
             ftpClient.setCompressionEnabled(ftpClient.isCompressionSupported());
-        } catch (IOException e) {
-            bundle.putString(EventBusMessenger.MSG, e.getMessage());
-            e.printStackTrace();
-        } catch (FTPIllegalReplyException e) {
-            bundle.putString(EventBusMessenger.MSG, e.getMessage());
-            e.printStackTrace();
-        } catch (FTPException e) {
-            bundle.putString(EventBusMessenger.MSG, e.getMessage());
+        } catch (Exception e) {
+            CommunicationEvent.send(CommunicationEvent.State.ERROR, connection, e.getMessage());
             e.printStackTrace();
         }
-        if(bundle.containsKey(EventBusMessenger.MSG))
-            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
         if(ftpClient.isConnected()) {
             if(ftpClient.isAuthenticated()) {
-                EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.OK, bundle);
+                CommunicationEvent.send(CommunicationEvent.State.FINISH, connection);
             } else {
-                EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
+                CommunicationEvent.send(CommunicationEvent.State.ERROR, connection, context.getString(R.string.connection_auth_error));
             }
         } else {
-            EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.ERROR, bundle);
+            CommunicationEvent.send(CommunicationEvent.State.ERROR, connection, context.getString(R.string.connection_error));
         }
-        EventBusMessenger.sendConnectionMessage(EventBusMessenger.Event.FINISH, bundle);
     }
 }

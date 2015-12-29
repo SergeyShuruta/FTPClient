@@ -23,14 +23,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
-import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.ui.DialogFactory;
-import com.shuruta.sergey.ftpclient.ui.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +36,13 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements CommunicationEvent.ConnectionEventListener {
 
     private ConnectionsAdapter connectionsAdapter;
     private List<Connection> connections = new ArrayList<>();
     private boolean bound = false;
     private FtpService mFtpConnectionService;
+    private LoadConnections loadConnections;
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -81,7 +80,7 @@ public class MainActivity extends BaseActivity {
     public void initUI() {
         RecyclerView conRecyclerView = (RecyclerView) findViewById(R.id.conRecyclerView);
         conRecyclerView.setHasFixedSize(true);
-        conRecyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext()));
+        //conRecyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext()));
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         conRecyclerView.setLayoutManager(layoutManager);
@@ -90,7 +89,34 @@ public class MainActivity extends BaseActivity {
         conRecyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
-    public void onEventMainThread(EventBusMessenger event) {
+    @Override
+    public void onEventMainThread(CommunicationEvent event) {
+        event.setListener(MainActivity.this);
+    }
+
+    @Override
+    public void onConnectionStart(Connection connection) {
+        connection.setActive(true);
+        connectionsAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onConnectionError(Connection connection, String message) {
+        connection.setActive(false);
+        connectionsAdapter.notifyDataSetChanged();
+        Toast.makeText(MainActivity.this, R.string.connection_error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFinish(Connection connection) {
+        connection.setActive(false);
+        connectionsAdapter.notifyDataSetChanged();
+        CustomApplication.getInstance().setCurrentConnection(connection);
+        startActivity(new Intent(MainActivity.this, FilesActivity.class));
+    }
+
+
+/*    public void onEventMainThread(EventBusMessenger event) {
         if(event.isValidListType(Constants.TYPE_CONNECTION)) {
             Log.d(TAG, "onEvent: " + event.event + " for connections");
             long connectionId = event.bundle.getLong(Constants.PARAM_CONNECTION_ID, 0);
@@ -134,19 +160,37 @@ public class MainActivity extends BaseActivity {
                     break;
             }
         }
+    }*/
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(MainActivity.this, FtpService.class), mServiceConnection, 0);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
-        new LoadConnections().execute();
+        loadConnections = new LoadConnections();
+        loadConnections.execute();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(!loadConnections.isCancelled()) {
+            loadConnections.cancel(false);
+        }
+        if (!bound) return;
+        unbindService(mServiceConnection);
+        bound = false;
     }
 
     private class ConnectionMenuClickListener implements OnConnectionMenuClickListener {
@@ -168,7 +212,8 @@ public class MainActivity extends BaseActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     CustomApplication.getInstance().getDatabaseAdapter().removeConnection(connection.getId());
-                                    new LoadConnections().execute();
+                                    loadConnections = new LoadConnections();
+                                    loadConnections.execute();
                                 }
                             });
                             break;
@@ -256,20 +301,6 @@ public class MainActivity extends BaseActivity {
                 mFtpConnectionService.startConnection(connections.get(getAdapterPosition()));
             }
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        bindService(new Intent(MainActivity.this, FtpService.class), mServiceConnection, 0);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (!bound) return;
-        unbindService(mServiceConnection);
-        bound = false;
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {

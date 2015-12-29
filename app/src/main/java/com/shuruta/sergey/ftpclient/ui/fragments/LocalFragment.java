@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
-import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.event.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.adapters.LocalFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;

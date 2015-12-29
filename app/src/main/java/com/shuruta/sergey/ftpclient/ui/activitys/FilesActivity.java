@@ -4,17 +4,23 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import com.shuruta.sergey.ftpclient.Constants;
-import com.shuruta.sergey.ftpclient.EventBusMessenger;
+import com.shuruta.sergey.ftpclient.CustomApplication;
+import com.shuruta.sergey.ftpclient.entity.Connection;
+import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.ui.fragments.FilesFragment;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Author: Sergey Shuruta
  * Date: 08/15/15
  * Time: 22:11
  */
-public class FilesActivity extends BaseActivity {
+public class FilesActivity extends BaseActivity implements CommunicationEvent.DisconnectionEventListener, CommunicationEvent.ConnectionEventListener {
 
     private FilesFragment mFtpFilesFragment, mLocalFilesFragment;
 
@@ -24,7 +30,7 @@ public class FilesActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files);
-        setupToolBar(R.string.app_name, getString(R.string.list_of_connections), ToolBarButton.CLOSE);
+        setupToolBar(R.string.app_name, CustomApplication.getInstance().getCurrentConnection().getName(), ToolBarButton.CLOSE);
         Bundle argsFtp = new Bundle();
         argsFtp.putInt(FilesFragment.LIST_TYPE, Constants.TYPE_FTP);
         argsFtp.putBoolean(FilesFragment.IS_SELECTED, true);
@@ -52,26 +58,73 @@ public class FilesActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                EventBusMessenger.sendMessage(Constants.TYPE_FTP, EventBusMessenger.Event.CLOSE);
+                if(null != mFtpFilesFragment)
+                    mFtpFilesFragment.onDisconnect();
             case R.id.action_refresh:
-                // Do animation start
-                //LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                //ImageView iv = (ImageView)inflater.inflate(R.layout.refresh_action_view, null);
-                //Animation rotation = AnimationUtils.loadAnimation(this, R.anim.refresh);
-                //rotation.setRepeatCount(Animation.INFINITE);
-                //iv.startAnimation(rotation);
-                //item.getActionView().findViewById(R.id.action_refresh).startAnimation(rotation);
-                //refreshItem = item;
-                //refresh();
-                EventBusMessenger.sendMessage(Constants.TYPE_FTP,EventBusMessenger.Event.REFRESH);
-                EventBusMessenger.sendMessage(Constants.TYPE_LOCAL, EventBusMessenger.Event.REFRESH);
+                if(null != mFtpFilesFragment)
+                    mFtpFilesFragment.onListRefresh();
+                if(null != mLocalFilesFragment)
+                    mLocalFilesFragment.onListRefresh();
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public void onBackPressed() {
-        EventBusMessenger.sendMessage(Constants.TYPE_FTP, EventBusMessenger.Event.BACK);
-        EventBusMessenger.sendMessage(Constants.TYPE_LOCAL, EventBusMessenger.Event.BACK);
+        if(null != mFtpFilesFragment)
+            mFtpFilesFragment.onListBack();
+        if(null != mLocalFilesFragment)
+            mLocalFilesFragment.onListBack();
+    }
+
+    @Override
+    public void onEventMainThread(CommunicationEvent event) {
+        event.setListener((CommunicationEvent.DisconnectionEventListener)FilesActivity.this);
+        event.setListener((CommunicationEvent.ConnectionEventListener)FilesActivity.this);
+    }
+
+    @Override
+    public void onConnectionStart(Connection connection) {
+
+    }
+
+    @Override
+    public void onConnectionError(Connection connection, String message) {
+        Toast.makeText(FilesActivity.this, R.string.connection_error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFinish(Connection connection) {
+        if(null != mFtpFilesFragment)
+            mFtpFilesFragment.readList();
+        if(null != mLocalFilesFragment)
+            mLocalFilesFragment.readList();
+    }
+
+    @Override
+    public void onDisconnectionStart() {
+
+    }
+
+    @Override
+    public void onDisconnectionError(String message) {
+        Toast.makeText(FilesActivity.this, getString(R.string.error_disconnect), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDisconnectionFinish() {
+        finish();
     }
 }

@@ -1,10 +1,8 @@
 package com.shuruta.sergey.ftpclient.ui;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.widget.ProgressBar;
+import android.support.v7.app.AlertDialog;
 
 import com.shuruta.sergey.ftpclient.R;
 
@@ -55,6 +53,7 @@ public class DialogFactory {
         return dialog;
     }
 
+    /*
     public static AlertDialog showProgressDialog(Context context, String message, DialogInterface.OnClickListener cancelListener) {
         return showProgressDialog(context, null, message, cancelListener);
     }
@@ -68,4 +67,5 @@ public class DialogFactory {
         dialog.show();
         return dialog;
     }
+    */
 }

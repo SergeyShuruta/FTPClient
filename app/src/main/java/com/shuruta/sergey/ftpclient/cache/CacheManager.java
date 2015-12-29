@@ -20,7 +20,8 @@ public class CacheManager {
 
     private List<FFile> ftpFiles = new ArrayList<>();
     private List<FFile> localFiles = new ArrayList<>();
-    private Queue<DownloadEntity> downloads = new LinkedList<>();
+    private List<DownloadEntity> downloads = new LinkedList<>();
+    private int downloadIndex;
 
     public static final String TAG = CacheManager.class.getSimpleName();
 
@@ -43,11 +44,9 @@ public class CacheManager {
         if(listType == Constants.TYPE_FTP) {
             this.ftpFiles.clear();
             this.ftpFiles.addAll(ftpFiles);
-            Log.d("TEST", "Put ftp files: " + this.ftpFiles.size());
         } else if(listType == Constants.TYPE_LOCAL) {
             this.localFiles.clear();
             this.localFiles.addAll(ftpFiles);
-            Log.d("TEST", "Put local files: " + this.localFiles.size());
         }
     }
 
@@ -61,6 +60,14 @@ public class CacheManager {
     }
 
     public DownloadEntity getNextDownload() {
-        return this.downloads.poll();
+        return this.downloads.get(downloadIndex++);
+    }
+
+    public DownloadEntity getCurrentDownload() {
+        return this.downloads.get(downloadIndex-1);
+    }
+
+    public boolean isHasDownload() {
+        return this.downloads.size() > downloadIndex;
     }
 }

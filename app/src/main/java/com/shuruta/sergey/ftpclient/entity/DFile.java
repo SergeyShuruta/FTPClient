@@ -2,17 +2,20 @@ package com.shuruta.sergey.ftpclient.entity;
 
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
+import it.sauronsoftware.ftp4j.FTPDataTransferListener;
+
 /**
  * Created by Sergey on 12.12.2015.
  */
-public class DFile {
+public class DFile implements FTPDataTransferListener {
 
     private final FFile file;
     private final String from;
     private final String to;
     private final long size;
-    private long progress;
-
+    private long progress = 0;
+    private boolean isCompleted = false;
+    private boolean isFiled = false;
 
     public DFile(FFile file, String from, String to) {
         this.file = file;
@@ -21,12 +24,36 @@ public class DFile {
         this.size = file.getSize();
     }
 
-    public void setProgress(long progres) {
-        this.progress = progres;
+    public void addProgress(long progres) {
+        this.progress += progres;
     }
 
     public String getProgress() {
         return String.valueOf((this.size / this.progress) * 100);
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted() {
+        setCompleted(true);
+    }
+
+    public boolean isFiled() {
+        return isFiled;
+    }
+
+    public void setIsFiled() {
+        this.isFiled = true;
+    }
+
+    public void setCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
+    }
+
+    public long getSize() {
+        return size;
     }
 
     public String getFrom() {
@@ -51,5 +78,30 @@ public class DFile {
 
     public boolean isFile() {
         return file.isFile();
+    }
+
+    @Override
+    public void started() {
+
+    }
+
+    @Override
+    public void transferred(int i) {
+
+    }
+
+    @Override
+    public void completed() {
+
+    }
+
+    @Override
+    public void aborted() {
+
+    }
+
+    @Override
+    public void failed() {
+
     }
 }

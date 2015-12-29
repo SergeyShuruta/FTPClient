@@ -25,11 +25,12 @@
     <string name="connection_new">New connection</string>
     <string name="connection_delete_ask">Delete the connection?</string>
     <string name="connection_error">Connection error</string>
+    <string name="connection_auth_error">Error authorization</string>
     <string name="connection_edit_x">Edit: %s</string>
     <string name="connection_lost_title">Connection lost</string>
     <string name="connection_lost_restore_ask">Connection lost. Do you want restore it?</string>
     <string name="connection_will_be_closed">Connection will be closed</string>
-    <string name="connection_to_server_x">Connecting to server "%s"</string>
+    <string name="connecting_to_server_x">Connecting to server "%s"</string>
     <string name="internet_connection_error_title">No internet connection</string>
     <string name="error_disconnect">Disconnect error</string>
     <string name="error_read">Read error</string>

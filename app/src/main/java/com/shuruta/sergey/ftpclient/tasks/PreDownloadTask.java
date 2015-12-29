@@ -2,9 +2,7 @@ package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.shuruta.sergey.ftpclient.EventBusMessenger;
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.entity.DFile;
@@ -12,7 +10,6 @@ import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.io.File;
-import java.util.Iterator;
 
 import it.sauronsoftware.ftp4j.FTPClient;
 import it.sauronsoftware.ftp4j.FTPFile;
@@ -21,13 +18,13 @@ import it.sauronsoftware.ftp4j.FTPFile;
  * Created by Sergey Shuruta
  * 08.12.2015 at 15:57
  */
-public class PrepForDownloadTask extends Task {
+public class PreDownloadTask extends Task {
 
     private FTPClient ftpClient;
     private FFile file;
     private String from, to;
 
-    public PrepForDownloadTask(Context context, FTPClient ftpClient, FFile file, String from, String to) {
+    public PreDownloadTask(Context context, FTPClient ftpClient, FFile file, String from, String to) {
         super(context);
         this.ftpClient = ftpClient;
         this.file = file;
@@ -38,16 +35,18 @@ public class PrepForDownloadTask extends Task {
     @Override
     public void run() {
         Bundle bundle = new Bundle();
-        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.START_PREP_DOWNLOAD);
+        //EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.START_PREDOWNLOAD);
         try {
             CacheManager.getInstance().addToDownload(addToDownload(file, from, to));
         } catch (Exception e) {
-            bundle.putString(EventBusMessenger.MSG, e.getMessage());
+            //bundle.putString(EventBusMessenger.MSG, e.getMessage());
             e.printStackTrace();
         }
+/*
         if(bundle.containsKey(EventBusMessenger.MSG))
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR_PREP_DOWNLOAD, bundle);
-        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.FINISH_PREP_DOWNLOAD);
+            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR_PREDOWNLOAD, bundle);
+        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.FINISH_PREDOWNLOAD);
+*/
     }
 
     private DownloadEntity addToDownload(FFile file, String from, String to) {
@@ -58,6 +57,7 @@ public class PrepForDownloadTask extends Task {
         if(null == entity) {
             entity = new DownloadEntity();
         }
+        entity.putFile(file);
         if(file.isDir()) {
             try {
                 String newFrom = file.getFrom().concat(file.getName()).concat(File.separator);
@@ -71,8 +71,6 @@ public class PrepForDownloadTask extends Task {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if(file.isFile()){
-            entity.putFile(file);
         }
         return entity;
     }

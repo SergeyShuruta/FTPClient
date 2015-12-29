@@ -72,6 +72,7 @@ public class Connection extends BaseObservable implements Parcelable {
     private int     port;
     private String  dir;
     private String  ldir;
+    private boolean isAuth;
     private String  login;
     private String  passw;
     private int     noop;
@@ -142,6 +143,10 @@ public class Connection extends BaseObservable implements Parcelable {
         return ldir;
     }
 
+    public boolean isAuth() {
+        return true;//isAuth;
+    }
+
     public String getLogin() {
         return login;
     }
@@ -187,6 +192,10 @@ public class Connection extends BaseObservable implements Parcelable {
     public void setLocalDir(String ldir) {
         this.ldir = ldir;
         notifyPropertyChanged(BR.localDir);
+    }
+
+    public void setAuth(boolean isAuth) {
+        this.isAuth = isAuth;
     }
 
     @Bindable
