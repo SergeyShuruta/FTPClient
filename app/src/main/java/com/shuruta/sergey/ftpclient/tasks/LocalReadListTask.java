@@ -31,7 +31,7 @@ public class LocalReadListTask extends Task {
 
     @Override
     public void run() {
-        CommunicationEvent.send(CommunicationEvent.State.START, Constants.TYPE_LOCAL);
+        CommunicationEvent.sendReadList(CommunicationEvent.State.START, Constants.TYPE_LOCAL);
         File dir = new File(path);
         try {
             File filesArray[] = dir.listFiles();
@@ -45,9 +45,9 @@ public class LocalReadListTask extends Task {
                 Utils.sortFiles(files);
             }
             CacheManager.getInstance().putFiles(files, Constants.TYPE_LOCAL);
-            CommunicationEvent.send(CommunicationEvent.State.FINISH, Constants.TYPE_LOCAL);
+            CommunicationEvent.sendReadList(CommunicationEvent.State.FINISH, Constants.TYPE_LOCAL);
         } catch (Exception e) {
-            CommunicationEvent.send(CommunicationEvent.State.ERROR, Constants.TYPE_LOCAL, e.getMessage());
+            CommunicationEvent.sendReadList(CommunicationEvent.State.ERROR, Constants.TYPE_LOCAL, e.getMessage());
             e.printStackTrace();
         }
     }

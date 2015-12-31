@@ -72,14 +72,19 @@ public class FtpService extends Service {
         executorService.execute(task);
     }
 
+    public void disconnectAndClose() {
+        Log.d(TAG, "disconnectAndClose()");
+        executorService.execute(new DisconnectTask(this, ftpClient, true));
+    }
+
     public void disconnect() {
         Log.d(TAG, "disconnect()");
-        executorService.execute(new DisconnectTask(this, ftpClient));
+        executorService.execute(new DisconnectTask(this, ftpClient, false));
     }
 
     public void preDownload(FFile file, String from, String to) {
         Log.d(TAG, "preDownload(" + file.getName() + ")");
-        executorService.execute(new PreDownloadTask(FtpService.this, ftpClient, file, from, to));
+        executorService.execute(new PreDownloadTask(FtpService.this, ftpClient, file, from, to, FtpService.this));
     }
 
     public void download() {

@@ -34,7 +34,7 @@ public class FtpReadListTask extends Task {
 
     @Override
     public void run() {
-        CommunicationEvent.send(CommunicationEvent.State.START, Constants.TYPE_FTP);
+        CommunicationEvent.sendReadList(CommunicationEvent.State.START, Constants.TYPE_FTP);
         try {
             FTPFile[] filesArray = ftpClient.list(path);
             List<FFile> files = new ArrayList<>();
@@ -44,9 +44,9 @@ public class FtpReadListTask extends Task {
             }
             Utils.sortFiles(files);
             CacheManager.getInstance().putFiles(files, Constants.TYPE_FTP);
-            CommunicationEvent.send(CommunicationEvent.State.FINISH, Constants.TYPE_FTP);
+            CommunicationEvent.sendReadList(CommunicationEvent.State.FINISH, Constants.TYPE_FTP);
         } catch (Exception e) {
-            CommunicationEvent.send(CommunicationEvent.State.ERROR, Constants.TYPE_FTP, e.getMessage());
+            CommunicationEvent.sendReadList(CommunicationEvent.State.ERROR, Constants.TYPE_FTP, e.getMessage());
             e.printStackTrace();
         }
     }

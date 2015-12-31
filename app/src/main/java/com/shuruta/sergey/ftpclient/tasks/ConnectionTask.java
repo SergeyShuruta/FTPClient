@@ -33,7 +33,7 @@ public class ConnectionTask extends Task {
 
     @Override
     public void run() {
-        CommunicationEvent.send(CommunicationEvent.State.START, connection);
+        CommunicationEvent.sendConnection(CommunicationEvent.State.START, connection);
         try {
             ftpClient.connect(connection.getHost(), connection.getPort());
             ftpClient.setPassive(true);
@@ -44,17 +44,17 @@ public class ConnectionTask extends Task {
             ftpClient.changeDirectory(File.separator);
             ftpClient.setCompressionEnabled(ftpClient.isCompressionSupported());
         } catch (Exception e) {
-            CommunicationEvent.send(CommunicationEvent.State.ERROR, connection, e.getMessage());
+            CommunicationEvent.sendConnection(CommunicationEvent.State.ERROR, connection, e.getMessage());
             e.printStackTrace();
         }
         if(ftpClient.isConnected()) {
             if(ftpClient.isAuthenticated()) {
-                CommunicationEvent.send(CommunicationEvent.State.FINISH, connection);
+                CommunicationEvent.sendConnection(CommunicationEvent.State.FINISH, connection);
             } else {
-                CommunicationEvent.send(CommunicationEvent.State.ERROR, connection, context.getString(R.string.connection_auth_error));
+                CommunicationEvent.sendConnection(CommunicationEvent.State.ERROR, connection, context.getString(R.string.connection_auth_error));
             }
         } else {
-            CommunicationEvent.send(CommunicationEvent.State.ERROR, connection, context.getString(R.string.connection_error));
+            CommunicationEvent.sendConnection(CommunicationEvent.State.ERROR, connection, context.getString(R.string.connection_error));
         }
     }
 }

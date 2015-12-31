@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="24dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/preparations_for_downloading_files"
+        android:singleLine="true" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/progressBarTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:indeterminate="true"
+            android:layout_toLeftOf="@+id/totalProgressPercentTotal"
+            android:layout_marginRight="8dp" />
+
+        <TextView
+            android:id="@+id/totalProgressPercentTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="50%"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/progressBarTotal"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/containerFile"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewFile"
+            android:text="FileName.txt"
+            android:singleLine="true"
+            android:ellipsize="middle" />
+
+        <RelativeLayout
+            android:id="@+id/progressBarFileContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textViewFile" >
+
+            <ProgressBar
+                android:id="@+id/progressBarFile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:indeterminate="true"
+                android:layout_toLeftOf="@+id/totalProgressPercentFile"
+                android:layout_marginRight="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="50%"
+                android:id="@+id/totalProgressPercentFile"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/progressBarFile"
+                android:singleLine="true" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+</LinearLayout>

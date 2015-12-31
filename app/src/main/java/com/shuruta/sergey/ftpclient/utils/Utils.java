@@ -3,8 +3,10 @@ package com.shuruta.sergey.ftpclient.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.DisplayMetrics;
 
 import com.shuruta.sergey.ftpclient.Constants;
+import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
@@ -68,4 +70,37 @@ public class Utils {
         }
         return false;
     }
+
+    public static int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = CustomApplication.getInstance().getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
+    }
+
+    public int pxToDp(int px) {
+        DisplayMetrics displayMetrics = CustomApplication.getInstance().getResources().getDisplayMetrics();
+        int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return dp;
+    }
+
+    public static String backDir(String path) {
+        if(path.isEmpty() || path.equals(File.separator)) return path;
+        String[] dirs = path.split(File.separator);
+        path = File.separator;
+        for(String d : dirs) {
+            if(d.isEmpty()) continue;
+            if(dirs[dirs.length - 1].equals(d)) continue;
+            path += d + File.separator;
+        }
+        return path;
+    }
+
+    public static String addDir(String dir, String path) {
+        if(dir.isEmpty()) return path;
+        String[] dirs = path.split(File.separator);
+        if(0 != dirs.length && dirs[dirs.length - 1].equals(dir)) return path;
+        path += dir + File.separator;
+        return path;
+    }
+
 }

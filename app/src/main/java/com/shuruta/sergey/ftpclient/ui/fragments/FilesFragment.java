@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,20 +22,23 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
+import com.shuruta.sergey.ftpclient.adapters.RecyclerFileAdapter;
+import com.shuruta.sergey.ftpclient.entity.Connection;
+import com.shuruta.sergey.ftpclient.entity.DFile;
 import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.interfaces.NavigationListener;
+import com.shuruta.sergey.ftpclient.interfaces.OnFileClickListener;
+import com.shuruta.sergey.ftpclient.interfaces.OnFileMenuClickListener;
 import com.shuruta.sergey.ftpclient.services.FtpService;
-import com.shuruta.sergey.ftpclient.ui.DialogFactory;
+import com.shuruta.sergey.ftpclient.ui.dialog.DownloadDialog;
+import com.shuruta.sergey.ftpclient.ui.dialog.FTPDialog;
 import com.shuruta.sergey.ftpclient.utils.Utils;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,28 +48,28 @@ import de.greenrobot.event.EventBus;
  * Created by Sergey Shuruta
  * 04.09.2015 at 13:20
  */
-public class FilesFragment extends Fragment implements NavigationListener, CommunicationEvent.ListReadEventListener {
+public class FilesFragment extends Fragment implements NavigationListener,
+        CommunicationEvent.ListReadEventListener,
+        CommunicationEvent.ConnectionEventListener,
+        CommunicationEvent.PreDownloadEventListener,
+        CommunicationEvent.DownloadEventListener {
 
     private FtpService mFtpConnectionService;
 
     private TextView mPatchTextView;
     private RecyclerView mFileRecyclerView;
-    private FFileAdapter mFileAdapter;
+    private RecyclerFileAdapter mFileAdapter;
 
     private List<FFile> mFilesList = new ArrayList<>();
     private boolean isSelected;
     protected Context mContext;
     private int listType;
     private boolean bound;
-    private AlertDialog currentDialog;
+    private FTPDialog currentDialog;
 
     public static final String TAG = FilesFragment.class.getSimpleName();
     public static final String LIST_TYPE = "list_type";
     public static final String IS_SELECTED = "is_selected";
-
-    private interface OnFileMenuClickListener {
-        public void onMenuClick(View view, FFile file);
-    }
 
     private class FileMenuClickListener implements OnFileMenuClickListener {
 
@@ -146,33 +148,105 @@ public class FilesFragment extends Fragment implements NavigationListener, Commu
 
     @Override
     public void onEventMainThread(CommunicationEvent event) {
-        event.setListener(FilesFragment.this);
+        event.setListener((CommunicationEvent.ListReadEventListener) FilesFragment.this);
+        event.setListener((CommunicationEvent.ConnectionEventListener)FilesFragment.this);
+        event.setListener((CommunicationEvent.PreDownloadEventListener) FilesFragment.this);
+        event.setListener((CommunicationEvent.DownloadEventListener) FilesFragment.this);
+    }
+
+    @Override
+    public void onDownloadStart() {
+
+    }
+
+    @Override
+    public void onDownloadError(String message) {
+        currentDialog.dismiss();
+    }
+
+    @Override
+    public void onDownloadFinish() {
+        currentDialog.dismiss();
+    }
+
+    @Override
+    public void onPreDownloadStart() {
+        Log.d("TEST", "onPreDownloadStart()");
+        DownloadDialog.show(getActivity());
+        /*currentDialog = FTPDialog.showProgressDialog(getActivity(),
+                getString(R.string.preparations_for_downloading_files,
+                        CustomApplication.getInstance().getCurrentConnection().getName()));*/
+    }
+
+    @Override
+    public void onPreDownloadError(String message) {
+        currentDialog.dismiss();
+    }
+
+    @Override
+    public void onPreDownloadFinish() {
+
+    }
+
+    @Override
+    public void onConnectionStart(Connection connection) {
+        currentDialog = FTPDialog.showProgressDialog(getActivity(),
+                getString(R.string.connecting_to_server_x,
+                        CustomApplication.getInstance().getCurrentConnection().getName()));
+    }
+
+    @Override
+    public void onConnectionError(Connection connection, String message) {
+        if(null != currentDialog)
+            currentDialog.dismiss();
+        // Show Dialog reconnect
+    }
+
+    @Override
+    public void onConnectionFinish(Connection connection) {
+        if(null != currentDialog)
+            currentDialog.dismiss();
     }
 
     @Override
     public void onListReadStart(int listTpe) {
         if(this.listType != listTpe) return;
-        mFileAdapter.setIsActive(false);
-/*        currentDialog = DialogFactory.showProgressDialog(mContext, getString(R.string.connecting_to_server_x, CustomApplication.getInstance().getCurrentConnection().getName()), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mFtpConnectionService.disconnect();
-            }
-        });*/
+        deactivateList();
     }
 
     @Override
     public void onListReadError(int listTpe, String message) {
         if(this.listType != listTpe) return;
-        errorsProcessing();
-        mFileAdapter.setIsActive(true);
+        activateList();
+        if(Utils.isNetworkConnected(mContext)) {
+            currentDialog = FTPDialog.showReconnectDialog(getActivity(),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mFtpConnectionService.startConnection(
+                                    CustomApplication.getInstance().getCurrentConnection());
+                        }
+                    },
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mFtpConnectionService.disconnect();
+                        }
+                    });
+        } else {
+            FTPDialog.showNoInternetMessage(getActivity(), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mFtpConnectionService.disconnect();
+                }
+            });
+        }
     }
 
     @Override
     public void onListReadFinish(int listTpe) {
         if(this.listType != listTpe) return;
         displayList();
-        mFileAdapter.setIsActive(true);
     }
 
     @Override
@@ -232,12 +306,14 @@ public class FilesFragment extends Fragment implements NavigationListener, Commu
     public void onListRefresh() {
         if(!isSelected) return;
         mFtpConnectionService.readList(listType);
+        currentDialog = FTPDialog.showProgressDialog(getActivity(),R.string.refresh);
     }
 
     @Override
     public void onListBack() {
         if(!isSelected) return;
-        backDir();
+        CustomApplication.getInstance().setPath(listType,
+                Utils.backDir(CustomApplication.getInstance().getPath(listType)));
         mFtpConnectionService.readList(listType);
     }
 
@@ -262,8 +338,32 @@ public class FilesFragment extends Fragment implements NavigationListener, Commu
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mFileRecyclerView.setLayoutManager(layoutManager);
-        mFileAdapter = new FFileAdapter(mFilesList, new FileMenuClickListener());
-        mFileAdapter.setIsActive(true);
+        mFileAdapter = new RecyclerFileAdapter(mContext, mFilesList, new OnFileClickListener() {
+            @Override
+            public void onFileClick(View view, FFile file) {
+                if (!isSelected) {
+                    CommunicationEvent.selectFilesPanel(FilesFragment.this.listType);
+                    return;
+                }
+                if (!mFileAdapter.isActiveState()) return;
+                if (file.isBackButton()) {
+                    CustomApplication.getInstance().setPath(listType,
+                            Utils.backDir(CustomApplication.getInstance().getPath(listType)));
+                    mFtpConnectionService.readList(listType);
+                } else {
+                    if (file.isDir()) {
+                        CustomApplication.getInstance().setPath(listType,
+                                Utils.addDir(file.getName(), CustomApplication.getInstance().getPath(listType)));
+
+                        mFtpConnectionService.readList(listType);
+                    } else if (file.isFile()) {
+                        // on file click
+                    }
+                }
+
+            }
+        }, new FileMenuClickListener());
+        activateList();
         mFileRecyclerView.setAdapter(mFileAdapter);
         mFileRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mFileRecyclerView.setOnTouchListener(new View.OnTouchListener() {
@@ -279,131 +379,14 @@ public class FilesFragment extends Fragment implements NavigationListener, Commu
         return view;
     }
 
-    private void errorsProcessing() {
-        if(Utils.isNetworkConnected(mContext)) {
-            DialogFactory.showDialog(mContext, R.string.connection_lost_title, R.string.connection_lost_restore_ask, R.string.yes, R.string.no,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mFtpConnectionService.startConnection(CustomApplication.getInstance().getCurrentConnection());
-                        }
-                    },
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mFtpConnectionService.disconnect();
-                        }
-                    });
-        } else {
-            DialogFactory.showMessage(mContext, R.string.internet_connection_error_title, R.string.connection_will_be_closed,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mFtpConnectionService.disconnect();
-                        }
-                    });
-        }
+    private void deactivateList() {
+        mFileAdapter.setIsActive(false);
     }
 
-    private class FFileAdapter extends RecyclerView.Adapter<FFileAdapter.ViewHolder> {
-
-        private List<FFile> files;
-        private OnFileMenuClickListener listener;
-        private boolean isActiveState = true;
-
-        public FFileAdapter(List<FFile> files, OnFileMenuClickListener listener) {
-            this.files = files;
-            this.listener = listener;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-            return new ViewHolder(inflater.inflate(R.layout.row_file, viewGroup, false));
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder viewHolder, int i) {
-            final FFile file = files.get(i);
-            boolean isBackBtn = file.getName().equals(".");
-            if(isBackBtn) {
-                viewHolder.nameTextView.setText(R.string.back);
-                viewHolder.sizTextView.setVisibility(View.GONE);
-                viewHolder.menuImageView.setVisibility(View.GONE);
-                viewHolder.iconImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_action_back));
-            } else {
-                viewHolder.menuImageView.setVisibility(View.VISIBLE);
-                viewHolder.sizTextView.setVisibility(file.isDir() ? View.GONE : View.VISIBLE);
-                viewHolder.nameTextView.setText(file.getName());
-                viewHolder.sizTextView.setText(file.getFormatSize());
-                viewHolder.iconImageView.setImageDrawable(file.getIcon());
-                viewHolder.setFile(file);
-            }
-            if(isActiveState) {
-                viewHolder.nameTextView.setTextColor(ContextCompat.getColor(mContext, R.color.primary_text));
-                viewHolder.sizTextView.setTextColor(ContextCompat.getColor(mContext, R.color.secondary_text));
-            } else {
-                viewHolder.nameTextView.setTextColor(ContextCompat.getColor(mContext, R.color.primary_text_disable));
-                viewHolder.sizTextView.setTextColor(ContextCompat.getColor(mContext, R.color.secondary_text_disable));
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return files.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-            private TextView nameTextView, sizTextView;
-            private ImageView iconImageView, menuImageView;
-
-            public ViewHolder(View holderView) {
-                super(holderView);
-                this.nameTextView  = (TextView) holderView.findViewById(R.id.nameTextView);
-                this.sizTextView   = (TextView) holderView.findViewById(R.id.sizeTextView);
-                this.iconImageView = (ImageView) holderView.findViewById(R.id.iconImageView);
-                this.menuImageView = (ImageView) holderView.findViewById(R.id.menuImageView);
-                this.menuImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.onMenuClick(v, (FFile)v.getTag());
-                    }
-                });
-                holderView.setOnClickListener(this);
-            }
-
-            public void setFile(FFile file) {
-                this.menuImageView.setTag(file);
-            }
-
-            @Override
-            public void onClick(View v) {
-                if (!isSelected) {
-                    CommunicationEvent.selectFilesPanel(FilesFragment.this.listType);
-                    return;
-                }
-                if(!isActiveState) return;
-                FFile file = files.get(getPosition());
-                if(file.isBackButton()) {
-                    backDir();
-                    mFtpConnectionService.readList(listType);
-                } else {
-                    if(file.isDir()) {
-                        addDir(file.getName());
-                        Log.d("TEST", "Path: " + CustomApplication.getInstance().getPath(listType));
-                        mFtpConnectionService.readList(listType);
-                    } else if(file.isFile()) {
-                        onFileClick(file);
-                    }
-                }
-            }
-        }
-
-        public void setIsActive(boolean isActiveState) {
-            this.isActiveState = isActiveState;
-            notifyDataSetChanged();
-        }
+    private void activateList() {
+        mFileAdapter.setIsActive(true);
+        if(null != currentDialog)
+            currentDialog.dismiss();
     }
 
     private void setSelected(boolean isSelected) {
@@ -416,21 +399,10 @@ public class FilesFragment extends Fragment implements NavigationListener, Commu
         mFilesList.addAll(CacheManager.getInstance().getFiles(listType));
         mFileAdapter.notifyDataSetChanged();
         mPatchTextView.setText(CustomApplication.getInstance().getPath(listType));
+        activateList();
     }
 
-    private void backDir() {
-        String path = CustomApplication.getInstance().getPath(listType);
-        if(path.isEmpty() || path.equals(File.separator)) return;
-        String[] dirs = path.split(File.separator);
-        path = File.separator;
-        for(String d : dirs) {
-            if(d.isEmpty()) continue;
-            if(dirs[dirs.length - 1].equals(d)) continue;
-            path += d + File.separator;
-        }
-        CustomApplication.getInstance().setPath(listType, path);
-    }
-
+/*
     private void addDir(String dir) {
         if(dir.isEmpty()) return;
         String path = CustomApplication.getInstance().getPath(listType);
@@ -439,10 +411,7 @@ public class FilesFragment extends Fragment implements NavigationListener, Commu
         path += dir + File.separator;
         CustomApplication.getInstance().setPath(listType, path);
     }
-
-    public void onFileClick(FFile ftpFile) {
-
-    }
+*/
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
 

@@ -1,5 +1,6 @@
 package com.shuruta.sergey.ftpclient.entity;
 
+import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import it.sauronsoftware.ftp4j.FTPDataTransferListener;
@@ -7,7 +8,7 @@ import it.sauronsoftware.ftp4j.FTPDataTransferListener;
 /**
  * Created by Sergey on 12.12.2015.
  */
-public class DFile implements FTPDataTransferListener {
+public class DFile {
 
     private final FFile file;
     private final String from;
@@ -29,8 +30,13 @@ public class DFile implements FTPDataTransferListener {
     }
 
     public String getProgress() {
-        return String.valueOf((this.size / this.progress) * 100);
+        return String.valueOf(getProgressInt());
     }
+
+    public int getProgressInt() {
+        return (int)(100*(double)this.progress/Double.valueOf(this.size));
+    }
+
 
     public boolean isCompleted() {
         return isCompleted;
@@ -78,30 +84,5 @@ public class DFile implements FTPDataTransferListener {
 
     public boolean isFile() {
         return file.isFile();
-    }
-
-    @Override
-    public void started() {
-
-    }
-
-    @Override
-    public void transferred(int i) {
-
-    }
-
-    @Override
-    public void completed() {
-
-    }
-
-    @Override
-    public void aborted() {
-
-    }
-
-    @Override
-    public void failed() {
-
     }
 }

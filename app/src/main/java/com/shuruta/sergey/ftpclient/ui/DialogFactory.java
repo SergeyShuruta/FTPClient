@@ -1,5 +1,6 @@
 package com.shuruta.sergey.ftpclient.ui;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
@@ -53,19 +54,19 @@ public class DialogFactory {
         return dialog;
     }
 
-    /*
-    public static AlertDialog showProgressDialog(Context context, String message, DialogInterface.OnClickListener cancelListener) {
+
+/*    public static AlertDialog showProgressDialog(Context context, String message, DialogInterface.OnClickListener cancelListener) {
         return showProgressDialog(context, null, message, cancelListener);
     }
 
     public static AlertDialog showProgressDialog(Context context, String title, String message, DialogInterface.OnClickListener cancelListener) {
-        ProgressDialog.Builder builder = new ProgressDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(message).setNegativeButton(R.string.cancel, cancelListener);
         if(null != title)
             builder.setTitle(title);
         AlertDialog dialog = builder.create();
         dialog.show();
         return dialog;
-    }
-    */
+    }*/
+
 }

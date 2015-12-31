@@ -37,5 +37,10 @@
     <string name="download">Download</string>
     <string name="rename">Rename</string>
     <string name="properties">Properties</string>
+    <string name="preparations_for_downloading_files">Preparations for downloading files</string>
+    <string name="downloading_file_x_from_y">Downloading file %1$d from %2$d</string>
+    <string name="local_path">Local path:</string>
+    <string name="remote_path">Remote path:</string>
+    <string name="hide">Hide</string>
 
 </resources>

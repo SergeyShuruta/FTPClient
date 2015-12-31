@@ -1,13 +1,14 @@
 package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.entity.DFile;
 import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
+import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
+import com.shuruta.sergey.ftpclient.services.FtpService;
 
 import java.io.File;
 
@@ -23,30 +24,30 @@ public class PreDownloadTask extends Task {
     private FTPClient ftpClient;
     private FFile file;
     private String from, to;
+    private FtpService ftpService;
 
-    public PreDownloadTask(Context context, FTPClient ftpClient, FFile file, String from, String to) {
+    public PreDownloadTask(Context context, FTPClient ftpClient, FFile file, String from, String to, FtpService ftpService) {
         super(context);
         this.ftpClient = ftpClient;
         this.file = file;
         this.from = from;
         this.to = to;
+        this.ftpService = ftpService;
     }
 
     @Override
     public void run() {
-        Bundle bundle = new Bundle();
-        //EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.START_PREDOWNLOAD);
+        CommunicationEvent.sendPreDownload(CommunicationEvent.State.START);
         try {
             CacheManager.getInstance().addToDownload(addToDownload(file, from, to));
         } catch (Exception e) {
-            //bundle.putString(EventBusMessenger.MSG, e.getMessage());
+            CommunicationEvent.sendPreDownload(CommunicationEvent.State.ERROR, e.getMessage());
             e.printStackTrace();
         }
-/*
-        if(bundle.containsKey(EventBusMessenger.MSG))
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR_PREDOWNLOAD, bundle);
-        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.FINISH_PREDOWNLOAD);
-*/
+        CommunicationEvent.sendPreDownload(CommunicationEvent.State.FINISH);
+        if(CacheManager.getInstance().isHasDownload()) {
+            ftpService.download();
+        }
     }
 
     private DownloadEntity addToDownload(FFile file, String from, String to) {
@@ -55,7 +56,7 @@ public class PreDownloadTask extends Task {
 
     private DownloadEntity addToDownload(DFile file, DownloadEntity entity) {
         if(null == entity) {
-            entity = new DownloadEntity();
+            entity = new DownloadEntity(file.getFrom(), file.getTo());
         }
         entity.putFile(file);
         if(file.isDir()) {

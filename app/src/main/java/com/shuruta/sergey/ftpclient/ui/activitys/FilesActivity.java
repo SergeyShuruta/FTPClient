@@ -20,7 +20,9 @@ import de.greenrobot.event.EventBus;
  * Date: 08/15/15
  * Time: 22:11
  */
-public class FilesActivity extends BaseActivity implements CommunicationEvent.DisconnectionEventListener, CommunicationEvent.ConnectionEventListener {
+public class FilesActivity extends BaseActivity implements
+        CommunicationEvent.DisconnectionEventListener,
+        CommunicationEvent.ConnectionEventListener {
 
     private FilesFragment mFtpFilesFragment, mLocalFilesFragment;
 
@@ -124,7 +126,8 @@ public class FilesActivity extends BaseActivity implements CommunicationEvent.Di
     }
 
     @Override
-    public void onDisconnectionFinish() {
-        finish();
+    public void onDisconnectionFinish(boolean isCloseSession) {
+        if(isCloseSession)
+            finish();
     }
 }

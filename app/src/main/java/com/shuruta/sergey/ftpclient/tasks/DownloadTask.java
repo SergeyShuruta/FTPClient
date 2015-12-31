@@ -7,6 +7,7 @@ import android.util.Log;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.entity.DFile;
 import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
+import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import it.sauronsoftware.ftp4j.FTPAbortedException;
 import it.sauronsoftware.ftp4j.FTPClient;
 import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPDataTransferListener;
 import it.sauronsoftware.ftp4j.FTPException;
 import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
 
@@ -34,26 +36,29 @@ public class DownloadTask extends Task {
 
     @Override
     public void run() {
-        Bundle bundle = new Bundle();
-        //EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.START_DOWNLOAD);
+        CommunicationEvent.sendDownload(CommunicationEvent.State.START);
         do {
             DownloadEntity downloadEntity = CacheManager.getInstance().getNextDownload();
             if(null == downloadEntity) break;
             for(DFile dFile : downloadEntity) {
                 try {
-                    downloadFile(dFile);
+                    downloadFile(dFile, downloadEntity);
+                    //CommunicationEvent.sendDownload(CommunicationEvent.State.FINISH);
                 } catch (Exception e) {
-                    //bundle.putString(EventBusMessenger.MSG, e.getMessage());
+                    CommunicationEvent.sendDownload(CommunicationEvent.State.ERROR, e.getMessage());
                     e.printStackTrace();
                 }
             }
         } while(CacheManager.getInstance().isHasDownload());
-/*        if(bundle.containsKey(EventBusMessenger.MSG))
-            EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.ERROR_DOWNLOAD, bundle);
-        EventBusMessenger.sendFtpMessage(EventBusMessenger.Event.FINISH_DOWNLOAD);*/
+        CommunicationEvent.sendDownload(CommunicationEvent.State.FINISH);
     }
 
-    private boolean downloadFile(DFile dFile) {
+    private boolean downloadFile(DFile dFile, FTPDataTransferListener transferListener) throws
+            IOException,
+            FTPAbortedException,
+            FTPDataTransferException,
+            FTPException,
+            FTPIllegalReplyException {
         File lFile = new File(dFile.getTo() + dFile.getName());
         if(dFile.isDir())
             try {
@@ -62,22 +67,11 @@ public class DownloadTask extends Task {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        if(dFile.isFile())
-            try {
-                ftpClient.download(dFile.getFrom() + dFile.getName(), lFile, dFile);
-                Log.d(TAG, "Download " + dFile.getFrom() + dFile.getName() + " => " + lFile.getPath());
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (FTPIllegalReplyException e) {
-                e.printStackTrace();
-            } catch (FTPException e) {
-                e.printStackTrace();
-            } catch (FTPDataTransferException e) {
-                e.printStackTrace();
-            } catch (FTPAbortedException e) {
-                e.printStackTrace();
-            }
+        if(dFile.isFile()) {
+            ftpClient.download(dFile.getFrom() + dFile.getName(), lFile, transferListener);
+            Log.d(TAG, "Download " + dFile.getFrom() + dFile.getName() + " => " + lFile.getPath());
+            return true;
+        }
         return false;
     }
 }
