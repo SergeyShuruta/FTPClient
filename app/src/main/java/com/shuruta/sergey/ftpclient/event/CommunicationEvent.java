@@ -1,6 +1,8 @@
 package com.shuruta.sergey.ftpclient.event;
 
 
+import android.util.Log;
+
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.entity.DFile;
 
@@ -84,8 +86,8 @@ public class CommunicationEvent {
         ABORTED,
     }
 
-    private final Type type;
-    private final State state;
+    public final Type type;
+    public final State state;
     private String message;
     private Object object;
     private int constant;
@@ -208,6 +210,7 @@ public class CommunicationEvent {
 
     public void setListener(PreDownloadEventListener eventListener) {
         if(!type.equals(Type.PREDOWNLOAD)) return;
+        Log.d("TEST", "State: " + state);
         switch (state) {
             case START:  eventListener.onPreDownloadStart(); break;
             case ERROR:  eventListener.onPreDownloadError(message); break;

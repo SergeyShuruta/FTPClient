@@ -1,8 +1,13 @@
 package com.shuruta.sergey.ftpclient.ui.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
@@ -13,11 +18,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.entity.DFile;
 import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
 import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
+import com.shuruta.sergey.ftpclient.interfaces.OnDialogCloseListener;
+import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.utils.Utils;
 
 import de.greenrobot.event.EventBus;
@@ -28,7 +36,10 @@ import de.greenrobot.event.EventBus;
  */
 public class DownloadDialog extends DialogFragment implements
         DialogInterface.OnClickListener,
-        CommunicationEvent.FileDownloadEventListener {
+        CommunicationEvent.FileDownloadEventListener,
+        CommunicationEvent.DownloadEventListener {
+
+    private final String TAG = DownloadDialog.class.getSimpleName();
 
     private ProgressBar progressBarTotal, progressBarFile;
     private TextView title,
@@ -37,11 +48,23 @@ public class DownloadDialog extends DialogFragment implements
             textViewFile;
     private RelativeLayout containerFile;
     private boolean isDownloading = false;
+    private OnDialogCloseListener dialogCloseListener;
 
     public static DownloadDialog show(FragmentActivity fragmentActivity) {
         DownloadDialog downloadDialog = new DownloadDialog();
+        downloadDialog.setCancelable(false);
         downloadDialog.show(fragmentActivity.getSupportFragmentManager(), "DownloadDialog");
         return downloadDialog;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            dialogCloseListener = (OnDialogCloseListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnDialogCloseListener");
+        }
     }
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -60,7 +83,6 @@ public class DownloadDialog extends DialogFragment implements
         return adb.create();
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -75,12 +97,35 @@ public class DownloadDialog extends DialogFragment implements
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-
+        switch (which) {
+            case R.string.hide:
+                break;
+            case R.string.cancel:
+                break;
+        }
     }
 
     @Override
     public void onEventMainThread(CommunicationEvent event) {
-        event.setListener(DownloadDialog.this);
+        event.setListener((CommunicationEvent.FileDownloadEventListener)DownloadDialog.this);
+        event.setListener((CommunicationEvent.DownloadEventListener)DownloadDialog.this);
+    }
+
+    @Override
+    public void onDownloadStart() {
+
+    }
+
+    @Override
+    public void onDownloadError(String message) {
+        dismiss();
+        dialogCloseListener.onCloseDialog(OnDialogCloseListener.State.ERROR);
+    }
+
+    @Override
+    public void onDownloadFinish() {
+        dismiss();
+        dialogCloseListener.onCloseDialog(OnDialogCloseListener.State.FINISH);
     }
 
     @Override

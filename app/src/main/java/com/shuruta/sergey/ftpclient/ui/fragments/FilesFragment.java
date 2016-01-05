@@ -9,7 +9,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -27,7 +25,6 @@ import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.adapters.RecyclerFileAdapter;
 import com.shuruta.sergey.ftpclient.entity.Connection;
-import com.shuruta.sergey.ftpclient.entity.DFile;
 import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
@@ -54,7 +51,7 @@ public class FilesFragment extends Fragment implements NavigationListener,
         CommunicationEvent.PreDownloadEventListener,
         CommunicationEvent.DownloadEventListener {
 
-    private FtpService mFtpConnectionService;
+    private FtpService mFtpService;
 
     private TextView mPatchTextView;
     private RecyclerView mFileRecyclerView;
@@ -81,7 +78,7 @@ public class FilesFragment extends Fragment implements NavigationListener,
                 public boolean onMenuItemClick(MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.download:
-                            mFtpConnectionService.preDownload(file
+                            mFtpService.preDownload(file
                                     , CustomApplication.getInstance().getPath(Constants.TYPE_FTP)
                                     , CustomApplication.getInstance().getPath(Constants.TYPE_LOCAL));
                             //CustomApplication.getInstance().addToDownloadQueue();
@@ -122,25 +119,25 @@ public class FilesFragment extends Fragment implements NavigationListener,
     @Override
     public void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
         mContext.bindService(new Intent(mContext, FtpService.class), mServiceConnection, 0);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
         displayList();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        EventBus.getDefault().unregister(this);
         if (!bound) return;
         mContext.unbindService(mServiceConnection);
         bound = false;
@@ -148,10 +145,14 @@ public class FilesFragment extends Fragment implements NavigationListener,
 
     @Override
     public void onEventMainThread(CommunicationEvent event) {
+        if(event.type != CommunicationEvent.Type.FILE_DOWNLOAD)
+            Log.d("TEST", "event: " + event.type + " " + event.state);
+        // TODO Relocate listeners to activity (in this case we have 2 events)
         event.setListener((CommunicationEvent.ListReadEventListener) FilesFragment.this);
-        event.setListener((CommunicationEvent.ConnectionEventListener)FilesFragment.this);
+        event.setListener((CommunicationEvent.ConnectionEventListener) FilesFragment.this);
         event.setListener((CommunicationEvent.PreDownloadEventListener) FilesFragment.this);
         event.setListener((CommunicationEvent.DownloadEventListener) FilesFragment.this);
+
     }
 
     @Override
@@ -223,21 +224,21 @@ public class FilesFragment extends Fragment implements NavigationListener,
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mFtpConnectionService.startConnection(
+                            mFtpService.startConnection(
                                     CustomApplication.getInstance().getCurrentConnection());
                         }
                     },
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mFtpConnectionService.disconnect();
+                            mFtpService.disconnect();
                         }
                     });
         } else {
             FTPDialog.showNoInternetMessage(getActivity(), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    mFtpConnectionService.disconnect();
+                    mFtpService.disconnect();
                 }
             });
         }
@@ -283,7 +284,7 @@ public class FilesFragment extends Fragment implements NavigationListener,
                 break;
             case FINISH_PREDOWNLOAD:
                 if(CacheManager.getInstance().isHasDownload()) {
-                    mFtpConnectionService.download();
+                    mFtpService.download();
                 }
                 // Hide if present indeterminate progress dialog
                 // If has download entities - Start download
@@ -305,7 +306,7 @@ public class FilesFragment extends Fragment implements NavigationListener,
     @Override
     public void onListRefresh() {
         if(!isSelected) return;
-        mFtpConnectionService.readList(listType);
+        mFtpService.readList(listType);
         currentDialog = FTPDialog.showProgressDialog(getActivity(),R.string.refresh);
     }
 
@@ -314,18 +315,18 @@ public class FilesFragment extends Fragment implements NavigationListener,
         if(!isSelected) return;
         CustomApplication.getInstance().setPath(listType,
                 Utils.backDir(CustomApplication.getInstance().getPath(listType)));
-        mFtpConnectionService.readList(listType);
+        mFtpService.readList(listType);
     }
 
     @Override
     public void onDisconnect() {
         if(Constants.TYPE_FTP != listType) return;
-        mFtpConnectionService.disconnect();
+        mFtpService.disconnect();
     }
 
     @Override
     public void readList() {
-        mFtpConnectionService.readList(listType);
+        mFtpService.readList(listType);
     }
 
     @Override
@@ -349,13 +350,13 @@ public class FilesFragment extends Fragment implements NavigationListener,
                 if (file.isBackButton()) {
                     CustomApplication.getInstance().setPath(listType,
                             Utils.backDir(CustomApplication.getInstance().getPath(listType)));
-                    mFtpConnectionService.readList(listType);
+                    mFtpService.readList(listType);
                 } else {
                     if (file.isDir()) {
                         CustomApplication.getInstance().setPath(listType,
                                 Utils.addDir(file.getName(), CustomApplication.getInstance().getPath(listType)));
 
-                        mFtpConnectionService.readList(listType);
+                        mFtpService.readList(listType);
                     } else if (file.isFile()) {
                         // on file click
                     }
@@ -417,8 +418,8 @@ public class FilesFragment extends Fragment implements NavigationListener,
 
         public void onServiceConnected(ComponentName name, IBinder binder) {
             Log.d(TAG, "onServiceConnected()");
-            mFtpConnectionService = ((FtpService.ConnectionBinder) binder).getService();
-            mFtpConnectionService.readList(listType);
+            mFtpService = ((FtpService.ConnectionBinder) binder).getService();
+            mFtpService.readList(listType);
             bound = true;
         }
 

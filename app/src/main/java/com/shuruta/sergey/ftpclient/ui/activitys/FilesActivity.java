@@ -11,6 +11,8 @@ import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.R;
+import com.shuruta.sergey.ftpclient.interfaces.OnDialogCloseListener;
+import com.shuruta.sergey.ftpclient.ui.dialog.FTPDialog;
 import com.shuruta.sergey.ftpclient.ui.fragments.FilesFragment;
 
 import de.greenrobot.event.EventBus;
@@ -22,7 +24,8 @@ import de.greenrobot.event.EventBus;
  */
 public class FilesActivity extends BaseActivity implements
         CommunicationEvent.DisconnectionEventListener,
-        CommunicationEvent.ConnectionEventListener {
+        CommunicationEvent.ConnectionEventListener,
+        OnDialogCloseListener {
 
     private FilesFragment mFtpFilesFragment, mLocalFilesFragment;
 
@@ -129,5 +132,16 @@ public class FilesActivity extends BaseActivity implements
     public void onDisconnectionFinish(boolean isCloseSession) {
         if(isCloseSession)
             finish();
+    }
+
+    @Override
+    public void onCloseDialog(State state) {
+        switch (state){
+            case FINISH:
+                break;
+            case ERROR:
+                break;
+        }
+        mLocalFilesFragment.readList();
     }
 }
