@@ -1,6 +1,5 @@
+/*
 package com.shuruta.sergey.ftpclient.entity;
-
-import android.util.Log;
 
 import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 
@@ -10,9 +9,11 @@ import java.util.List;
 
 import it.sauronsoftware.ftp4j.FTPDataTransferListener;
 
+*/
 /**
  * Created by Sergey on 12.12.2015.
- */
+ *//*
+
 public class DownloadEntity implements Iterable<DFile>, FTPDataTransferListener {
 
     private int index = 0;
@@ -107,3 +108,4 @@ public class DownloadEntity implements Iterable<DFile>, FTPDataTransferListener 
         }
     }
 }
+*/

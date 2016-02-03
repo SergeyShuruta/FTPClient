@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -25,6 +28,7 @@ import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.adapters.RecyclerFileAdapter;
 import com.shuruta.sergey.ftpclient.entity.Connection;
+import com.shuruta.sergey.ftpclient.entity.DFile;
 import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
@@ -48,7 +52,6 @@ import de.greenrobot.event.EventBus;
 public class FilesFragment extends Fragment implements NavigationListener,
         CommunicationEvent.ListReadEventListener,
         CommunicationEvent.ConnectionEventListener,
-        CommunicationEvent.PreDownloadEventListener,
         CommunicationEvent.DownloadEventListener {
 
     private FtpService mFtpService;
@@ -62,7 +65,7 @@ public class FilesFragment extends Fragment implements NavigationListener,
     protected Context mContext;
     private int listType;
     private boolean bound;
-    private FTPDialog currentDialog;
+    private DialogFragment currentDialog;
 
     public static final String TAG = FilesFragment.class.getSimpleName();
     public static final String LIST_TYPE = "list_type";
@@ -78,13 +81,9 @@ public class FilesFragment extends Fragment implements NavigationListener,
                 public boolean onMenuItemClick(MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.download:
-                            mFtpService.preDownload(file
+                            mFtpService.download(file
                                     , CustomApplication.getInstance().getPath(Constants.TYPE_FTP)
                                     , CustomApplication.getInstance().getPath(Constants.TYPE_LOCAL));
-                            //CustomApplication.getInstance().addToDownloadQueue();
-                            //Intent intent = new Intent(mContext, FilesActivity.class);
-                            //intent.putExtra(FilesFragment.LIST_TYPE, Constants.TYPE_LOCAL);
-                            //startActivity(intent);
                             break;
                         case R.id.remove:
 
@@ -150,43 +149,27 @@ public class FilesFragment extends Fragment implements NavigationListener,
         // TODO Relocate listeners to activity (in this case we have 2 events)
         event.setListener((CommunicationEvent.ListReadEventListener) FilesFragment.this);
         event.setListener((CommunicationEvent.ConnectionEventListener) FilesFragment.this);
-        event.setListener((CommunicationEvent.PreDownloadEventListener) FilesFragment.this);
         event.setListener((CommunicationEvent.DownloadEventListener) FilesFragment.this);
-
     }
 
     @Override
     public void onDownloadStart() {
-
+        currentDialog = DownloadDialog.show(getActivity());
+        Log.d("DownloadTask", "onDownloadStart()");
     }
 
     @Override
     public void onDownloadError(String message) {
+        if(null == currentDialog) return;
         currentDialog.dismiss();
+        Log.d("DownloadTask", "onDownloadError(" + message + ")");
     }
 
     @Override
     public void onDownloadFinish() {
+        if(null == currentDialog) return;
         currentDialog.dismiss();
-    }
-
-    @Override
-    public void onPreDownloadStart() {
-        Log.d("TEST", "onPreDownloadStart()");
-        DownloadDialog.show(getActivity());
-        /*currentDialog = FTPDialog.showProgressDialog(getActivity(),
-                getString(R.string.preparations_for_downloading_files,
-                        CustomApplication.getInstance().getCurrentConnection().getName()));*/
-    }
-
-    @Override
-    public void onPreDownloadError(String message) {
-        currentDialog.dismiss();
-    }
-
-    @Override
-    public void onPreDownloadFinish() {
-
+        Log.d("DownloadTask", "onDownloadFinish()");
     }
 
     @Override
@@ -284,7 +267,7 @@ public class FilesFragment extends Fragment implements NavigationListener,
                 break;
             case FINISH_PREDOWNLOAD:
                 if(CacheManager.getInstance().isHasDownload()) {
-                    mFtpService.download();
+                    mFtpConnectionService.download();
                 }
                 // Hide if present indeterminate progress dialog
                 // If has download entities - Start download

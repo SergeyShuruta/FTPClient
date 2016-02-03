@@ -21,6 +21,7 @@ public class CustomApplication extends Application {
     private DatabaseAdapter mDatabaseAdapter;
     private Connection mCurrentConnection;
     private SharedPreferences mPreferences;
+    private boolean isCanDownload;
 
     private static CustomApplication instance;
 
@@ -69,5 +70,17 @@ public class CustomApplication extends Application {
         if(null == mCurrentConnection) return File.separator;
         String defValue = type == Constants.TYPE_FTP ? mCurrentConnection.getDir() : mCurrentConnection.getLocalDir();
         return mPreferences.getString(type + "--" + mCurrentConnection.getName(), defValue);
+    }
+
+    synchronized public void stopDownload() {
+        this.isCanDownload = false;
+    }
+
+    synchronized public void breakDownload() {
+        this.isCanDownload = true;
+    }
+
+    public boolean isStoppedDownload() {
+        return this.isCanDownload;
     }
 }

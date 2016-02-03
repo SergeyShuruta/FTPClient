@@ -15,8 +15,6 @@ public class DFile {
     private final String to;
     private final long size;
     private long progress = 0;
-    private boolean isCompleted = false;
-    private boolean isFiled = false;
 
     public DFile(FFile file, String from, String to) {
         this.file = file;
@@ -35,27 +33,6 @@ public class DFile {
 
     public int getProgressInt() {
         return (int)(100*(double)this.progress/Double.valueOf(this.size));
-    }
-
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
-    public void setCompleted() {
-        setCompleted(true);
-    }
-
-    public boolean isFiled() {
-        return isFiled;
-    }
-
-    public void setIsFiled() {
-        this.isFiled = true;
-    }
-
-    public void setCompleted(boolean isCompleted) {
-        this.isCompleted = isCompleted;
     }
 
     public long getSize() {

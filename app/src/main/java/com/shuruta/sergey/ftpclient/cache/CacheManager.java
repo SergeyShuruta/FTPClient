@@ -1,15 +1,11 @@
 package com.shuruta.sergey.ftpclient.cache;
 
-import android.util.Log;
-
 import com.shuruta.sergey.ftpclient.Constants;
-import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
+import com.shuruta.sergey.ftpclient.entity.DFile;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Author: Sergey Shuruta
@@ -20,9 +16,7 @@ public class CacheManager {
 
     private List<FFile> ftpFiles = new ArrayList<>();
     private List<FFile> localFiles = new ArrayList<>();
-    private List<DownloadEntity> downloads = new LinkedList<>();
-    private int downloadIndex;
-
+    private List<String> downloadedFiles = new ArrayList<>();
     public static final String TAG = CacheManager.class.getSimpleName();
 
     private static CacheManager instance;
@@ -55,19 +49,14 @@ public class CacheManager {
         this.localFiles.clear();
     }
 
-    public void addToDownload(DownloadEntity downloadEntity) {
-        this.downloads.add(downloadEntity);
+    public void setDownloaded(String file) {
+        downloadedFiles.add(file);
+    }
+    public boolean isDownloaded(String file) {
+        return downloadedFiles.contains(file);
     }
 
-    public DownloadEntity getNextDownload() {
-        return this.downloads.get(downloadIndex++);
-    }
-
-    public DownloadEntity getCurrentDownload() {
-        return this.downloads.get(downloadIndex-1);
-    }
-
-    public boolean isHasDownload() {
-        return this.downloads.size() > downloadIndex;
+    public void clearDownloaded() {
+        downloadedFiles.clear();
     }
 }

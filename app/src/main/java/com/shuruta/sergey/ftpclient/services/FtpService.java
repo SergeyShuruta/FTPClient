@@ -15,7 +15,6 @@ import com.shuruta.sergey.ftpclient.tasks.DisconnectTask;
 import com.shuruta.sergey.ftpclient.tasks.DownloadTask;
 import com.shuruta.sergey.ftpclient.tasks.FtpReadListTask;
 import com.shuruta.sergey.ftpclient.tasks.LocalReadListTask;
-import com.shuruta.sergey.ftpclient.tasks.PreDownloadTask;
 import com.shuruta.sergey.ftpclient.tasks.Task;
 
 import java.util.concurrent.ExecutorService;
@@ -82,14 +81,14 @@ public class FtpService extends Service {
         executorService.execute(new DisconnectTask(this, ftpClient, false));
     }
 
-    public void preDownload(FFile file, String from, String to) {
+/*    public void preDownload(FFile file, String from, String to) {
         Log.d(TAG, "preDownload(" + file.getName() + ")");
         executorService.execute(new PreDownloadTask(FtpService.this, ftpClient, file, from, to, FtpService.this));
-    }
+    }*/
 
-    public void download() {
-        Log.d(TAG, "download()");
-        executorService.execute(new DownloadTask(FtpService.this, ftpClient));
+    public void download(FFile file, String from, String to) {
+        Log.d(TAG, "download(" + file.getName() + ", " + from + ", " + to + ")");
+        executorService.execute(new DownloadTask(FtpService.this, ftpClient, file, from, to, DownloadTask.State.NEW));
     }
 
     FTPCommunicationListener ftpCommunicationListener = new FTPCommunicationListener()

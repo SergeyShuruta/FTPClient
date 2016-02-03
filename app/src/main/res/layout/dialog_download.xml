@@ -5,53 +5,18 @@
     android:orientation="vertical"
     android:paddingTop="24dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/preparations_for_downloading_files"
-            android:singleLine="true"
-            android:layout_alignRight="@+id/progressBarTotal" />
-
-        <ProgressBar
-            android:id="@+id/progressBarTotal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:indeterminate="true"
-            android:layout_toLeftOf="@+id/totalProgressPercentTotal"
-            android:layout_marginRight="8dp"
-            android:layout_below="@+id/title" />
-
-        <TextView
-            android:id="@+id/totalProgressPercentTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="50%"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/progressBarTotal"
-            android:visibility="gone" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/containerFile"
+    <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:visibility="gone">
+        android:text="@string/preparations_for_downloading_files"
+        android:singleLine="true" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textViewFile"
-            android:text="FileName.txt"
-            android:singleLine="true"
-            android:ellipsize="middle"
-            android:layout_alignRight="@+id/progressBarFile" />
+    <RelativeLayout
+        android:id="@+id/progressBarFileContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewFile" >
 
         <ProgressBar
             android:id="@+id/progressBarFile"
@@ -60,8 +25,7 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:indeterminate="true"
             android:layout_toLeftOf="@+id/totalProgressPercentFile"
-            android:layout_marginRight="8dp"
-            android:layout_below="@+id/textViewFile" />
+            android:layout_marginRight="8dp" />
 
         <TextView
             android:layout_width="wrap_content"

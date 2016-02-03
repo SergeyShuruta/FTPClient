@@ -1,8 +1,6 @@
 package com.shuruta.sergey.ftpclient.event;
 
 
-import android.util.Log;
-
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.entity.DFile;
 
@@ -233,7 +231,7 @@ public class CommunicationEvent {
             case START:    eventListener.onFileDownloadStart((DFile) object); break;
             case PROGRESS: eventListener.onFileDownloadProgress((DFile) object); break;
             case ERROR:    eventListener.onFileDownloadError((DFile) object, message); break;
-            case ABORTED:  eventListener.onFileDownloadAborted((DFile) object); break;
+            case PRESENT:  eventListener.onFileDownloadPresent((DFile) object); break;
             case FINISH:   eventListener.onFileDownloadFinish((DFile) object); break;
         }
     }

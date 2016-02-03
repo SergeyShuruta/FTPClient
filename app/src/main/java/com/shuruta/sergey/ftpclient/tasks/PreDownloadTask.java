@@ -1,7 +1,10 @@
+/*
 package com.shuruta.sergey.ftpclient.tasks;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.entity.DFile;
@@ -15,10 +18,12 @@ import java.io.File;
 import it.sauronsoftware.ftp4j.FTPClient;
 import it.sauronsoftware.ftp4j.FTPFile;
 
+*/
 /**
  * Created by Sergey Shuruta
  * 08.12.2015 at 15:57
- */
+ *//*
+
 public class PreDownloadTask extends Task {
 
     private FTPClient ftpClient;
@@ -55,6 +60,11 @@ public class PreDownloadTask extends Task {
     }
 
     private DownloadEntity addToDownload(DFile file, DownloadEntity entity) {
+        if(!CustomApplication.getInstance().isStoppedDownload()) {
+            CustomApplication.getInstance().stopDownload(true);
+            CommunicationEvent.sendDownload(CommunicationEvent.State.FINISH);
+            return null;
+        }
         if(null == entity) {
             entity = new DownloadEntity(file.getFrom(), file.getTo());
         }
@@ -76,3 +86,4 @@ public class PreDownloadTask extends Task {
         return entity;
     }
 }
+*/

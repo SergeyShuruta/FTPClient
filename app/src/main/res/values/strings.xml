@@ -42,5 +42,6 @@
     <string name="local_path">Local path:</string>
     <string name="remote_path">Remote path:</string>
     <string name="hide">Hide</string>
+    <string name="failed_to_write_file">Failed to write file</string>
 
 </resources>
