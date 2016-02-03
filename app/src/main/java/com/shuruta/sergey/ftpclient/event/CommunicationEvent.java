@@ -1,6 +1,8 @@
 package com.shuruta.sergey.ftpclient.event;
 
 
+import android.util.Log;
+
 import com.shuruta.sergey.ftpclient.entity.Connection;
 import com.shuruta.sergey.ftpclient.entity.DFile;
 
@@ -60,7 +62,7 @@ public class CommunicationEvent {
         public void onEventMainThread(CommunicationEvent event);
         public void onFileDownloadStart(DFile dFile);
         public void onFileDownloadProgress(DFile dFile);
-        public void onFileDownloadAborted(DFile dFile);
+        public void onFileDownloadPresent(DFile dFile);
         public void onFileDownloadError(DFile dFile, String message);
         public void onFileDownloadFinish(DFile dFile);
     }
@@ -78,6 +80,7 @@ public class CommunicationEvent {
     public enum State {
         START,
         ERROR,
+        PRESENT,
         FINISH,
         SELECT,
         PROGRESS,

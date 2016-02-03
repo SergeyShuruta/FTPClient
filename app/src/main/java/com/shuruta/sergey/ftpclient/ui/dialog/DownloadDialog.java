@@ -32,8 +32,7 @@ import de.greenrobot.event.EventBus;
  */
 public class DownloadDialog extends DialogFragment implements
         DialogInterface.OnClickListener,
-        CommunicationEvent.FileDownloadEventListener,
-        CommunicationEvent.DownloadEventListener {
+        CommunicationEvent.FileDownloadEventListener {
 
     private ProgressBar progressBarFile;
     private TextView title, textViewProgressFile;
@@ -44,7 +43,7 @@ public class DownloadDialog extends DialogFragment implements
         downloadDialog.show(fragmentActivity.getSupportFragmentManager(), "DownloadDialog");
         return downloadDialog;
     }
-
+/*
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -53,7 +52,7 @@ public class DownloadDialog extends DialogFragment implements
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnDialogCloseListener");
         }
-    }
+    }*/
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
