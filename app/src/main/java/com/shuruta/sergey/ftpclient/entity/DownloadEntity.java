@@ -1,111 +1,71 @@
-/*
 package com.shuruta.sergey.ftpclient.entity;
 
-import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
+import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import it.sauronsoftware.ftp4j.FTPDataTransferListener;
-
-*/
 /**
- * Created by Sergey on 12.12.2015.
- *//*
+ * Created by Sergey on 07.03.2016.
+ */
+public class DownloadEntity {
 
-public class DownloadEntity implements Iterable<DFile>, FTPDataTransferListener {
+    private final FFile startFile;
+    private final String from;
+    private final String to;
 
-    private int index = 0;
-    private List<DFile> downloadList = new ArrayList<>();
-    private long totalProgress = 0;
-    private long totalSize = 0;
-    private String remotePath, localPath;
+    private List<DFile> downloadedList = new ArrayList<>();
+    private List<DFile> skippedList = new ArrayList<>();
+    private boolean isOverrideNext = false;
+    private DFile currentFile;
 
-    public DownloadEntity(String remotePath, String localPath) {
-        this.remotePath = remotePath;
-        this.localPath = localPath;
+    public DownloadEntity(FFile startFile, String from, String to) {
+        this.startFile = startFile;
+        this.from = from;
+        this.to = to;
     }
 
-    public void putFile(DFile file) {
-        if(file.isFile())
-            totalSize += file.getSize();
-        this.downloadList.add(file.clone());
+    public FFile getStartFile() {
+        return startFile;
     }
 
-    @Override
-    public Iterator<DFile> iterator() {
-        return new DownloadEntityIterator();
+    public String getFrom() {
+        return from;
     }
 
-    public String getTotalProgress() {
-        return String.valueOf(getTotalProgressInt());
+    public String getTo() {
+        return to;
     }
 
-    public int getTotalProgressInt() {
-        return (int)(100*(double)this.totalProgress/Double.valueOf(this.totalSize));
+    public void setCurrentFile(DFile currentFile) {
+        this.currentFile = currentFile;
     }
 
-    public int getSize() {
-        return downloadList.size();
+    public boolean isDownloaded(DFile dFile) {
+        return downloadedList.contains(dFile) || skippedList.contains(dFile);
     }
 
-    public int getCompletedSize() {
-        return index-1;
+    public void setDownloaded() {
+        downloadedList.add(currentFile);
     }
 
-    public String getLocalPath() {
-        return localPath;
+    public void setSkip() {
+        skippedList.add(currentFile);
     }
 
-    public String getRemotePath() {
-        return remotePath;
+    public void setOverride() {
+        isOverrideNext = true;
     }
 
-    @Override
-    public void started() {
-        CommunicationEvent.sendFileDownload(CommunicationEvent.State.START, downloadList.get(index-1));
-    }
-
-    @Override
-    public void transferred(int i) {
-        downloadList.get(index-1).addProgress(i);
-        totalProgress += i;
-        CommunicationEvent.sendFileDownload(CommunicationEvent.State.PROGRESS, downloadList.get(index-1), getTotalProgress());
-    }
-
-    @Override
-    public void completed() {
-        downloadList.get(index-1).setCompleted();
-        CommunicationEvent.sendFileDownload(CommunicationEvent.State.FINISH, downloadList.get(index - 1));
-    }
-
-    @Override
-    public void aborted() {
-        CommunicationEvent.sendFileDownload(CommunicationEvent.State.ABORTED, downloadList.get(index - 1));
-    }
-
-    @Override
-    public void failed() {
-        downloadList.get(index-1).setIsFiled();
-    }
-
-    private class DownloadEntityIterator implements Iterator<DFile> {
-
-        @Override
-        public boolean hasNext() {
-            return downloadList.size() > index;
+    public boolean isOverride() {
+        if (isOverrideNext) {
+            isOverrideNext = false;
+            return true;
         }
+        return false;
+    }
 
-        @Override
-        public DFile next() {
-            return downloadList.get(index++);
-        }
-
-        @Override
-        public void remove() {
-            downloadList.remove(index--);
-        }
+    public DFile getCurrentFile() {
+        return currentFile;
     }
 }
-*/

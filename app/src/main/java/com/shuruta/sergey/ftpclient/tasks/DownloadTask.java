@@ -8,6 +8,7 @@ import com.shuruta.sergey.ftpclient.R;
 import com.shuruta.sergey.ftpclient.adapters.FTPFileAdapter;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.entity.DFile;
+import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
 import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
@@ -26,29 +27,20 @@ public class DownloadTask extends Task implements FTPDataTransferListener {
     private Context context;
     private FTPClient ftpClient;
     private FFile downloadFile;
-    private DFile dFile;
+    private DownloadEntity downloadEntity;
     private String from, to;
-    private State state;
     private boolean isBreak = false;
 
     private static String TAG = DownloadTask.class.getSimpleName();
 
-    public enum State {
-        NEW,
-        OVERWRITE,
-        OVERWRITE_ALL,
-        SKIP,
-        SKIP_ALL,
-    }
-
-    public DownloadTask(Context context, FTPClient ftpClient, FFile ftpFile, String from, String to, State state) {
+    public DownloadTask(Context context, FTPClient ftpClient, FFile ftpFile, String from, String to) {
         super(context);
         this.context = context;
         this.ftpClient = ftpClient;
         this.downloadFile = ftpFile;
         this.from = from;
         this.to = to;
-        this.state = state;
+        downloadEntity = CacheManager.getInstance().newDownloadEntity(ftpFile, from, to);
     }
 
     @Override
@@ -56,20 +48,19 @@ public class DownloadTask extends Task implements FTPDataTransferListener {
         CommunicationEvent.sendDownload(CommunicationEvent.State.START);
         downloadFile(new DFile(downloadFile, from, to));
         if(!isBreak) {
-            CacheManager.getInstance().clearDownloaded();
-            CustomApplication.getInstance().breakDownload();
+            CacheManager.getInstance().clearDownload();
+            CommunicationEvent.sendDownload(CommunicationEvent.State.FINISH);
         }
-        CommunicationEvent.sendDownload(CommunicationEvent.State.FINISH);
     }
 
     private void downloadFile(DFile dFile) {
-        if (!CustomApplication.getInstance().isStoppedDownload() || isBreak) return;
+        if(isBreak || downloadEntity.isDownloaded(dFile)) return;
         String newFromFilePatch = dFile.getFrom() + dFile.getName();
         String newToFilePatch = dFile.getTo() + dFile.getName();
         File newToFile = new File(newToFilePatch);
         if (dFile.isDir()) {
-            if (!newToFile.exists()) newToFile.mkdir();
             Log.d(TAG, "Try read dir " + newFromFilePatch);
+            newToFile.mkdir();
             try {
                 for (FTPFile ftpFile : ftpClient.list(dFile.getFrom() + dFile.getName())) {
                     if (ftpFile.getName().equals(".") || ftpFile.getName().equals("..")) continue;
@@ -77,37 +68,26 @@ public class DownloadTask extends Task implements FTPDataTransferListener {
                 }
             } catch (Exception e) {
                 CommunicationEvent.sendDownload(CommunicationEvent.State.ERROR, e.getMessage());
-                isBreak = true;
                 e.printStackTrace();
-            }
-        } else if (!CacheManager.getInstance().isDownloaded(newFromFilePatch)) {
-            Log.d(TAG, "Label 1");
-            if (newToFile.exists() && state.equals(State.NEW)) {
-                CommunicationEvent.sendFileDownload(CommunicationEvent.State.PRESENT, dFile);
                 isBreak = true;
-            } else if (!(newToFile.exists() && state.equals(State.SKIP_ALL))) {
-                Log.d(TAG, "Label 2");
-                if (newToFile.exists() && state.equals(State.SKIP)) {
-                    this.state = State.NEW;
-                    CacheManager.getInstance().setDownloaded(newToFilePatch);
-                    Log.d(TAG, "Label 3");
-                } else {
-                    if (newToFile.exists() && state.equals(State.OVERWRITE)) {
-                        this.state = State.NEW;
-                    }
-                    Log.d(TAG, "Try download file " + newFromFilePatch);
-                    try {
-                        ftpClient.download(newFromFilePatch, newToFile, DownloadTask.this);
-                        CacheManager.getInstance().setDownloaded(newToFilePatch);
-                    } catch (Exception e) {
-                        CommunicationEvent.sendDownload(CommunicationEvent.State.ERROR, e.getMessage());
-                        isBreak = true;
-                        e.printStackTrace();
-                    }
-                }
             }
         } else {
-            Log.d(TAG, "Label 4");
+            downloadEntity.setCurrentFile(dFile);
+            if (newToFile.exists()) {
+                CommunicationEvent.sendFileDownload(CommunicationEvent.State.PRESENT, dFile);
+                isBreak = true;
+            } else {
+                Log.d(TAG, "Try download file " + newFromFilePatch);
+                try {
+                    ftpClient.download(newFromFilePatch, newToFile, DownloadTask.this);
+                } catch (Exception e) {
+                    CommunicationEvent.sendDownload(CommunicationEvent.State.ERROR, e.getMessage());
+                    e.printStackTrace();
+                    isBreak = true;
+                }
+            }
+            if(!isBreak)
+                downloadEntity.setDownloaded();
         }
     }
 
@@ -171,13 +151,13 @@ public class DownloadTask extends Task implements FTPDataTransferListener {
 
     @Override
     public void started() {
-        CommunicationEvent.sendFileDownload(CommunicationEvent.State.START, dFile);
+        CommunicationEvent.sendFileDownload(CommunicationEvent.State.START, downloadEntity.getCurrentFile());
     }
 
     @Override
     public void transferred(int i) {
-        dFile.addProgress(i);
-        CommunicationEvent.sendFileDownload(CommunicationEvent.State.PROGRESS, dFile);
+        downloadEntity.getCurrentFile().addProgress(i);
+        CommunicationEvent.sendFileDownload(CommunicationEvent.State.PROGRESS, downloadEntity.getCurrentFile());
     }
 
     @Override
@@ -187,11 +167,11 @@ public class DownloadTask extends Task implements FTPDataTransferListener {
 
     @Override
     public void aborted() {
-        CommunicationEvent.sendFileDownload(CommunicationEvent.State.ERROR, dFile);
+        CommunicationEvent.sendFileDownload(CommunicationEvent.State.ERROR, downloadEntity.getCurrentFile());
     }
 
     @Override
     public void failed() {
-        CommunicationEvent.sendFileDownload(CommunicationEvent.State.ERROR, dFile);
+        CommunicationEvent.sendFileDownload(CommunicationEvent.State.ERROR, downloadEntity.getCurrentFile());
     }
 }

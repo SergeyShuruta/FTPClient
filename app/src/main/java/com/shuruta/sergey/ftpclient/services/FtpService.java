@@ -88,7 +88,7 @@ public class FtpService extends Service {
 
     public void download(FFile file, String from, String to) {
         Log.d(TAG, "download(" + file.getName() + ", " + from + ", " + to + ")");
-        executorService.execute(new DownloadTask(FtpService.this, ftpClient, file, from, to, DownloadTask.State.NEW));
+        executorService.execute(new DownloadTask(FtpService.this, ftpClient, file, from, to));
     }
 
     FTPCommunicationListener ftpCommunicationListener = new FTPCommunicationListener()

@@ -35,6 +35,7 @@
     <string name="error_disconnect">Disconnect error</string>
     <string name="error_read">Read error</string>
     <string name="download">Download</string>
+    <string name="error_download">Download</string>
     <string name="rename">Rename</string>
     <string name="properties">Properties</string>
     <string name="preparations_for_downloading_files">Preparations for downloading files</string>
@@ -43,5 +44,8 @@
     <string name="remote_path">Remote path:</string>
     <string name="hide">Hide</string>
     <string name="failed_to_write_file">Failed to write file</string>
+    <string name="override_file">Override</string>
+    <string name="skip_file">Skip</string>
+    <string name="file_x_is_present">File "%s" is present</string>
 
 </resources>

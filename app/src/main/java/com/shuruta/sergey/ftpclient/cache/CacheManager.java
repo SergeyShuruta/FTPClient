@@ -2,6 +2,7 @@ package com.shuruta.sergey.ftpclient.cache;
 
 import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.entity.DFile;
+import com.shuruta.sergey.ftpclient.entity.DownloadEntity;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class CacheManager {
 
     private List<FFile> ftpFiles = new ArrayList<>();
     private List<FFile> localFiles = new ArrayList<>();
-    private List<String> downloadedFiles = new ArrayList<>();
+    private DownloadEntity downloadEntity;
     public static final String TAG = CacheManager.class.getSimpleName();
 
     private static CacheManager instance;
@@ -49,14 +50,17 @@ public class CacheManager {
         this.localFiles.clear();
     }
 
-    public void setDownloaded(String file) {
-        downloadedFiles.add(file);
-    }
-    public boolean isDownloaded(String file) {
-        return downloadedFiles.contains(file);
+    public DownloadEntity getDownloadEntity() {
+        return downloadEntity;
     }
 
-    public void clearDownloaded() {
-        downloadedFiles.clear();
+    public DownloadEntity newDownloadEntity(FFile startFile, String from, String to) {
+        if(null == downloadEntity)
+            downloadEntity = new DownloadEntity(startFile, from, to);
+        return downloadEntity;
+    }
+
+    public void clearDownload() {
+        downloadEntity = null;
     }
 }

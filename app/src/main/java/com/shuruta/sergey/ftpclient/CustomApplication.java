@@ -71,7 +71,7 @@ public class CustomApplication extends Application {
         String defValue = type == Constants.TYPE_FTP ? mCurrentConnection.getDir() : mCurrentConnection.getLocalDir();
         return mPreferences.getString(type + "--" + mCurrentConnection.getName(), defValue);
     }
-
+/*
     synchronized public void stopDownload() {
         this.isCanDownload = false;
     }
@@ -82,5 +82,5 @@ public class CustomApplication extends Application {
 
     public boolean isStoppedDownload() {
         return this.isCanDownload;
-    }
+    }*/
 }

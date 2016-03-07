@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +19,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -28,7 +26,6 @@ import com.shuruta.sergey.ftpclient.Constants;
 import com.shuruta.sergey.ftpclient.CustomApplication;
 import com.shuruta.sergey.ftpclient.adapters.RecyclerFileAdapter;
 import com.shuruta.sergey.ftpclient.entity.Connection;
-import com.shuruta.sergey.ftpclient.entity.DFile;
 import com.shuruta.sergey.ftpclient.event.CommunicationEvent;
 import com.shuruta.sergey.ftpclient.cache.CacheManager;
 import com.shuruta.sergey.ftpclient.interfaces.FFile;
@@ -38,6 +35,7 @@ import com.shuruta.sergey.ftpclient.interfaces.OnFileClickListener;
 import com.shuruta.sergey.ftpclient.interfaces.OnFileMenuClickListener;
 import com.shuruta.sergey.ftpclient.services.FtpService;
 import com.shuruta.sergey.ftpclient.ui.dialog.DownloadDialog;
+import com.shuruta.sergey.ftpclient.ui.dialog.DownloadPresentDialog;
 import com.shuruta.sergey.ftpclient.ui.dialog.FTPDialog;
 import com.shuruta.sergey.ftpclient.utils.Utils;
 import java.util.ArrayList;
@@ -154,21 +152,26 @@ public class FilesFragment extends Fragment implements NavigationListener,
 
     @Override
     public void onDownloadStart() {
-        currentDialog = DownloadDialog.show(getActivity());
-        Log.d("DownloadTask", "onDownloadStart()");
+        if(null == currentDialog) {
+            currentDialog = DownloadDialog.show(getActivity());
+            Log.d("DownloadTask", "onDownloadStart()");
+        }
     }
 
     @Override
     public void onDownloadError(String message) {
-        if(null == currentDialog) return;
-        currentDialog.dismiss();
+        if(null != currentDialog) {
+            currentDialog.dismiss();
+        }
         Log.d("DownloadTask", "onDownloadError(" + message + ")");
+        currentDialog = DownloadPresentDialog.show(getActivity());
     }
 
     @Override
     public void onDownloadFinish() {
-        if(null == currentDialog) return;
-        currentDialog.dismiss();
+        if(null != currentDialog) {
+            currentDialog.dismiss();
+        }
         Log.d("DownloadTask", "onDownloadFinish()");
     }
 

@@ -81,7 +81,7 @@ public class DownloadDialog extends DialogFragment implements
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case DialogInterface.BUTTON_NEGATIVE:
-                CustomApplication.getInstance().stopDownload();
+                //CustomApplication.getInstance().stopDownload();
                 break;
         }
     }
